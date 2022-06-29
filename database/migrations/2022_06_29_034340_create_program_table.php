@@ -16,6 +16,7 @@ class CreateProgramTable extends Migration {
 		Schema::create('program', function(Blueprint $table)
 		{
 			$table->integer('id', true);
+			$table->integer('major_id')->index('fk_session_major_id')->comment('chuyên ngành');
 			$table->string('name')->nullable()->comment('tên chương trình');
 			$table->string('session')->comment('niên khóa');
 			$table->date('start')->comment('năm học (bắt đầu)');

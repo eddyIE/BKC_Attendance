@@ -18,7 +18,7 @@ class CreateAttendanceTable extends Migration {
 			$table->integer('id', true);
 			$table->integer('lesson_id')->index('fk_attendance_lesson_id')->comment('buổi học');
 			$table->integer('student_id')->index('fk_attendance_student_id')->comment('sinh viên');
-			$table->string('status')->comment('tình trạng đi học (có mặt, nghỉ không phép, có phép, muộn)');
+			$table->string('attendant_status')->comment('tình trạng đi học (có mặt, nghỉ không phép, có phép, muộn)');
 			$table->string('note')->nullable()->comment('lí do (nếu có)');
 			$table->integer('created_by')->index('fk_attendance_user_create');
 			$table->integer('modified_by')->nullable()->index('fk_attendance_user_modify');
