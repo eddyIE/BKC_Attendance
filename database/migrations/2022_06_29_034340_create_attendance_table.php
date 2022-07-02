@@ -22,8 +22,7 @@ class CreateAttendanceTable extends Migration {
 			$table->string('note')->nullable()->comment('lí do (nếu có)');
 			$table->integer('created_by')->index('fk_attendance_user_create');
 			$table->integer('modified_by')->nullable()->index('fk_attendance_user_modify');
-			$table->timestamp('date_create')->nullable()->default(DB::raw('CURRENT_TIMESTAMP'));
-			$table->timestamp('date_modify')->nullable()->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamps($precision = 0);
 		});
 	}
 

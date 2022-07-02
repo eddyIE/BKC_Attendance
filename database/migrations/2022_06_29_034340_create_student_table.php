@@ -22,8 +22,7 @@ class CreateStudentTable extends Migration {
 			$table->boolean('status')->nullable()->default(1);
 			$table->integer('created_by')->index('fk_student_user_create');
 			$table->integer('modified_by')->nullable()->index('fk_student_user_modifiy');
-			$table->timestamp('date_create')->nullable()->default(DB::raw('CURRENT_TIMESTAMP'));
-			$table->timestamp('date_modify')->nullable()->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamps($precision = 0);
 		});
 	}
 
