@@ -1,3 +1,6 @@
+@if(!isset($data))
+    {{$data}}
+@else
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
@@ -130,3 +133,4 @@
         </div>
     </body>
 </html>
+@endif
