@@ -1,6 +1,6 @@
-@extends('lecturer.layout.layout')
+@extends('lecturer.layout.main')
 
-@section('title', 'Admin Dashboard')
+@section('title', 'Lecturer Dashboard')
 
 @section('content')
     <h2>Chào mừng</h2><br>
