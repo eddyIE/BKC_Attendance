@@ -21,8 +21,7 @@ class CreateSubjectTable extends Migration {
 			$table->boolean('status')->nullable()->default(1);
 			$table->integer('created_by');
 			$table->integer('modified_by')->nullable();
-			$table->timestamp('date_create')->nullable()->default(DB::raw('CURRENT_TIMESTAMP'));
-			$table->timestamp('date_modify')->nullable()->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamps($precision = 0);
 		});
 	}
 

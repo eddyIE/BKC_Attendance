@@ -13,6 +13,18 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('login', 'LoginController@index')->name('login');
+
+Route::post('login-process', 'LoginController@authenticate');
+
+Route::get('logout', 'LoginController@logout');
+
+Route::group(['prefix' => '/admin', 'middleware' => ['auth', 'role:admin']], function (){
+    Route::get('/', 'AdminController@index');
 });
+
+Route::group(['prefix' => '/', 'middleware' => ['auth', 'role:lecturer']], function (){
+    Route::get('/', 'LecturerController@index');
+});
+
+Route::get('/majors', [App\Http\Controllers\AttendanceCtrl::class, 'index']);
