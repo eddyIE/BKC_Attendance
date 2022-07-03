@@ -1,14 +1,13 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>HỆ THỐNG ĐIỂM DANH BKACAD</title>
-    <link rel="icon" href="../../../../public/img/bkacad.png">
-</head>
-<body>
-
-</body>
-</html>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="card card-body ">
+                    @yield('content')
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

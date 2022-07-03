@@ -1,8 +1,9 @@
-welcome to lecturer site!
-<input type="button" id="logout" value="Log Out">
+@extends('lecturer.layout.layout')
 
-<script>
-    $('#logout').click(function (){
-        alert('hello');
-    });
-</script>
+@section('title', 'Admin Dashboard')
+
+@section('content')
+    <h2>Chào mừng</h2><br>
+    <h3>Vui lòng nhấp vào sidebar để quản lí thông tin điểm danh</h3>
+@endsection
+

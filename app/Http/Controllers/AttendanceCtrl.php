@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Classes;
+use App\Models\Course;
 use App\Models\Major;
 use Illuminate\Http\Request;
 
@@ -14,10 +15,9 @@ class AttendanceCtrl extends Controller
     public function index()
     {
         // Lấy danh sách các lớp
-        $majors = Major::all();
+        $courses = Course::all();
         // Trả dữ liệu về view
-        return view('attendance.index', ['majors' => $majors]);
-//        return view('attendance.index');
+        return view('lecturer.index', ['courses' => $courses]);
     }
 
 //    /**
