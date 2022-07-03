@@ -10,7 +10,7 @@ class LoginController extends Controller
 {
     public function index(){
         if (Auth::check()){
-            if (Auth::user()->hasRole('lecturer')){
+            if (Auth::user()->role == 0){
                 return redirect('/');
             } else {
                 return redirect('/admin');
