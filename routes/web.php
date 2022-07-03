@@ -13,15 +13,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/login', [\App\Http\Controllers\LoginController::class, 'index']);
+Route::get('login', 'LoginController@index')->name('login');
 
-Route::post('/login-process', [\App\Http\Controllers\LoginController::class, 'authenticate']);
+Route::post('login-process', 'LoginController@authenticate');
 
-Route::middleware('role_check')->group(function (){
-    Route::get('/admin', [\App\Http\Controllers\AdminController::class])->middleware('role_check');
-    Route::get('/', 'LecturerController@index')->middleware('role_check');
+Route::get('logout', 'LoginController@logout');
+
+Route::group(['prefix' => '/admin', 'middleware' => ['auth', 'role:admin']], function (){
+    Route::get('/', 'AdminController@index');
 });
-
 
 Route::group(['prefix' => '/', 'middleware' => ['auth', 'role:lecturer']], function (){
     Route::get('/', 'LecturerController@index');

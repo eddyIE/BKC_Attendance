@@ -19,15 +19,4 @@ class User extends Authenticatable
         'gender',
         'status',
     ];
-
-    public function hasRole($role){
-        switch ($role){
-            case 'lecturer':    $role = 0; break;
-            case 'admin':       $role = 1; break;
-            case 'superadmin':  $role = 2; break;
-        }
-        if (Auth::user()->role == $role){
-            return true;
-        }
-    }
 }
