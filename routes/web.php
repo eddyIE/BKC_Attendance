@@ -26,3 +26,5 @@ Route::group(['prefix' => '/admin', 'middleware' => ['auth', 'role:admin']], fun
 Route::group(['prefix' => '/', 'middleware' => ['auth', 'role:lecturer']], function (){
     Route::get('/', 'LecturerController@index');
 });
+
+Route::get('/majors', [App\Http\Controllers\AttendanceCtrl::class, 'index']);

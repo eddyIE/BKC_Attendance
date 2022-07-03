@@ -15,4 +15,5 @@ yarn-error.log
 /.idea
 /.vscode
 composer.json
-composer.json
+*.lock
+config/database.php
