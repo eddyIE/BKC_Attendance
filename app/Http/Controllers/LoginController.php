@@ -9,6 +9,13 @@ use Illuminate\Support\Facades\Auth;
 class LoginController extends Controller
 {
     public function index(){
+        if (Auth::check()){
+            if (Auth::user()->role == 0){
+                return redirect('/');
+            } else {
+                return redirect('/admin');
+            }
+        }
         return view('login');
     }
     public function authenticate(Request $request){
@@ -25,8 +32,17 @@ class LoginController extends Controller
         Auth::login($user);
 
         if (Auth::check()){
-            return redirect('/');
+            if (Auth::user()->role == 0){
+                return redirect('/');
+            } else {
+                return redirect('/admin');
+            }
         }
         return redirect()->to('login')->withErrors('Tài khoản không tồn tại.');
+    }
+
+    public function logout(){
+        Auth::logout();
+        return redirect('login');
     }
 }

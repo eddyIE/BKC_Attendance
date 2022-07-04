@@ -1,14 +1,31 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>HỆ THỐNG ĐIỂM DANH BKACAD</title>
-    <link rel="icon" href="../../../../public/img/bkacad.png">
+    @include('admin.layout.header')
 </head>
-<body>
+<style>
+    @yield('css')
+</style>
+<body class="hold-transition sidebar-mini layout-fixed sidebar-collapse">
+    <nav>
+        @include('admin.layout.nav')
+    </nav>
 
+    <div class="content-wrapper">
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="card card-body ">
+                        @yield('content')
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="main-footer">
+        @yield('script')
+        @include('admin.layout.footer')
+    </footer>
 </body>
 </html>

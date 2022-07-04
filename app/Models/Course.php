@@ -14,6 +14,8 @@ class Course extends Model
         'subject_id',
         'name',
         'total_hours',
+        'finished_hours',
+        'finished_lessons',
         'scheduled_day',
         'scheduled_time',
         'status',

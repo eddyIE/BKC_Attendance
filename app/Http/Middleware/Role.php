@@ -11,19 +11,28 @@ class Role
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
-     * @param  string  $role
+     * @param \Illuminate\Http\Request $request
+     * @param \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
+     * @param mixed ...$roles
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
     public function handle(Request $request, Closure $next, ...$roles)
     {
         $user = Auth::user();
         foreach ($roles as $role){
-            if($user->hasRole($role)){
-                return $next($request);
+            if ($role == 'lecturer'){
+                if ($user->role == 0){
+                    return $next($request);
+                } else {
+                    return redirect('/admin');
+                }
+            } else {
+                if ($user->role == 1){
+                    return $next($request);
+                } else {
+                    return redirect('/');
+                }
             }
         }
-        return redirect('login');
     }
 }
