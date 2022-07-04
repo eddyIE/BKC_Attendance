@@ -21,10 +21,20 @@ Route::get('logout', 'LoginController@logout');
 
 Route::group(['prefix' => '/admin', 'middleware' => ['auth', 'role:admin']], function (){
     Route::get('/', 'AdminController@index');
+
+    Route::resource('major', 'MajorController');
 });
 
 Route::group(['prefix' => '/', 'middleware' => ['auth', 'role:lecturer']], function (){
+    // Trang chủ lecturer
     Route::get('/', 'LecturerController@index');
-});
 
-Route::get('/majors', [App\Http\Controllers\AttendanceCtrl::class, 'index']);
+    // Trang tìm kiếm lớp điểm danh
+    Route::get('/attendance', 'LecturerController@courseChooser');
+
+    // Chọn lớp điểm danh
+    Route::post("/course", 'LecturerController@courseDetail');
+
+    // Tạo điểm danh
+    Route::post("/attendance", 'LecturerController@createAttendance');
+});

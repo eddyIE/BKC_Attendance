@@ -8,7 +8,9 @@
     </ul>
     <div class="container">
         <div class="navbar-header">
-            <a class="navbar-brand text-uppercase text-white fw-bold fs-1" href="index">Hệ thống điểm danh</a>
+            <a class="navbar-brand text-uppercase text-white fw-bold fs-2" href="{{ route('lecturer/index') }}">
+                Hệ thống điểm danh - Học viện công nghệ BKACAD
+            </a>
         </div>
         <ul class="navbar-nav float-right" style="float:right">
             <li class="nav-item"><a class="nav-link text-white fs-5" href="#">GIANG VIEN</a></li>

@@ -20,6 +20,8 @@ class CreateCourseTable extends Migration {
 			$table->integer('subject_id')->nullable()->index('fk_course_subject_id')->comment('môn');
 			$table->string('name')->comment('tên khóa học');
 			$table->decimal('total_hours', 10)->comment('tổng thời gian khóa học');
+            $table->decimal('finished_hours', 10)->nullable()->comment('số giờ đã dạy');
+            $table->integer('finished_lessons')->nullable()->comment('số buổi đã dạy');
 			$table->string('scheduled_day')->nullable()->comment('lịch dạy theo số buổi trong tuần');
 			$table->string('scheduled_time')->nullable()->comment('lịch dạy theo giờ');
 			$table->boolean('status')->nullable()->default(1);

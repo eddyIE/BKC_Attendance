@@ -19,6 +19,10 @@
     <link rel="stylesheet" href="{{ asset('css/adminlte.min.css') }}">
     <!-- overlayScrollbars -->
     <link rel="stylesheet" href="{{ asset('css/overlayScrollbars/OverlayScrollbars.min.css') }}">
+    <link rel="icon" href="{{ asset('img/bkacad.png') }}">
+    <style>
+        @yield('css')
+    </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed sidebar-collapse">
 <div class="head-nav">

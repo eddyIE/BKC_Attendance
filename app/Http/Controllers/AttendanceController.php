@@ -7,7 +7,7 @@ use App\Models\Course;
 use App\Models\Major;
 use Illuminate\Http\Request;
 
-class AttendanceCtrl extends Controller
+class AttendanceController extends Controller
 {
     /**
      * Display a listing of the resource.
