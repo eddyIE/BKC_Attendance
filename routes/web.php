@@ -1,8 +1,5 @@
 <?php
 
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\LoginController;
-use App\Http\Controllers\LecturerController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,30 +13,28 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/login', [LoginController::class, 'index']);
+Route::get('login', 'LoginController@index')->name('login');
 
-Route::post('/login-process', [LoginController::class, 'authenticate']);
+Route::post('login-process', 'LoginController@authenticate');
 
-Route::middleware('role_check')->group(function () {
-    Route::get('/admin', [AdminController::class])->middleware('role_check');
-    Route::get('/', [LecturerController::class, 'index'])->middleware('role_check');
+Route::get('logout', 'LoginController@logout');
+
+Route::group(['prefix' => '/admin', 'middleware' => ['auth', 'role:admin']], function (){
+    Route::get('/', 'AdminController@index');
+
+    Route::resource('major', 'MajorController');
 });
 
-
-Route::group(['prefix' => '/', 'middleware' => ['auth', 'role:lecturer']], function () {
-    Route::get('/', [LecturerController::class, 'index']);
-});
-
-Route::prefix('/lecturer')->group(function () {
+Route::group(['prefix' => '/', 'middleware' => ['auth', 'role:lecturer']], function (){
     // Trang chủ lecturer
-    Route::get('/', [LecturerController::class, 'index'])
-        ->name('lecturer/index');
+    Route::get('/', 'LecturerController@index');
 
     // Trang tìm kiếm lớp điểm danh
-    Route::get('/attendance', [LecturerController::class, 'courseChooser'])
-        ->name('lecturer/course');
+    Route::get('/attendance', 'LecturerController@courseChooser');
 
     // Chọn lớp điểm danh
-    Route::post("/course", [LecturerController::class, 'courseDetail'])
-        ->name('lecturer/course-detail');
+    Route::post("/course", 'LecturerController@courseDetail');
+
+    // Tạo điểm danh
+    Route::post("/attendance", 'LecturerController@createAttendance');
 });

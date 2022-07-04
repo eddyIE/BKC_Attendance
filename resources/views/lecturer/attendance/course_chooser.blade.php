@@ -120,7 +120,7 @@
 
 @endsection
 
-<form action="{{ route('lecturer/course-detail') }}" method="POST" class="form">
+<form action="{{ asset('/attendance') }}" method="POST" class="form">
     @csrf
     <div class="select-box">
         <div class="course-container">
@@ -133,7 +133,7 @@
             @endforeach
         </div>
         <div class="selected">
-            CHỌN LỚP...
+            CHỌN PHÂN CÔNG...
         </div>
         <div class="search-box">
             <input type="text" placeholder="Tìm kiếm...">

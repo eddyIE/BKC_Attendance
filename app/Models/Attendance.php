@@ -12,7 +12,7 @@ class Attendance extends Model
     protected $fillable = [
         'lesson_id',
         'student_id',
-        'attendance_status',
+        'attendant_status',
         'note',
         'created_by',
         'modified_by',
