@@ -14,7 +14,7 @@
                 <!-- Add icons to the links using the .nav-icon class
                  with font-awesome or any other icon font library -->
                 <li class="nav-item">
-                    <a href="{{ asset('/index') }}" class="nav-link">
+                    <a href="{{ asset('/') }}" class="nav-link">
                         <i class="nav-icon fas fa-school"></i>
                         <p>
                             TRANG CHỦ

@@ -120,7 +120,7 @@
 
 @endsection
 
-<form action="{{ asset('/attendance') }}" method="POST" class="form">
+<form action="{{ asset('/course-detail') }}" method="POST" class="form">
     @csrf
     <div class="select-box">
         <div class="course-container">

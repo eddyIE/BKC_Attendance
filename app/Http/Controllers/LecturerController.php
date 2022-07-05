@@ -44,7 +44,7 @@ class LecturerController extends Controller
         $students = Student::where('class_id', $curClass)->get();
         $studentDTOs = self::studentToDTO($students, $courseId);
         return view('lecturer.attendance.index',
-            ['courses' => $courses, 'students' => $students, 'curCourse' => $curCourse]);
+            ['courses' => $courses, 'students' => $studentDTOs, 'curCourse' => $curCourse]);
     }
 
     /*
@@ -119,10 +119,10 @@ class LecturerController extends Controller
                 }
 
                 // Một bản ghi nghỉ không phép => +1
-                if ($attend->attendance_status == 'without reason') {
+                if ($attend->attendant_status == 'without reason') {
                     $absentList[$attend->student_id] += 1;
                 } // Một bản ghi đi muộn => +0.3
-                else if ($attend->attendance_status == 'late') {
+                else if ($attend->attendant_status == 'late') {
                     $absentList[$attend->student_id] += 0.3;
                     // Xử lí 0.9 -> 1
                     if ($absentList[$attend->student_id] * 10 % 10 == 9) {
@@ -142,13 +142,16 @@ class LecturerController extends Controller
         // Tạo buổi học (lesson)
         $lessonId = self::createLesson($request);
 
+        // Update số buổi, giờ đã dạy của course
+        self::courseFinishedTimeAndLessonHandler($request);
+
         // Tạo (tạo lại) các bản ghi điểm danh
         $data = $request->{'students'};
         foreach ($data as $student) {
             if (!is_null($student["status"])) {
                 $attendance = new Attendance();
                 $attendance->student_id = $student['student_id'];
-                $attendance->attendance_status = $student['status'];
+                $attendance->attendant_status = $student['status'];
                 $attendance->note = $student['absent_reason'];
                 $attendance->lesson_id = $lessonId;
                 // TODO: Lấy id người tạo từ session
@@ -157,15 +160,13 @@ class LecturerController extends Controller
             }
         }
 
-
+        return redirect('/course');
     }
 
-    private function createLesson(Request $request): string
+    private function createLesson(Request $request)
     {
         // Tạo mới buổi học
         $newLesson = new Lesson();
-        $newLessonId = uniqid();
-        $newLesson->id = $newLessonId;
         $newLesson->start = $request->start['hour'] . ":" . $request->start['minutes'];
         $newLesson->end = $request->end['hour'] . ":" . $request->end['minutes'];
         $newLesson->note = $request->note;
@@ -175,6 +176,38 @@ class LecturerController extends Controller
         // TODO: Lấy ID theo session
         $newLesson->created_by = 2;
 
-        return $newLessonId;
+        $newLesson->save();
+
+        return $newLesson->id;
+    }
+
+    private function courseFinishedTimeAndLessonHandler($request, $prevStart = null, $prevEnd = null){
+        $start = $request->start['hour'] . ":" . $request->start['minutes'];
+        $end = $request->end['hour'] . ":" . $request->end['minutes'];
+        $courseId = $request->{'current-course-id'};
+
+        $lessonDuration = strtotime($start) - strtotime($end);
+        // Làm tròn đến góc phần tư gần nhất (0.0, 0.25, 0.5, 0.75)
+        $lessonDuration = floor(round(abs($lessonDuration) / 3600, 2) * 4) / 4;
+
+        // Nếu buổi học đã tồn tại:
+        // - xử lí khác biệt về thời lượng
+        // - update thời gian đã học của khóa học nhưng ko tăng buổi học
+        if ($prevStart != null && $prevEnd != null) {
+            $prevLessonDuration = strtotime($prevEnd) - strtotime($prevStart);
+            $prevLessonDuration = floor(round(abs($prevLessonDuration) / 3600, 2) * 4) / 4;
+            $newDuration = $lessonDuration - $prevLessonDuration;
+
+            //Cập nhật và số giờ đã dạy mà ko làm tăng số buổi đã học
+            $course = Course::find($courseId);
+            $course->finished_hours += $newDuration;
+            $course->save();
+        } else {
+            //Cập nhật số buổi và số giờ đã dạy
+            $course = Course::find($courseId);
+            $course->finished_hours += $lessonDuration;
+            $course->finished_lessons += 1;
+            $course->save();
+        }
     }
 }

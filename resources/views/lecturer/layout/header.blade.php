@@ -8,7 +8,7 @@
     </ul>
     <div class="container">
         <div class="navbar-header">
-            <a class="navbar-brand text-uppercase text-white fw-bold fs-2" href="{{ asset('/index') }}">
+            <a class="navbar-brand text-uppercase text-white fw-bold fs-2" href="{{ asset('/') }}">
                 Hệ thống điểm danh - Học viện công nghệ BKACAD
             </a>
         </div>

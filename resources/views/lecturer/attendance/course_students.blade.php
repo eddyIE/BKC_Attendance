@@ -27,13 +27,13 @@
 
                     {{--Số buổi nghỉ / Tổng số buổi đã học--}}
                     <span class="text-danger fw-bold">
-                        ({{ $each->absents }}
+                        ({{ $each->absentQuan }}
                         /
                         <?php echo isset($curCourse) ? $curCourse->{'finished_lesson'} + 1 : ''; ?>)
                     </span>
 
                     {{--Số buổi nghỉ có phép--}}
-                    <span class="fw-bold fst-italic"> - P:{{ $each->permission }}</span>
+                    <span class="fw-bold fst-italic"> - P:{{ $each->permissionQuan }}</span>
                     <br>
 
                     {{--Ngày sinh--}}
