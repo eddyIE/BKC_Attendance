@@ -29,7 +29,7 @@
                     <span class="text-danger fw-bold">
                         ({{ $each->absentQuan }}
                         /
-                        <?php echo isset($curCourse) ? $curCourse->{'finished_lesson'} + 1 : ''; ?>)
+                        <?php echo isset($curCourse) ? $curCourse->{'finished_lessons'} + 1 : ''; ?>)
                     </span>
 
                     {{--Số buổi nghỉ có phép--}}

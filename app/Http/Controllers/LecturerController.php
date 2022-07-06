@@ -16,6 +16,7 @@ class LecturerController extends Controller
         return view('lecturer.index');
     }
 
+    // ===================== CHỌN LỚP ĐỂ ĐIỂM DANH ============================
     public function courseChooser()
     {
         // TODO: Chỉ lấy danh sách các khóa học theo phân công
@@ -25,7 +26,7 @@ class LecturerController extends Controller
         return view('lecturer.attendance.index', ['courses' => $courses]);
     }
 
-    /* Lấy toàn bộ các thông tin về một khóa học
+    /* ================ LẤY TOÀN BỘ CÁC THÔNG TIN VỀ MỘT KHÓA HỌC =============
      *  - Thông tin chung: số giờ dạy, tên lớp học, v.v
      *  - Danh sách sinh viên
      *  - Lịch sử
@@ -136,6 +137,7 @@ class LecturerController extends Controller
         }
     }
 
+    // ============================  XỬ LÝ ĐIỂM DANH ==========================
     public function createAttendance(Request $request)
     {
         // TODO: Check buổi học đã tồn tại thì gọi Update
@@ -163,6 +165,10 @@ class LecturerController extends Controller
         return redirect('/course');
     }
 
+    private function updateLesson(Request $request){
+        $updatedLesson = Lesson::where();
+    }
+
     private function createLesson(Request $request)
     {
         // Tạo mới buổi học
@@ -181,7 +187,8 @@ class LecturerController extends Controller
         return $newLesson->id;
     }
 
-    private function courseFinishedTimeAndLessonHandler($request, $prevStart = null, $prevEnd = null){
+    private function courseFinishedTimeAndLessonHandler($request, $prevStart = null, $prevEnd = null)
+    {
         $start = $request->start['hour'] . ":" . $request->start['minutes'];
         $end = $request->end['hour'] . ":" . $request->end['minutes'];
         $courseId = $request->{'current-course-id'};
