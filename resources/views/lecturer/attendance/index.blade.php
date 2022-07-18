@@ -166,4 +166,14 @@
             });
         };
     </script>
+    <script>
+        export default {
+            data() {
+                return {
+                    value: ''
+                }
+            }
+        }
+    </script>
+    <script src="{{ asset('js/daterangepicker.js') }}"></script>
 @endsection
