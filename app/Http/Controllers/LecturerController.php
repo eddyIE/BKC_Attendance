@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Attendance;
+use App\Models\Classes;
 use App\Models\Course;
 use App\Models\Lesson;
 use App\Models\Student;
 use App\Models\StudentDTO;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LecturerController extends Controller
 {
@@ -38,14 +40,25 @@ class LecturerController extends Controller
         // để truyền lên thanh tìm kiếm khóa học
         $courses = Course::all();
 
-        // Tìm danh sách sinh viên của khóa học này
+        /*
+         * Tìm danh sách sinh viên của khóa học này
+         */
+        // Lấy thông tin của khóa học
         $courseId = $request->all()['course-id'];
         $curCourse = Course::find($courseId);
-        $curClass = $curCourse->class_id;
-        $students = Student::where('class_id', $curClass)->get();
+        // Lấy thông tin lớp theo học khóa học
+        $curClass = Classes::find($curCourse->class_id);
+        // Lấy danh sách các sinh viên
+        $students = Student::where('class_id', $curCourse->class_id)->get();
+        // Chuyển Student về DTO để chứa các thông tin số buổi nghỉ, muộn, phép
         $studentDTOs = self::studentToDTO($students, $courseId);
-        return view('lecturer.attendance.index',
-            ['courses' => $courses, 'students' => $studentDTOs, 'curCourse' => $curCourse]);
+
+        return view('lecturer.attendance.index', [
+            'courses' => $courses,
+            'students' => $studentDTOs,
+            'curCourse' => $curCourse,
+            'curClass' => $curClass
+        ]);
     }
 
     /*
@@ -156,8 +169,7 @@ class LecturerController extends Controller
                 $attendance->attendant_status = $student['status'];
                 $attendance->note = $student['absent_reason'];
                 $attendance->lesson_id = $lessonId;
-                // TODO: Lấy id người tạo từ session
-                $attendance->created_by = 2;
+                $attendance->created_by = Auth::user()->id;
                 $attendance->save();
             }
         }
@@ -165,7 +177,8 @@ class LecturerController extends Controller
         return redirect('/course');
     }
 
-    private function updateLesson(Request $request){
+    private function updateLesson(Request $request)
+    {
         $updatedLesson = Lesson::where();
     }
 
@@ -176,11 +189,9 @@ class LecturerController extends Controller
         $newLesson->start = $request->start['hour'] . ":" . $request->start['minutes'];
         $newLesson->end = $request->end['hour'] . ":" . $request->end['minutes'];
         $newLesson->note = $request->note;
-        // TODO: Lấy ID theo session
-        $newLesson->lecturer_id = 2;
+        $newLesson->lecturer_id = Auth::user()->id;
         $newLesson->course_id = $request->{'current-course-id'};
-        // TODO: Lấy ID theo session
-        $newLesson->created_by = 2;
+        $newLesson->created_by = Auth::user()->id;
 
         $newLesson->save();
 

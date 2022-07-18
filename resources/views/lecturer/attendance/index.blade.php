@@ -7,7 +7,7 @@
     @include('lecturer.attendance.course_chooser')
 
     {{--Thông tin chung của khóa học vừa chọn--}}
-    @include('lecturer.attendance.course_detail')
+    @include('lecturer.attendance.course_info')
 
     <form action="{{asset('/attendance')}}" method="POST" onsubmit="return validateForm()" name="attendanceForm">
         @csrf
@@ -17,7 +17,7 @@
         @endisset
 
         {{--Danh sách sinh viên--}}
-        @include('lecturer.attendance.course_students')
+        @include('lecturer.attendance.course_student_list')
 
         {{--Lịch sử các buổi học--}}
         @include('lecturer.attendance.course_history')

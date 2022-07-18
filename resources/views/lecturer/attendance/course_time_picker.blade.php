@@ -6,6 +6,26 @@
                            value="<?php echo date('Y-d-m', strtotime($curLessonDate)); ?>"
                            placeholder="dd-mm-yyyy" readonly>
 
+    <div>
+        <br>
+        <span class="">Ca học:</span>
+        <input id="morning-shift" type="radio" name="shift" value="morning" class="btn-check">
+        <label class="btn btn-outline-primary  mb-3 ml-3" for="morning-shift">
+            Ca sáng (8h-12h)
+        </label>
+
+        <input id="afternoon-shift" type="radio" name="shift" value="afternoon" class="btn-check">
+        <label class="btn btn-outline-primary  mb-3 ml-3" for="afternoon-shift">
+            Ca chiều (13h-17h)
+        </label>
+
+        <input id="evening-shift" type="radio" name="shift" value="evening" class="btn-check">
+        <label class="btn btn-outline-primary  mb-3 ml-3" for="evening-shift">
+            Ca tối (18h-21h)
+        </label>
+        <br>
+    </div>
+
     Giờ bắt đầu:
     <span class="time-picker" id="start" name="start">
         <select class="pt-1 pb-1 ps-2 pe-2 fs-4" name="start[hour]" id="start[hour]" disabled>
@@ -192,12 +212,33 @@
         </select>
     </span>
 @else
-    Ngày điểm danh: <input type="date" name='lesson-date'
-                           class='pt-2 pb-2 ps-2 mb-2 me-4 text-primary fs-5 text-center'
-                           value="<?php echo date('Y-m-d'); ?>"
-                           placeholder="dd-mm-yyyy" readonly>
+    <span class="h5"> Ngày điểm danh:</span>
+    <input type="date" name='lesson-date'
+           class='pt-2 pb-2 ps-2 mb-2 me-4 text-primary fs-5 text-center'
+           value="<?php echo date('Y-m-d'); ?>"
+           placeholder="dd-mm-yyyy" readonly>
 
-    Giờ bắt đầu:
+    <div>
+        <br>
+        <span class="h5">Ca học:</span>
+        <input id="morning-shift" type="radio" name="shift" value="morning" class="btn-check">
+        <label class="btn btn-outline-primary  mb-3 ml-3" for="morning-shift">
+            Ca sáng (8h-12h)
+        </label>
+
+        <input id="afternoon-shift" type="radio" name="shift" value="afternoon" class="btn-check">
+        <label class="btn btn-outline-primary  mb-3 ml-3" for="afternoon-shift">
+            Ca chiều (13h-17h)
+        </label>
+
+        <input id="evening-shift" type="radio" name="shift" value="evening" class="btn-check">
+        <label class="btn btn-outline-primary  mb-3 ml-3" for="evening-shift">
+            Ca tối (18h-21h)
+        </label>
+        <br>
+    </div>
+
+    <span class="h5">Giờ bắt đầu:</span>
     <span class="time-picker" id="start" name="start">
         <select class="pt-1 pb-1 ps-2 pe-2 fs-4" name="start[hour]" id="start[hour]">
             <option value="00">00</option>
@@ -290,7 +331,7 @@
         </select>
     </span>
 
-    Giờ kết thúc:
+    <span class="h5">Giờ kết thúc:</span>
     <span class="time-picker" id="end" name="end">
         <select class="pt-1 pb-1 ps-2 pe-2 fs-4" name="end[hour]" id="end[hour]">
             <option value="00">00</option>
