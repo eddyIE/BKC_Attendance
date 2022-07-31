@@ -212,10 +212,11 @@
             <option value="59" {{ $lessonEnd['minutes'] == '59' ? 'selected' : '' }}>59</option>
         </select>
     </span>
+    {{--Chọn giờ học cho bản điểm danh mới--}}
 @else
-    <span class="h5"> Ngày điểm danh:</span>
+    <span class="h5"> Ngày điểm danh: </span>
     <input type="date" name='lesson-date'
-           class='pt-2 pb-2 ps-2 mb-2 me-4 text-primary fs-5 text-center'
+           class='pt-1 pb-1 text-primary fs-5 text-center'
            value="<?php echo date('Y-m-d'); ?>"
            placeholder="dd-mm-yyyy" readonly>
 
@@ -223,17 +224,17 @@
     <div>
         <br>
         <span class="h5">Ca học:</span>
-        <input id="morning-shift" type="radio" name="shift" value="morning" class="btn-check">
+        <input id="morning-shift" type="radio" name="shift" value="0" class="btn-check">
         <label class="btn btn-outline-primary  mb-3 ml-3" for="morning-shift">
             Ca sáng (8h-12h)
         </label>
 
-        <input id="afternoon-shift" type="radio" name="shift" value="afternoon" class="btn-check">
+        <input id="afternoon-shift" type="radio" name="shift" value="1" class="btn-check">
         <label class="btn btn-outline-primary  mb-3 ml-3" for="afternoon-shift">
             Ca chiều (13h-17h)
         </label>
 
-        <input id="evening-shift" type="radio" name="shift" value="evening" class="btn-check">
+        <input id="evening-shift" type="radio" name="shift" value="2" class="btn-check">
         <label class="btn btn-outline-primary  mb-3 ml-3" for="evening-shift">
             Ca tối (18h-21h)
         </label>
@@ -259,7 +260,6 @@
                     else{
                         echo ("<option value='$i'>$i</option>");
                     }
-
                 }
             @endphp
         </select>
@@ -275,7 +275,6 @@
                     else{
                         echo ("<option value='$i'>$i</option>");
                     }
-
                 }
             @endphp
         </select>
@@ -292,13 +291,12 @@
                     }
                     else{
                         if($i == 12){
-                        echo ("<option value='$i' selected>$i</option>");
+                            echo ("<option value='$i' selected>$i</option>");
                         }
                         else{
-                        echo ("<option value='$i'>$i</option>");
+                            echo ("<option value='$i'>$i</option>");
                         }
                     }
-
                 }
             @endphp
         </select>
@@ -313,7 +311,6 @@
                     else{
                         echo ("<option value='$i'>$i</option>");
                     }
-
                 }
             @endphp
         </select>

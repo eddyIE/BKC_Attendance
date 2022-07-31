@@ -19,6 +19,7 @@ class Lesson extends Model
         'created_by',
         'modified_by',
         'finished_hours',
-        'finished_lessons'
+        'finished_lessons',
+        'shift'
     ];
 }
