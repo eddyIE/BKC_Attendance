@@ -36,5 +36,5 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'role:lecturer']], funct
     Route::post("/course-detail", 'LecturerController@courseDetail');
 
     // Tạo điểm danh
-    Route::post("/attendance", 'LecturerController@createAttendance');
+    Route::post("/attendance", 'AttendanceController@createAttendance');
 });
