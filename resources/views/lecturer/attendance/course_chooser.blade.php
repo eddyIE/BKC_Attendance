@@ -120,6 +120,7 @@
 
 @endsection
 
+{{--Form chọn lớp học được phân công cho giảng viên--}}
 <form action="{{ asset('/course-detail') }}" method="POST" class="form">
     @csrf
     <div class="select-box">

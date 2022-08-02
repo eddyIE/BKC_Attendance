@@ -8,9 +8,7 @@ use App\Models\Course;
 use App\Models\Lesson;
 use App\Models\Student;
 use App\Models\StudentDTO;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class LecturerController extends Controller
 {
@@ -44,9 +42,6 @@ class LecturerController extends Controller
         // để truyền lên thanh tìm kiếm khóa học
         $courses = Course::all();
 
-        /*
-         * Tìm danh sách sinh viên của khóa học này
-         */
         // Lấy thông tin của khóa học
         $courseId = $request->all()['course-id'];
         $curCourse = Course::find($courseId);
@@ -58,30 +53,25 @@ class LecturerController extends Controller
         // Lấy ds DTO chứa các thông tin số buổi nghỉ, muộn, phép
         $studentDTOs = self::studentToDTO($students, $courseId);
 
-
         // Lấy danh sách các buổi học trước
         $lessons = Lesson::where('course_id', $courseId)->get();
         // Bỏ buổi học hiện tại (nếu có) ra khỏi list
-        for($i = count($lessons)-1; $i >= 0; $i--){
-            if((new AttendanceController)->getExistLesson($courseId) != null){
-                $lessons->forget($i);
-            }
-            break;
+        if ((new AttendanceController)->getExistLesson($courseId) != null) {
+            $lessons->forget(count($lessons) - 1);
         }
 
-        return view('lecturer.attendance.index', [
-            'courses' => $courses,
+        return view('lecturer.attendance.index', ['courses' => $courses,
             'students' => $studentDTOs,
             'curCourse' => $curCourse,
             'curClass' => $curClass,
-            'lessons' => $lessons
-        ]);
+            'lessons' => $lessons]);
     }
 
     /*
      * Chuyển Model Student sang StudentDTO để chứa thêm các thông tin số ngày nghỉ
      */
-    private function studentToDTO($students, $courseId): array
+    private
+    function studentToDTO($students, $courseId, $specificLessonId = null): array
     {
         $result = array();
 
@@ -95,8 +85,8 @@ class LecturerController extends Controller
 
         // Lấy danh sách số buổi nghỉ, nghỉ phép, trạng thái đi học hôm nay
         // của các sinh viên trong 1 course
-        self::getAbsentQuan($courseId, $absentList,
-            $permissionList, $curStatusList, $reasonList);
+        self::getAbsentQuan($courseId, $absentList,$permissionList,
+            $curStatusList, $reasonList, $specificLessonId);
 
         foreach ($students as $student) {
 
@@ -127,14 +117,14 @@ class LecturerController extends Controller
     /*
      * Xử lí lấy số buổi nghỉ, phép, muộn của các sinh viên
      */
-    private function getAbsentQuan($courseId, &$absentList,
-                                   &$permissionList, &$curStatusList,
-                                   &$reasonList)
+    private
+    function getAbsentQuan($courseId, &$absentList,
+                           &$permissionList, &$curStatusList,
+                           &$reasonList, $specificLessonId = null)
     {
-        $curLesson = (new AttendanceController)->getExistLesson($courseId);
-
-        if ($curLesson != null) {
-            $attendances = Attendance::where('lesson_id', $curLesson->id)->get();
+        // lấy trạng thái đi học của buổi học hiện tại
+        if ($specificLessonId != null) {
+            $attendances = Attendance::where('lesson_id', $specificLessonId)->get();
             foreach ($attendances as $attendance) {
                 // Set trạng thái đi học buổi hiện tại của sinh viên
                 $curStatusList[$attendance->student_id] = $attendance->attendant_status;
@@ -144,6 +134,21 @@ class LecturerController extends Controller
                 // - $curStatusList = ("1" => "with reason", "2" => "late");
                 // - $reasonList = ("1" => "Ốm", "2" => "Hỏng xe nên đi muộn");
             }
+        } else {
+            $curLesson = (new AttendanceController)->getExistLesson($courseId);
+
+            if ($curLesson != null) {
+                $attendances = Attendance::where('lesson_id', $curLesson->id)->get();
+                foreach ($attendances as $attendance) {
+                    // Set trạng thái đi học buổi hiện tại của sinh viên
+                    $curStatusList[$attendance->student_id] = $attendance->attendant_status;
+                    // Set lý do nghỉ
+                    $reasonList[$attendance->student_id] = $attendance->note;
+                    // => Kết quả sẽ có dạng:
+                    // - $curStatusList = ("1" => "with reason", "2" => "late");
+                    // - $reasonList = ("1" => "Ốm", "2" => "Hỏng xe nên đi muộn");
+                }
+            }
         }
 
         // Đếm số buổi nghỉ/phép của sinh viên dựa theo các bản ghi attendance
@@ -152,12 +157,14 @@ class LecturerController extends Controller
         //    - $permissionList = ("ID_sv" => số_buổi_phép, "1" => 1, "2" => 0)
         $lessons = Lesson::where('course_id', $courseId)->get();
         foreach ($lessons as $lesson) {
+            // Lấy các bản ghi điểm danh để thao tác
             $attends = Attendance::where('lesson_id', $lesson->id)->get();
-            if (!isset($attends)) {
+            if (is_null($attends)) {
                 return;
             }
+
             foreach ($attends as $attend) {
-                // Init
+                // Init?
                 if (!isset($absentList[$attend->student_id])) {
                     $absentList[$attend->student_id] = 0;
                 }
@@ -181,5 +188,43 @@ class LecturerController extends Controller
                 }
             }
         }
+    }
+
+    public function prevLessonDetail($lessonId)
+    {
+        // Lấy lại danh sách các khóa học
+        // để truyền lên thanh tìm kiếm khóa học
+        $courses = Course::all();
+
+        // Lấy các thông tin về previous lesson được chọn
+        $prevLesson = Lesson::find($lessonId);
+        if (is_null($prevLesson)) {
+            return;
+        }
+
+        // Lấy thông tin của khóa học
+        $courseId = $prevLesson->course_id;
+        $curCourse = Course::find($courseId);
+        // Lấy thông tin lớp theo học khóa học
+        $curClass = Classes::find($curCourse->class_id);
+
+        // Lấy danh sách các sinh viên
+        $students = Student::where('class_id', $curCourse->class_id)->get();
+        // Lấy ds DTO chứa các thông tin số buổi nghỉ, muộn, phép
+        $studentDTOs = self::studentToDTO($students, $courseId, $lessonId);
+
+        // Lấy danh sách các buổi học trước
+        $prevLessons = Lesson::where('course_id', $courseId)->get();
+        // Bỏ buổi học hiện tại (nếu có) ra khỏi list
+        if ((new AttendanceController)->getExistLesson($courseId) != null) {
+            $prevLessons->forget(count($prevLessons) - 1);
+        }
+
+        return view('lecturer.attendance.history_view', ['courses' => $courses,
+            'students' => $studentDTOs,
+            'curCourse' => $curCourse,
+            'curClass' => $curClass,
+            'lessons' => $prevLessons,
+            'prevLesson' => $prevLesson]);
     }
 }
