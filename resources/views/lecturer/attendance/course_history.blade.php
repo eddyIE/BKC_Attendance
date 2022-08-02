@@ -8,7 +8,17 @@
             <a href="#">
                 <button type="button" class="btn btn-outline-primary ms-1 me-1">
                     @php
-                        echo date('d-m-Y', strtotime($lesson->created_at));
+                        $shift = "";
+                        if($lesson->shift == 0){
+                            $shift = "Ca sáng";
+                        }
+                        else if($lesson->shift == 1){
+                            $shift = "Ca chiều";
+                        }
+                        else if($lesson->shift == 2){
+                            $shift = "Ca tối";
+                        }
+                        echo ($shift." - ".date('d/m/Y', strtotime($lesson->created_at)));
                     @endphp
                 </button>
             </a>

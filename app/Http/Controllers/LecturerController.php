@@ -20,6 +20,9 @@ class LecturerController extends Controller
     }
 
     // ===================== CHỌN LỚP ĐỂ ĐIỂM DANH ============================
+    /*
+     * Query các lớp phân công của lecturer đang đăng nhập
+     */
     public function courseChooser()
     {
         // TODO: Chỉ lấy danh sách các khóa học theo phân công
@@ -55,11 +58,23 @@ class LecturerController extends Controller
         // Lấy ds DTO chứa các thông tin số buổi nghỉ, muộn, phép
         $studentDTOs = self::studentToDTO($students, $courseId);
 
+
+        // Lấy danh sách các buổi học trước
+        $lessons = Lesson::where('course_id', $courseId)->get();
+        // Bỏ buổi học hiện tại (nếu có) ra khỏi list
+        for($i = count($lessons)-1; $i >= 0; $i--){
+            if((new AttendanceController)->getExistLesson($courseId) != null){
+                $lessons->forget($i);
+            }
+            break;
+        }
+
         return view('lecturer.attendance.index', [
             'courses' => $courses,
             'students' => $studentDTOs,
             'curCourse' => $curCourse,
-            'curClass' => $curClass
+            'curClass' => $curClass,
+            'lessons' => $lessons
         ]);
     }
 
@@ -116,10 +131,10 @@ class LecturerController extends Controller
                                    &$permissionList, &$curStatusList,
                                    &$reasonList)
     {
-        $curLessonId = (new AttendanceController)->lessonIsExist($courseId);
+        $curLesson = (new AttendanceController)->getExistLesson($courseId);
 
-        if ($curLessonId != null) {
-            $attendances = Attendance::where('lesson_id', $curLessonId)->get();
+        if ($curLesson != null) {
+            $attendances = Attendance::where('lesson_id', $curLesson->id)->get();
             foreach ($attendances as $attendance) {
                 // Set trạng thái đi học buổi hiện tại của sinh viên
                 $curStatusList[$attendance->student_id] = $attendance->attendant_status;
@@ -132,11 +147,9 @@ class LecturerController extends Controller
         }
 
         // Đếm số buổi nghỉ/phép của sinh viên dựa theo các bản ghi attendance
-        /*
-        Kết quả sẽ có dạng:
-            - $absentList = ("ID_sv" => số_buổi_nghỉ, "1" => 1.3, "2" => 4)
-            - $permissionList = ("ID_sv" => số_buổi_phép, "1" => 1, "2" => 0)
-        */
+        // Kết quả sẽ có dạng:
+        //    - $absentList = ("ID_sv" => số_buổi_nghỉ, "1" => 1.3, "2" => 4)
+        //    - $permissionList = ("ID_sv" => số_buổi_phép, "1" => 1, "2" => 0)
         $lessons = Lesson::where('course_id', $courseId)->get();
         foreach ($lessons as $lesson) {
             $attends = Attendance::where('lesson_id', $lesson->id)->get();
