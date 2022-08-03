@@ -1,9 +1,9 @@
 {{-- Phần chọn thời gian --}}
 {{-- Nếu đang xem lại chi tiết buổi học trong phần lịch sử --}}
 @isset($prevLesson)
-    Ngày điểm danh:
+    <span class="h5">Ngày điểm danh buổi học này: </span>
     <input type="text" name='lesson-date'
-           class='pt-2 pb-2 ps-2 mb-2 me-4 text-primary fs-5 text-center'
+           class='pt-2 pb-2 ps-2 mb-2 me-4 text-success fs-5 text-center'
            value="{{date('d/m/Y', strtotime($prevLesson->created_at))}}"
            placeholder="dd-mm-yyyy" readonly>
 

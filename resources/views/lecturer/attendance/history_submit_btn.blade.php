@@ -14,6 +14,7 @@
 @isset($students)
     {{--Các nút khi đang xem lịch sử--}}
     @isset($prevLesson)
+        <input type="hidden" name="prev-lesson-id" value="{{$prevLesson->id}}" >
         <button id="submit" class="btn btn-success mb-3" type="submit">
             Cập nhật điểm danh
         </button>

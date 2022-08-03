@@ -32,6 +32,13 @@ class AttendanceController extends Controller
      */
     public function createAttendance(Request $request)
     {
+
+        if(isset($request->all()['prev-lesson-id'])){
+            self::updateAttendance($request);
+            $request->request->add(['course-id' => $request->{'current-course-id'}]);
+            Session::flash('alert', 'Lưu điểm danh thành công');
+            return (new LecturerController)->courseDetail($request);
+        }
         // Check xem buổi học đã tồn tại chưa
         $lesson = $this->getExistLesson($request->{'current-course-id'});
 
@@ -234,5 +241,30 @@ class AttendanceController extends Controller
             }
         }
         return false;
+    }
+
+    /*
+     * Update điểm danh cho một buổi học trong lịch sử
+     */
+    public function updateAttendance(Request $request){
+        $lessonId = $request->all()['prev-lesson-id'];
+
+        // Xóa các bản ghi điểm danh cũ
+        Attendance::where('lesson_id', $lessonId)->delete();
+
+        // Tạo lại các bản ghi điểm danh
+        $students = $request->{'students'};
+        foreach ($students as $student) {
+            if (!is_null($student["status"])) {
+                $attendance = new Attendance();
+                $attendance->student_id = $student['student_id'];
+                $attendance->attendant_status = $student['status'];
+                $attendance->note = $student['absent_reason'];
+                $attendance->lesson_id = $lessonId;
+                $attendance->created_by = Auth::user()->id;
+                $attendance->modified_by = Auth::user()->id;
+                $attendance->save();
+            }
+        }
     }
 }
