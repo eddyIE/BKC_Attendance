@@ -47,11 +47,15 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'role:lecturer']], funct
     Route::get('/', 'LecturerController@index');
 
     // Trang tìm kiếm lớp điểm danh
-    Route::get('/attendance', 'LecturerController@courseChooser');
+    Route::get('/course', 'LecturerController@courseChooser');
 
     // Chọn lớp điểm danh
-    Route::post("/course", 'LecturerController@courseDetail');
+    Route::post("/course-detail", 'LecturerController@courseDetail');
 
     // Tạo điểm danh
-    Route::post("/attendance", 'LecturerController@createAttendance');
+    Route::post("/attendance", 'AttendanceController@createAttendance');
+
+    // Chi tiết buổi học trong lịch sử
+    Route::get('/lesson/{id}', 'LecturerController@prevLessonDetail');
+
 });

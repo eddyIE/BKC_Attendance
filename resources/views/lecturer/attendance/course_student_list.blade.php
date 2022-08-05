@@ -14,6 +14,7 @@
     @isset($students)
         @foreach ($students as $each)
             <tr>
+                {{--Gửi hidden id một sinh viên--}}
                 <input type="hidden" name="students[{{ $loop->index + 1 }}][student_id]"
                        value="{{ $each->id }}"/>
 
@@ -23,17 +24,22 @@
                 {{--Thông tin chung một sinh viên: Tên, ngày sinh, số nghỉ, số phép--}}
                 <td class="">
                     {{--Tên sinh viên--}}
-                    <span class="roll fw-bolder"><a href="#">{{ $each->full_name }}</a></span>
+                    <span class="roll fw-bolder">
+                        <a href="#">{{ $each->full_name }}</a>
+                    </span>
 
                     {{--Số buổi nghỉ / Tổng số buổi đã học--}}
                     <span class="text-danger fw-bold">
-                        ({{ $each->absents }}
+                        ({{ $each->absentQuan }}
                         /
-                        <?php echo isset($curCourse) ? $curCourse->{'finished_lesson'} + 1 : ''; ?>)
+                        <?php echo isset($curCourse) ?
+                            $curCourse->{'finished_lessons'} + 1 : ''; ?>)
                     </span>
 
                     {{--Số buổi nghỉ có phép--}}
-                    <span class="fw-bold fst-italic"> - P:{{ $each->permission }}</span>
+                    <span class="fw-bold fst-italic">
+                        - P:{{ $each->permissionQuan }}
+                    </span>
                     <br>
 
                     {{--Ngày sinh--}}
@@ -57,7 +63,8 @@
                 {{--Nghỉ không phép--}}
                 <td class="text-center border border-0">
                     <input type="radio" class="btn-check"
-                           name="students[{{ $loop->index + 1 }}][status]" value="without reason"
+                           name="students[{{ $loop->index + 1 }}][status]"
+                           value="without reason"
                            id="{{$each->id}}_no_reason"
                         {{ $each->currentStatus == 'without reason' ? ' checked' : '' }}>
                     <label class="btn btn-outline-danger" for="{{$each->id}}_no_reason">
@@ -68,8 +75,10 @@
                 {{--Đi muộn--}}
                 <td class="text-center border border-0">
                     <input type="radio" class="btn-check"
-                           name="students[{{ $loop->index + 1 }}][status]" value="late"
-                           id="{{$each->id}}_late" {{ $each->currentStatus == 'late' ? ' checked' : '' }}>
+                           name="students[{{ $loop->index + 1 }}][status]"
+                           value="late"
+                           id="{{$each->id}}_late"
+                        {{ $each->currentStatus == 'late' ? ' checked' : '' }}>
                     <label class="btn btn-outline-dark" for="{{$each->id}}_late">
                         Muộn
                     </label>
@@ -78,7 +87,8 @@
                 {{--Nghỉ có phép--}}
                 <td class="text-center border border-0">
                     <input type="radio" class="btn-check"
-                           name="students[{{ $loop->index + 1 }}][status]" id="{{$each->id}}_with_reason"
+                           name="students[{{ $loop->index + 1 }}][status]"
+                           id="{{$each->id}}_with_reason"
                            autocomplete="off" value="with reason"
                         {{ $each->currentStatus == 'with reason' ? ' checked' : '' }}>
                     <label class="btn btn-outline-primary" for="{{$each->id}}_with_reason">

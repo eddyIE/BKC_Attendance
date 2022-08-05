@@ -18,6 +18,9 @@ class Lesson extends Model
         'status',
         'created_by',
         'modified_by',
+        'finished_hours',
+        'finished_lessons',
+        'shift'
     ];
 
     public function course(){

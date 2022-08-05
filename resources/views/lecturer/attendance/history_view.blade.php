@@ -23,10 +23,10 @@
         @include('lecturer.attendance.course_history')
 
         {{--Phần chọn thời gian--}}
-        @include('lecturer.attendance.course_time_picker')
+        @include('lecturer.attendance.history_time_picker')
 
         {{--Phần ghi chú và các nút--}}
-        @include('lecturer.attendance.course_submit_btn')
+        @include('lecturer.attendance.history_submit_btn')
     </form>
 @endsection
 
