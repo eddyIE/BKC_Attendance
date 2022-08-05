@@ -16,4 +16,8 @@ class Major extends Model
         'created_by',
         'modified_by',
     ];
+
+    public function program(){
+        return $this->hasMany(Program::class);
+    }
 }

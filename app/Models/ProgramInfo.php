@@ -16,4 +16,16 @@ class ProgramInfo extends Model
         'created_by',
         'modified_by',
     ];
+
+    public function subject(){
+        return $this->belongsTo(Subject::class);
+    }
+
+    public function program(){
+        return $this->belongsTo(Program::class);
+    }
+
+    public function course(){
+        return $this->hasMany(Course::class, 'subject_id');
+    }
 }

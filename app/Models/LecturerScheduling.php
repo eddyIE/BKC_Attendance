@@ -18,4 +18,12 @@ class LecturerScheduling extends Model
         'created_by',
         'modified_by',
     ];
+
+    public function course(){
+        return $this->belongsTo(Course::class);
+    }
+
+    public function user(){
+        return $this->belongsTo(User::class, 'lecturer_id');
+    }
 }
