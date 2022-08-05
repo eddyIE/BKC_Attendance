@@ -11,9 +11,13 @@ class Subject extends Model
     protected $primaryKey = 'id';
     protected $fillable = [
         'name',
-        'recommended_hours',
+        'recommend_hours',
         'status',
         'created_by',
         'modified_by',
     ];
+
+    public function program_info(){
+        return $this->hasMany(ProgramInfo::class);
+    }
 }

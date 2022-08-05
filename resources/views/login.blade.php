@@ -18,49 +18,47 @@
 </head>
 <body class="hold-transition login-page" style="background-image: url('{{asset('img/website-login-background.jpg')}}')">
     <div class="login-box">
-    <div class="card">
-        <div class="card-header text-center">
-            <h1><b class="text-uppercase">Đăng Nhập</b></h1>
-        </div>
-        <div class="card-body">
-            @if($errors->any())
-                <div class="alert alert-danger">
-                    @foreach($errors->all() as $message)
-                        {{ $message }}<br>
-                    @endforeach
-                </div>
-            @else
-                <p class="login-box-msg"></p>
-            @endif
-            <form action="{{ asset('login-process') }}" method="post">
-                @csrf
-                <div class="input-group mb-3">
-                    <input type="text" class="form-control" placeholder="Username" name="username">
-                    <div class="input-group-append">
-                        <div class="input-group-text">
-                            <span class="fas fa-user"></span>
+        <div class="card">
+            <div class="card-header text-center">
+                <h1><b class="text-uppercase">Đăng Nhập</b></h1>
+            </div>
+            <div class="card-body">
+                @if($errors->any())
+                    <div class="alert alert-danger">
+                        @foreach($errors->all() as $message)
+                            {{ $message }}<br>
+                        @endforeach
+                    </div>
+                @else
+                    <p class="login-box-msg"></p>
+                @endif
+                <form action="{{ asset('login-process') }}" method="post">
+                    @csrf
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" placeholder="Username" name="username">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-user"></span>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="input-group mb-3">
-                    <input type="password" class="form-control" placeholder="Password" name="password">
-                    <div class="input-group-append">
-                        <div class="input-group-text">
-                            <span class="fas fa-lock"></span>
+                    <div class="input-group mb-3">
+                        <input type="password" class="form-control" placeholder="Password" name="password">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-lock"></span>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-8"></div>
-                    <!-- /.col -->
-                    <div class="col-4">
-                        <button type="submit" class="btn btn-primary btn-block">Đăng Nhập</button>
+                    <div class="row">
+                        <div class="col">
+                            <button type="submit" class="btn btn-primary float-right">Đăng Nhập</button>
+                        </div>
                     </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
-</div>
     <script>
         <!-- jQuery -->
         <script src="{{ asset('js/jquery/jquery.min.js') }}" async></script>

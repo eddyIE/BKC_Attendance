@@ -7,10 +7,27 @@
     @include('lecturer.attendance.course_chooser')
 
     {{--Thông tin chung của khóa học vừa chọn--}}
-    @include('lecturer.attendance.course_detail')
+    @include('lecturer.attendance.course_info')
 
-    {{--Danh sách sinh viên--}}
-    @include('lecturer.attendance.course_students')
+    <form action="{{asset('/attendance')}}" method="POST" onsubmit="return validateForm()" name="attendanceForm">
+        @csrf
+        {{-- Thông tin khóa học đang được chọn --}}
+        @isset($curCourse)
+            <input type="hidden" name='current-course-id' value='{{$curCourse->id}}'>
+        @endisset
+
+        {{--Danh sách sinh viên--}}
+        @include('lecturer.attendance.course_student_list')
+
+        {{--Lịch sử các buổi học--}}
+        @include('lecturer.attendance.course_history')
+
+        {{--Phần chọn thời gian--}}
+        @include('lecturer.attendance.course_time_picker')
+
+        {{--Phần ghi chú và các nút--}}
+        @include('lecturer.attendance.course_submit_btn')
+    </form>
 @endsection
 
 @section('script')
@@ -149,4 +166,14 @@
             });
         };
     </script>
+    <script>
+        export default {
+            data() {
+                return {
+                    value: ''
+                }
+            }
+        }
+    </script>
+    <script src="{{ asset('js/daterangepicker.js') }}"></script>
 @endsection

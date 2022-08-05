@@ -18,5 +18,20 @@ class Lesson extends Model
         'status',
         'created_by',
         'modified_by',
+        'finished_hours',
+        'finished_lessons',
+        'shift'
     ];
+
+    public function course(){
+        return $this->belongsTo(Course::class);
+    }
+
+    public function user(){
+        return $this->belongsTo(User::class);
+    }
+
+    public function attendance(){
+        return $this->hasMany(Attendance::class);
+    }
 }

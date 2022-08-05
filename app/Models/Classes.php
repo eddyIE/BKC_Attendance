@@ -16,4 +16,16 @@ class Classes extends Model
         'created_by',
         'modified_by',
     ];
+
+    public function program(){
+        return $this->belongsTo(Program::class);
+    }
+
+    public function student(){
+        return $this->hasMany(Student::class);
+    }
+
+    public function course(){
+        return $this->hasMany(Course::class);
+    }
 }
