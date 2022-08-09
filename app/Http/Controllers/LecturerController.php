@@ -23,9 +23,12 @@ class LecturerController extends Controller
      */
     public function courseChooser()
     {
-        // TODO: Chỉ lấy danh sách các khóa học theo phân công
         // Lấy danh sách các lớp
-        $courses = Course::all();
+        $courses = Course::select('course.*')
+            ->join('lecturer_scheduling', 'course.id', '=',
+                'lecturer_scheduling.course_id')
+            ->join('user', 'user.id', '=', 'lecturer_scheduling.lecturer_id')
+            ->get();
         // Trả dữ liệu về view
         return view('lecturer.attendance.index', ['courses' => $courses]);
     }
@@ -85,7 +88,7 @@ class LecturerController extends Controller
 
         // Lấy danh sách số buổi nghỉ, nghỉ phép, trạng thái đi học hôm nay
         // của các sinh viên trong 1 course
-        self::getAbsentQuan($courseId, $absentList,$permissionList,
+        self::getAbsentQuan($courseId, $absentList, $permissionList,
             $curStatusList, $reasonList, $specificLessonId);
 
         foreach ($students as $student) {
