@@ -2,14 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Support\Facades\Auth;
 
 class User extends Authenticatable
 {
     use HasFactory;
     protected $table = 'user';
+    protected $primaryKey = 'id';
     protected $fillable = [
         'username',
         'password',
@@ -17,6 +18,14 @@ class User extends Authenticatable
         'full_name',
         'phone',
         'gender',
-        'status',
     ];
+
+
+    public function lesson(){
+        return $this->hasMany(Lesson::class);
+    }
+
+    public function lecturer_scheduling(){
+        return $this->hasMany(LecturerScheduling::class, 'lecturer_id');
+    }
 }

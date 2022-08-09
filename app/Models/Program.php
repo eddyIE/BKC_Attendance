@@ -19,4 +19,16 @@ class Program extends Model
         'created_by',
         'modified_by',
     ];
+
+    public function programInfo(){
+        return $this->hasMany(ProgramInfo::class);
+    }
+
+    public function class(){
+        return $this->hasMany(Classes::class);
+    }
+
+    public function major(){
+        return $this->belongsTo(Major::class);
+    }
 }

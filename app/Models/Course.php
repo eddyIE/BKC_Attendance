@@ -22,4 +22,20 @@ class Course extends Model
         'created_by',
         'modified_by',
     ];
+
+    public function lesson(){
+        return $this->hasMany(Lesson::class);
+    }
+
+    public function lecturer_scheduling(){
+        return $this->hasMany(LecturerScheduling::class);
+    }
+
+    public function class(){
+        return $this->belongsTo(Classes::class);
+    }
+
+    public function program_info(){
+        return $this->belongsTo(ProgramInfo::class, 'subject_id');
+    }
 }

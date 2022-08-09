@@ -17,4 +17,12 @@ class Attendance extends Model
         'created_by',
         'modified_by',
     ];
+
+    public function lesson(){
+        return $this->belongsTo(Lesson::class);
+    }
+
+    public function student(){
+        return $this->belongsTo(Student::class);
+    }
 }

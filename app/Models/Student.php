@@ -17,4 +17,12 @@ class Student extends Model
         'created_by',
         'modified_by',
     ];
+
+    public function attendance(){
+        return $this->hasMany(Attendance::class);
+    }
+
+    public function class(){
+        return $this->belongsTo(Classes::class);
+    }
 }
