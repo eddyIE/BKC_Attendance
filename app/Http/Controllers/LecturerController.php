@@ -8,6 +8,7 @@ use App\Models\Course;
 use App\Models\Lesson;
 use App\Models\Student;
 use App\Models\StudentDTO;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 
@@ -278,4 +279,28 @@ class LecturerController extends Controller
         return redirect('/my-course');
     }
 
+    /*
+     * Lịch chấm công
+     */
+    public function timeKeeping()
+    {
+        $monthStart = date('Y-m-01');
+        $monthEnd = date('Y-m-t');
+
+        // Lấy danh sách các lớp được phân công
+        $courses = Course::select('course.*')
+            ->join('lecturer_scheduling', 'course.id', '=',
+                'lecturer_scheduling.course_id')
+            ->join('user', 'user.id', '=', 'lecturer_scheduling.lecturer_id')
+            ->get();
+
+        // Lấy danh sách các buổi học
+        $lessons = new Collection();
+        foreach ($courses as $course) {
+            $lessons->push(Lesson::where('course_id', $course->id)
+                ->whereBetween('created_at', [$monthStart, $monthEnd])->get());
+        }
+        // Lấy phần tử đầu của $lessons
+        return view('lecturer.time_keeping.time_keeping', ['lessons' => $lessons[0]]);
+    }
 }

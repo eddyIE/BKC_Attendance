@@ -21,6 +21,9 @@
     <link rel="stylesheet" href="{{ asset('css/overlayScrollbars/OverlayScrollbars.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/datarangepicker.css') }}">
     <link rel="icon" href="{{ asset('img/bkacad.png') }}">
+
+    {{--Thư viện lịch FullCalendar--}}
+    <link rel='stylesheet' href="{{ asset('js/fullcalendar/lib/main.css') }}"/>
     <style>
         @yield('css')
     </style>

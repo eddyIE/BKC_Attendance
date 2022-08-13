@@ -45,7 +45,7 @@
                     </ul>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ asset('#') }}" class="nav-link">
+                    <a href="{{ asset('/time-keeping') }}" class="nav-link">
                         <i class="nav-icon fas fa-chart-area"></i>
                         <p>THỐNG KÊ GIỜ DẠY</p>
                     </a>
