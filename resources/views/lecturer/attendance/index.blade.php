@@ -1,6 +1,6 @@
 @extends('lecturer.layout.main')
 
-@section('title', 'Lecturer Dashboard')
+@section('title', 'BKACAD - Điểm danh')
 
 @section('content')
     {{-- Thanh chọn lớp điểm danh--}}

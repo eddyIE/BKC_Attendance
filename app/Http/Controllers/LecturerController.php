@@ -9,6 +9,7 @@ use App\Models\Lesson;
 use App\Models\Student;
 use App\Models\StudentDTO;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 
 class LecturerController extends Controller
 {
@@ -28,6 +29,7 @@ class LecturerController extends Controller
             ->join('lecturer_scheduling', 'course.id', '=',
                 'lecturer_scheduling.course_id')
             ->join('user', 'user.id', '=', 'lecturer_scheduling.lecturer_id')
+            ->where('course.status', 0)
             ->get();
         // Trả dữ liệu về view
         return view('lecturer.attendance.index', ['courses' => $courses]);
@@ -230,4 +232,50 @@ class LecturerController extends Controller
             'lessons' => $prevLessons,
             'prevLesson' => $prevLesson]);
     }
+
+    /*
+     * Quản lí các lớp được phân công
+     */
+    public function courseManagement()
+    {
+        // Lấy danh sách các lớp được phân công
+        $courses = Course::select('course.*')
+            ->join('lecturer_scheduling', 'course.id', '=',
+                'lecturer_scheduling.course_id')
+            ->join('user', 'user.id', '=', 'lecturer_scheduling.lecturer_id')
+            ->get();
+        // Trả dữ liệu về view
+        return view('lecturer.course.course', ['courses' => $courses]);
+    }
+
+    /*
+     * Update status của phân công
+     */
+    public function courseUpdateVisibility($id)
+    {
+        $course = Course::find($id);
+        if ($course->status == 1) {
+            $data = [
+                'status' => 0,
+                'modified_by' => auth()->user()->id,
+            ];
+        } else {
+            $data = [
+                'status' => 1,
+                'modified_by' => auth()->user()->id,
+            ];
+        }
+
+        $result = $course->update($data);
+
+        if ($result) {
+            Session::flash('type', 'info');
+            Session::flash('message', 'Khóa học đã kết thúc.');
+        } else {
+            Session::flash('type', 'error');
+            Session::flash('message', 'Đã có sự cố xảy ra.');
+        }
+        return redirect('/my-course');
+    }
+
 }

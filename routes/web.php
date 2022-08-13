@@ -58,4 +58,10 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'role:lecturer']], funct
     // Chi tiết buổi học trong lịch sử
     Route::get('/lesson/{id}', 'LecturerController@prevLessonDetail');
 
+    // Quản lí các lớp được phân công
+    Route::get('/my-course', 'LecturerController@courseManagement');
+
+    // Update ẩn/hiện phân công
+    Route::get('/my-course/visibility/{id}', 'LecturerController@courseUpdateVisibility');
+
 });

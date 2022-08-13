@@ -42,5 +42,46 @@ All rights reserved.
             "autoWidth": false,
             "responsive": true,
         });
+
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        var type = '{{ session('type') }}';
+        var message = '{{ session('message') }}';
+
+        if (message && type){
+            Swal.fire({
+                toast: true,
+                timer: 3000,
+                position: 'top-end',
+                iconColor: 'white',
+                customClass: {
+                    popup: 'colored-toast'
+                },
+                showConfirmButton: false,
+                icon: type,
+                title: message,
+            });
+        }
+
+        $('#datatable').DataTable({
+            "paging": false,
+            "lengthChange": false,
+            "searching": false,
+            "ordering": true,
+            "info": true,
+            "autoWidth": true,
+            "responsive": true,
+            "columnDefs": [{
+                "targets": -1,
+                "orderable": false,
+                "searchable": false,
+            }]
+        });
     });
 </script>
+
+

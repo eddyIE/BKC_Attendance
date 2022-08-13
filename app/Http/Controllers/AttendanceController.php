@@ -79,7 +79,8 @@ class AttendanceController extends Controller
 
         // Thêm request param
         $request->request->add(['course-id' => $request->{'current-course-id'}]);
-        Session::flash('alert', 'Lưu điểm danh thành công');
+        Session::flash('type', 'info');
+        Session::flash('message', 'Điểm danh thành công');
         return (new LecturerController)->courseDetail($request);
     }
 

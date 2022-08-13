@@ -33,16 +33,22 @@
                         <li class="nav-item">
                             <a href="{{ asset('/course') }}" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Tạo mới</p>
+                                <p>Điểm danh</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link">
+                            <a href="{{ asset('/my-course') }}" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Danh sách lớp</p>
+                                <p>Danh sách các phân công</p>
                             </a>
                         </li>
                     </ul>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ asset('#') }}" class="nav-link">
+                        <i class="nav-icon fas fa-chart-area"></i>
+                        <p>THỐNG KÊ GIỜ DẠY</p>
+                    </a>
                 </li>
             </ul>
         </nav>
