@@ -32,6 +32,10 @@ All rights reserved.
             "info": true,
             "autoWidth": false,
             "responsive": true,
+            'aoColumnDefs': [{
+                'bSortable': false,
+                'aTargets': [-1] /* 1st one, start by the right */
+            }]
         });
         $('#example2').DataTable({
             "paging": true,
@@ -43,6 +47,30 @@ All rights reserved.
             "responsive": true,
         });
 
+        $('#course_table').DataTable({
+            "paging": true,
+            "lengthChange": false,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+            "responsive": true,
+            "oLanguage" : {
+                "sSearch" : "Tìm kiếm",
+                "sInfo" : "Hiển thị _START_ đến _END_ của _TOTAL_ kết quả",
+                "sInfoEmpty": "Hiển thị 0 kết quả",
+                "sInfoFiltered": "(Lọc từ _MAX_ kết quả)",
+                "sEmptyTable" : "Không có dữ liệu",
+                "sZeroRecords" : "Không tìm thấy kết quả",
+                "paginate": {
+                    "sFirst": "Trang đầu",
+                    "sLast": "Trang cuối",
+                    "sNext": "Sau",
+                    "sPrevious": "Trước"
+                },
+            }
+        });
+
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -52,7 +80,7 @@ All rights reserved.
         var type = '{{ session('type') }}';
         var message = '{{ session('message') }}';
 
-        if (message && type){
+        if (message && type) {
             Swal.fire({
                 toast: true,
                 timer: 3000,

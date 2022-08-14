@@ -1,4 +1,4 @@
-<table id="example1" class="table table-striped align-middle table-bordered">
+<table id="course_table" class="table table-striped align-middle table-bordered">
     <thead>
     <tr>
         <th>ID</th>

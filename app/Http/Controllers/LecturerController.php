@@ -8,6 +8,7 @@ use App\Models\Course;
 use App\Models\Lesson;
 use App\Models\Student;
 use App\Models\StudentDTO;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
@@ -294,13 +295,29 @@ class LecturerController extends Controller
             ->join('user', 'user.id', '=', 'lecturer_scheduling.lecturer_id')
             ->get();
 
+        // Thời gian làm việc tháng này
+        $totalWorkTime = 0;
         // Lấy danh sách các buổi học
         $lessons = new Collection();
         foreach ($courses as $course) {
-            $lessons->push(Lesson::where('course_id', $course->id)
-                ->whereBetween('created_at', [$monthStart, $monthEnd])->get());
+            $queries = Lesson::where('course_id', $course->id)
+                ->whereBetween('created_at', [$monthStart, $monthEnd])->get();
+            // Set thêm tên khóa học vào các lesson
+            foreach ($queries as $query) {
+                $query->course_name = $course->name;
+                // Tính luôn tổng số giờ dạy tháng
+                $totalWorkTime +=
+                    strtotime($query->end) - strtotime($query->start);
+            }
+            $lessons->push($queries);
         }
+
+        // Biến đổi giờ dạy từ giây sang Giờ:Phút:Giây
+        $totalWorkTime = floor($totalWorkTime / 3600).gmdate(":i", $totalWorkTime % 3600);
         // Lấy phần tử đầu của $lessons
-        return view('lecturer.time_keeping.time_keeping', ['lessons' => $lessons[0]]);
+        return view('lecturer.time_keeping.time_keeping', [
+                'lessons' => $lessons[0],
+                'totalWorkTime' => $totalWorkTime
+        ]);
     }
 }

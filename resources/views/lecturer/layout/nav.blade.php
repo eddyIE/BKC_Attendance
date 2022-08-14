@@ -32,14 +32,14 @@
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
                             <a href="{{ asset('/course') }}" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
+                                &emsp;<i class="fas fa-circle nav-icon"></i>
                                 <p>Điểm danh</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ asset('/my-course') }}" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Danh sách các phân công</p>
+                                &emsp;<i class="fas fa-circle nav-icon"></i>
+                                <p>Danh sách phân công</p>
                             </a>
                         </li>
                     </ul>
@@ -47,7 +47,7 @@
                 <li class="nav-item">
                     <a href="{{ asset('/time-keeping') }}" class="nav-link">
                         <i class="nav-icon fas fa-chart-area"></i>
-                        <p>THỐNG KÊ GIỜ DẠY</p>
+                        <p>BẢNG GIỜ DẠY</p>
                     </a>
                 </li>
             </ul>
