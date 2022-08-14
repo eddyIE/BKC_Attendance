@@ -32,26 +32,31 @@ class AttendanceController extends Controller
      */
     public function createAttendance(Request $request)
     {
-
+        // Check có phải request update điểm danh buổi học trong lịch sử ko?
+        // Có thì gọi method updateAttendance rồi return luôn
         if(isset($request->all()['prev-lesson-id'])){
+
             self::updateAttendance($request);
+
             $request->request->add(['course-id' => $request->{'current-course-id'}]);
             Session::flash('alert', 'Lưu điểm danh thành công');
             return (new LecturerController)->courseDetail($request);
         }
+
         // Check xem buổi học đã tồn tại chưa
         $lesson = $this->getExistLesson($request->{'current-course-id'});
 
         // Nếu buổi học đã tồn tại
         if ($lesson != null) {
             $lessonId = $lesson->id;
+            // Update thời lượng buổi học, note, người chỉnh sửa, etc.
             self::updateLesson($request, $lesson);
             // Update giờ đã dạy của course dựa theo thời lượng bản ghi trước
             self::courseFinishedTimeAndLessonHandler($request, $lesson);
 
-            // Xóa các bản ghi điểm danh cũ
+            // Xóa các bản ghi điểm danh cũ tí tạo lại
             Attendance::where('lesson_id', $lesson->id)->delete();
-        } // Chưa tồn tại thì tạo mới
+        } // Chưa tồn tại buổi học thì tạo mới
         else {
             $lessonId = self::createLesson($request);
             // Tăng số buổi, giờ đã dạy của course
@@ -74,7 +79,8 @@ class AttendanceController extends Controller
 
         // Thêm request param
         $request->request->add(['course-id' => $request->{'current-course-id'}]);
-        Session::flash('alert', 'Lưu điểm danh thành công');
+        Session::flash('type', 'info');
+        Session::flash('message', 'Điểm danh thành công');
         return (new LecturerController)->courseDetail($request);
     }
 
@@ -247,6 +253,7 @@ class AttendanceController extends Controller
      * Update điểm danh cho một buổi học trong lịch sử
      */
     public function updateAttendance(Request $request){
+        // Lấy lesson id buổi học trước cần update
         $lessonId = $request->all()['prev-lesson-id'];
 
         // Xóa các bản ghi điểm danh cũ
@@ -261,6 +268,8 @@ class AttendanceController extends Controller
                 $attendance->attendant_status = $student['status'];
                 $attendance->note = $student['absent_reason'];
                 $attendance->lesson_id = $lessonId;
+                // Chưa tìm được cách ko phải set lại created_by
+                // IDEA: Lấy created_by của lesson
                 $attendance->created_by = Auth::user()->id;
                 $attendance->modified_by = Auth::user()->id;
                 $attendance->save();

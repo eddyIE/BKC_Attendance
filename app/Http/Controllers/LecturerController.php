@@ -8,7 +8,10 @@ use App\Models\Course;
 use App\Models\Lesson;
 use App\Models\Student;
 use App\Models\StudentDTO;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 
 class LecturerController extends Controller
 {
@@ -23,9 +26,13 @@ class LecturerController extends Controller
      */
     public function courseChooser()
     {
-        // TODO: Chỉ lấy danh sách các khóa học theo phân công
         // Lấy danh sách các lớp
-        $courses = Course::all();
+        $courses = Course::select('course.*')
+            ->join('lecturer_scheduling', 'course.id', '=',
+                'lecturer_scheduling.course_id')
+            ->join('user', 'user.id', '=', 'lecturer_scheduling.lecturer_id')
+            ->where('course.status', 0)
+            ->get();
         // Trả dữ liệu về view
         return view('lecturer.attendance.index', ['courses' => $courses]);
     }
@@ -85,7 +92,7 @@ class LecturerController extends Controller
 
         // Lấy danh sách số buổi nghỉ, nghỉ phép, trạng thái đi học hôm nay
         // của các sinh viên trong 1 course
-        self::getAbsentQuan($courseId, $absentList,$permissionList,
+        self::getAbsentQuan($courseId, $absentList, $permissionList,
             $curStatusList, $reasonList, $specificLessonId);
 
         foreach ($students as $student) {
@@ -226,5 +233,91 @@ class LecturerController extends Controller
             'curClass' => $curClass,
             'lessons' => $prevLessons,
             'prevLesson' => $prevLesson]);
+    }
+
+    /*
+     * Quản lí các lớp được phân công
+     */
+    public function courseManagement()
+    {
+        // Lấy danh sách các lớp được phân công
+        $courses = Course::select('course.*')
+            ->join('lecturer_scheduling', 'course.id', '=',
+                'lecturer_scheduling.course_id')
+            ->join('user', 'user.id', '=', 'lecturer_scheduling.lecturer_id')
+            ->get();
+        // Trả dữ liệu về view
+        return view('lecturer.course.course', ['courses' => $courses]);
+    }
+
+    /*
+     * Update status của phân công
+     */
+    public function courseUpdateVisibility($id)
+    {
+        $course = Course::find($id);
+        if ($course->status == 1) {
+            $data = [
+                'status' => 0,
+                'modified_by' => auth()->user()->id,
+            ];
+        } else {
+            $data = [
+                'status' => 1,
+                'modified_by' => auth()->user()->id,
+            ];
+        }
+
+        $result = $course->update($data);
+
+        if ($result) {
+            Session::flash('type', 'info');
+            Session::flash('message', 'Khóa học đã kết thúc.');
+        } else {
+            Session::flash('type', 'error');
+            Session::flash('message', 'Đã có sự cố xảy ra.');
+        }
+        return redirect('/my-course');
+    }
+
+    /*
+     * Lịch chấm công
+     */
+    public function timeKeeping()
+    {
+        $monthStart = date('Y-m-01');
+        $monthEnd = date('Y-m-t');
+
+        // Lấy danh sách các lớp được phân công
+        $courses = Course::select('course.*')
+            ->join('lecturer_scheduling', 'course.id', '=',
+                'lecturer_scheduling.course_id')
+            ->join('user', 'user.id', '=', 'lecturer_scheduling.lecturer_id')
+            ->get();
+
+        // Thời gian làm việc tháng này
+        $totalWorkTime = 0;
+        // Lấy danh sách các buổi học
+        $lessons = new Collection();
+        foreach ($courses as $course) {
+            $queries = Lesson::where('course_id', $course->id)
+                ->whereBetween('created_at', [$monthStart, $monthEnd])->get();
+            // Set thêm tên khóa học vào các lesson
+            foreach ($queries as $query) {
+                $query->course_name = $course->name;
+                // Tính luôn tổng số giờ dạy tháng
+                $totalWorkTime +=
+                    strtotime($query->end) - strtotime($query->start);
+            }
+            $lessons->push($queries);
+        }
+
+        // Biến đổi giờ dạy từ giây sang Giờ:Phút:Giây
+        $totalWorkTime = floor($totalWorkTime / 3600).gmdate(":i", $totalWorkTime % 3600);
+        // Lấy phần tử đầu của $lessons
+        return view('lecturer.time_keeping.time_keeping', [
+                'lessons' => $lessons[0],
+                'totalWorkTime' => $totalWorkTime
+        ]);
     }
 }

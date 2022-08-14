@@ -1,6 +1,6 @@
 @extends('lecturer.layout.main')
 
-@section('title', 'Lecturer Dashboard')
+@section('title', 'BKACAD - Điểm danh')
 
 @section('content')
     {{-- Thanh chọn lớp điểm danh--}}
@@ -32,6 +32,7 @@
 
 @section('script')
     <script>
+        // Validate thời gian
         function validateForm() {
             // Lấy thời gian hiện tại
             const now = new Date();
@@ -39,19 +40,20 @@
             const curMinutes = (now.getMinutes() < 10) ? ("0" + now.getMinutes()) : now.getMinutes();
             const curTime = `${curHour}:${curMinutes}`;
 
-            // Lấy ngày tháng nếu là buổi hoc cũ => != null => ko check ngày tháng
+            // Lấy ngày tháng nếu là buổi hoc cũ
             const a = {!! json_encode($curLessonDate ?? null) !!};
             if (a !== null) {
                 return true;
             }
-            // Get data
-            const attendanceForm = document.forms["attendanceForm"];
-            let start = `${attendanceForm["start[hour]"].value}:${attendanceForm["start[minutes]"].value}`;
-            let end = `${attendanceForm["end[hour]"].value}:${attendanceForm["end[minutes]"].value}`;
+
+            // Lấy data
+            const attendanceList = document.forms["attendanceForm"];
+            let start = `${attendanceList["start[hour]"].value}:${attendanceList["start[minutes]"].value}`;
+            let end = `${attendanceList["end[hour]"].value}:${attendanceList["end[minutes]"].value}`;
 
             // VALIDATE
             try {
-                // Seperate data to calculate
+                // Tách data để tính toán
                 let curArr = curTime.split(":");
                 let endArr = end.split(":");
                 let startArr = start.split(":");
@@ -59,11 +61,15 @@
                 // - Giờ bắt đầu không sớm hơn giờ kết thúc
                 // - Giờ bắt đầu không sớm hơn hiện tại
                 // - Giờ kết thúc không muộn hơn hiện tại quá 30p
-                if (start > end || start > curTime) {
-                    alert("Thời gian buổi học không hợp lệ");
+                if (start >= end) {
+                    alert("Giờ bắt đầu phải sớm hơn giờ kết thúc.");
                     return false;
                 }
-                if ((curArr[0] - endArr[0] == 0 && curArr[1] - endArr[1] > 30) || (curArr[0] - endArr[0] > 0)) {
+                else if(start > curTime){
+                    alert("Buổi học chưa đến giờ điểm danh.");
+                    return false;
+                }
+                if ((curArr[0] - endArr[0] === 0 && curArr[1] - endArr[1] > 30) || (curArr[0] - endArr[0] > 0)) {
                     alert("Buổi học đã kết thúc quá 30 phút");
                     return false;
                 }
@@ -78,9 +84,10 @@
             document.getElementsByName("lesson-date")[0].setAttribute('max', maxDate);
         }
 
+        // Show lịch sử
         function showPrevLesson() {
             let x = document.getElementById("prev-lesson");
-            if (x.style.display == "none") {
+            if (x.style.display === "none") {
                 x.style.display = "block";
             } else {
                 x.style.display = "none";
@@ -88,14 +95,13 @@
         }
 
         function courseSearch() {
-            // Declare variables
             var input, filter, ul, courses, a, i, txtValue;
             input = document.getElementById('courseSearchInput');
             filter = input.value.toUpperCase();
             ul = document.getElementById("class_selector");
             courses = ul.getElementsByName('select_course');
 
-            // Loop through all list items, and hide those who don't match the search query
+            // Lăp qua list, ẩn các kết quả không trùng
             for (i = 0; i < courses.length; i++) {
                 txtValue = courses.textContent || courses.innerText;
                 if (txtValue.toUpperCase().indexOf(filter) > -1) {
