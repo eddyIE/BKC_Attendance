@@ -13,6 +13,18 @@
     /* Full calendar hiện tên Tháng Năm in hoa chữ đầu*/
     .fc-toolbar { text-transform: capitalize; }
 
+    /* Hiện border đậm màu hơn */
+    .fc-scrollgrid{
+    border-collapse: collapse!important;
+    }
+    .fc-scrollgrid td, .fc-scrollgrid th  {
+    border: 1px solid black!important;
+    }
+
+    .fc-event-main{
+    padding: 5px;
+    }
+
 @endsection
 
 @section('content')
@@ -20,6 +32,10 @@
     @isset($totalWorkTime)
         <h3>Thời lượng đã dạy tháng này: {{$totalWorkTime}}</h3>
     @endisset
+
+    {{-- Chọn xem bảng chấm công tháng khác --}}
+    @include('lecturer.time_keeping.prev_time_keeping')
+
     <div id='calendar'></div>
 @endsection
 
@@ -32,24 +48,41 @@
             let calendarEl = document.getElementById('calendar');
 
             let calendar = new FullCalendar.Calendar(calendarEl, {
+                // Theme & color
                 themeSystem: 'bootstrap5',
+                eventBorderColor: '#ffffff',
+                eventColor: '#378006',
+
+                // Toolbar
                 headerToolbar: {
                     left: 'today',
                     center: 'title',
                     right: 'dayGridMonth,dayGridWeek,dayGridDay'
                 },
+
+                // Dịch sang tiếng Việt
+                locale: 'vi',
                 buttonText: {
                     today: 'Hôm nay',
                     day: 'Xem ngày',
-                    week:'Xem tuần',
-                    month:'Xem tháng'
+                    week: 'Xem tuần',
+                    month: 'Xem tháng'
                 },
-                locale: 'vi',
+
+                // Chỉnh header thành Tháng X năm Y nếu đang xem tháng trước
+                @isset($month)
+                initialDate: @php echo (json_encode($month)) @endphp,
+                @endisset
+
                 // Thứ 2 là ngày đầu tuần ~
                 firstDay: 1,
+                // Không hiện mờ mấy ngày của tháng khác
+                showNonCurrentDates: false,
                 navLinks: true, // can click day/week names to navigate views
                 editable: false,
                 dayMaxEvents: true, // allow "more" link when too many events
+
+                // Truyền vào các buổi chấm công
                 events: [
                         @isset($lessons)
                         @foreach($lessons as $lesson)
@@ -85,7 +118,6 @@
                     @endforeach
                     @endisset
                 ],
-                eventColor: '#378006',
                 // Làm thuộc tính title có thể xuống dòng
                 eventContent: function (arg) {
                     return {

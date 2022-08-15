@@ -65,6 +65,5 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'role:lecturer']], funct
     Route::get('/my-course/visibility/{id}', 'LecturerController@courseUpdateVisibility');
 
     // Chấm công
-    Route::get('/time-keeping', 'LecturerController@timeKeeping');
-
+    Route::get('/time-keeping/{month?}', 'LecturerController@timeKeeping');
 });

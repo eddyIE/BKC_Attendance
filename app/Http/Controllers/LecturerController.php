@@ -8,7 +8,6 @@ use App\Models\Course;
 use App\Models\Lesson;
 use App\Models\Student;
 use App\Models\StudentDTO;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
@@ -285,8 +284,13 @@ class LecturerController extends Controller
      */
     public function timeKeeping()
     {
-        $monthStart = date('Y-m-01');
-        $monthEnd = date('Y-m-t');
+        if (isset(request()->month)) {
+            $monthStart = date('Y-m-01', strtotime(request()->month));
+            $monthEnd = date('Y-m-t', strtotime(request()->month));
+        } else {
+            $monthStart = date('Y-m-01');
+            $monthEnd = date('Y-m-t');
+        }
 
         // Lấy danh sách các lớp được phân công
         $courses = Course::select('course.*')
@@ -313,11 +317,18 @@ class LecturerController extends Controller
         }
 
         // Biến đổi giờ dạy từ giây sang Giờ:Phút:Giây
-        $totalWorkTime = floor($totalWorkTime / 3600).gmdate(":i", $totalWorkTime % 3600);
+        $totalWorkTime = floor($totalWorkTime / 3600) . gmdate(":i", $totalWorkTime % 3600);
         // Lấy phần tử đầu của $lessons
-        return view('lecturer.time_keeping.time_keeping', [
+        if (isset(request()->month)) {
+            return view('lecturer.time_keeping.time_keeping', [
                 'lessons' => $lessons[0],
-                'totalWorkTime' => $totalWorkTime
+                'totalWorkTime' => $totalWorkTime,
+                'month' => request()->month
+            ]);
+        }
+        return view('lecturer.time_keeping.time_keeping', [
+            'lessons' => $lessons[0],
+            'totalWorkTime' => $totalWorkTime
         ]);
     }
 }
