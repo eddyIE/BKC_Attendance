@@ -20,6 +20,8 @@
     <!-- overlayScrollbars -->
     <link rel="stylesheet" href="{{ asset('css/overlayScrollbars/OverlayScrollbars.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/daterangepicker.css') }}">
+    <!-- Tempusdominus Bootstrap 4 -->
+    <link rel="stylesheet" href="{{ asset('css/tempusdominus-bootstrap-4.min.css') }}">
     <link rel="icon" href="{{ asset('img/bkacad.png') }}">
     <style>
         @yield('css')
