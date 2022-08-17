@@ -141,6 +141,6 @@
         </div>
     </div>
 
-    <input type="submit" class="btn btn-outline-success fs-5 fw-bold fst-italic mt-2 mb-2 float-right"
+    <input type="submit" class="btn btn-outline-primary fs-5 fw-bold fst-italic mt-2 mb-2 float-right"
            value="Lấy danh sách điểm danh"/>
 </form>

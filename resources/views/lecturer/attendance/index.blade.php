@@ -2,6 +2,11 @@
 
 @section('title', 'BKACAD - Điểm danh')
 
+@section('links')
+    {{-- Thư viện daterangepicker--}}
+    <link rel="stylesheet" href="{{ asset('css/daterangepicker.css') }}">
+@endsection
+
 @section('content')
     {{-- Thanh chọn lớp điểm danh--}}
     @include('lecturer.attendance.course_chooser')
@@ -64,8 +69,7 @@
                 if (start >= end) {
                     alert("Giờ bắt đầu phải sớm hơn giờ kết thúc.");
                     return false;
-                }
-                else if(start > curTime){
+                } else if (start > curTime) {
                     alert("Buổi học chưa đến giờ điểm danh.");
                     return false;
                 }
@@ -181,5 +185,27 @@
             }
         }
     </script>
-    <script src="{{ asset('js/daterangepicker.js') }}"></script>
+
+    <!-- jQuery -->
+    <script src="{{ asset('js/jquery/jquery.min.js') }}"></script>
+
+    <!-- InputMask -->
+    <script src="{{ asset('js/moment.min.js') }}"></script>
+    <script src="{{ asset('js/jquery.inputmask.min.js') }}"></script>
+
+    <!-- bootstrap color picker -->
+    <script src="{{ asset('js/bootstrap-colorpicker.min.js') }}"></script>
+    <script>
+        $('#lesson-time').daterangepicker({
+            timePicker: true,
+            timePicker24Hour: true,
+            timePickerIncrement: 1,
+            locale: {
+                format: 'HH:mm'
+            }
+        }).on('show.daterangepicker', function (ev, picker) {
+            picker.container.find(".calendar-table").hide();
+        });
+    </script>
+
 @endsection

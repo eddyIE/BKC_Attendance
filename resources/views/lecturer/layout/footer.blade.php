@@ -29,13 +29,27 @@ All rights reserved.
             "lengthChange": false,
             "searching": true,
             "ordering": true,
-            "info": true,
+            "info": false,
             "autoWidth": false,
             "responsive": true,
             'aoColumnDefs': [{
                 'bSortable': false,
                 'aTargets': [-1] /* 1st one, start by the right */
-            }]
+            }],
+            "oLanguage" : {
+                "sSearch" : "Tìm kiếm",
+                "sInfo" : "Hiển thị _START_ đến _END_ của _TOTAL_ kết quả",
+                "sInfoEmpty": "Hiển thị 0 kết quả",
+                "sInfoFiltered": "(Lọc từ _MAX_ kết quả)",
+                "sEmptyTable" : "Không có dữ liệu",
+                "sZeroRecords" : "Không tìm thấy kết quả",
+                "paginate": {
+                    "sFirst": "Trang đầu",
+                    "sLast": "Trang cuối",
+                    "sNext": "Sau",
+                    "sPrevious": "Trước"
+                },
+            }
         });
         $('#example2').DataTable({
             "paging": true,

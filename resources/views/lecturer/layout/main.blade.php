@@ -19,12 +19,17 @@
     <link rel="stylesheet" href="{{ asset('css/adminlte.min.css') }}">
     <!-- overlayScrollbars -->
     <link rel="stylesheet" href="{{ asset('css/overlayScrollbars/OverlayScrollbars.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/datarangepicker.css') }}">
+
+    <!-- icon bkacad -->
     <link rel="icon" href="{{ asset('img/bkacad.png') }}">
 
-    {{--Thư viện lịch FullCalendar--}}
-    <link rel='stylesheet' href="{{ asset('js/fullcalendar/lib/main.css') }}"/>
+    @yield('links')
+
     <style>
+        .btn-primary, .btn-primary:hover, .btn-primary:active, .btn-primary:visited {
+            background-color: #006182;
+            border-color: #006182;
+        }
         @yield('css')
     </style>
 </head>

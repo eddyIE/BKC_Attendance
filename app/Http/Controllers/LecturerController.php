@@ -284,6 +284,7 @@ class LecturerController extends Controller
      */
     public function timeKeeping()
     {
+        // Nếu đang xem chi tiết một tháng nào đấy
         if (isset(request()->month)) {
             $monthStart = date('Y-m-01', strtotime(request()->month));
             $monthEnd = date('Y-m-t', strtotime(request()->month));

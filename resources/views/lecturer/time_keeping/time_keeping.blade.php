@@ -3,6 +3,11 @@
 
 @section('title', 'BKACAD - Chấm công')
 
+@section('links')
+    {{--Thư viện lịch FullCalendar--}}
+    <link rel='stylesheet' href="{{ asset('js/fullcalendar/lib/main.css') }}"/>
+@endsection
+
 @section('css')
 
     #calendar {

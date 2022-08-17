@@ -1,4 +1,4 @@
-<nav class="main-header navbar navbar-expand-sm bg-blue">
+<nav class="main-header navbar navbar-expand-sm" style="background: #006182">
     <ul class="navbar-nav">
         <li class="nav-item" style="display: flex;align-items: center">
             <a class="nav-link text-white" data-widget="pushmenu" href="#" role="button" style="color: #156A8F">
