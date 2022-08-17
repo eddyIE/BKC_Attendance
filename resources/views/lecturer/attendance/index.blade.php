@@ -186,6 +186,7 @@
         }
     </script>
 
+    {{--TODO: SCRIPT--}}
     <!-- jQuery -->
     <script src="{{ asset('js/jquery/jquery.min.js') }}"></script>
 

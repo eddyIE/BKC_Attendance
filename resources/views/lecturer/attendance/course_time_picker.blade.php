@@ -26,11 +26,12 @@
     <br>
 </div>
 
-{{--Chọn giờ học--}}
 
+{{--TODO: thẻ input--}}
 <input type="text" class="form-control text-center" name="giờ dạy" id="lesson-time">
 <br>
 
+{{--Chọn giờ học--}}
 <span class="time-picker" id="start" name="start">
     <span class="h5">Giờ bắt đầu:</span>
         {{--Giờ bắt đầu--}}
