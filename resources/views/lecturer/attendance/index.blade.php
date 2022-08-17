@@ -175,5 +175,4 @@
             }
         }
     </script>
-    <script src="{{ asset('js/daterangepicker.js') }}"></script>
 @endsection

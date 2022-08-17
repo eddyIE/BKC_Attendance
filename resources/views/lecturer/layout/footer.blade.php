@@ -19,11 +19,27 @@ All rights reserved.
 <script src="{{ asset('js/datatables-bs4/dataTables.bootstrap4.min.js') }}"></script>
 <!-- overlayScrollbars -->
 <script src="{{ asset('js/overlayScrollbars/jquery.overlayScrollbars.min.js') }}"></script>
+<!-- InputMask -->
+<script src="{{ asset('js/moment.min.js') }}"></script>
+<script src="{{ asset('js/jquery.inputmask.min.js') }}"></script>
+<!--daterangepicker-->
+<script src="{{ asset('js/daterangepicker.js') }}"></script>
 <!-- AdminLTE App -->
 <script src="{{ asset('/js/adminlte.js') }}"></script>
 <!-- Page specific script -->
 <script>
     $(function () {
+        $('#lesson_hours').daterangepicker({
+            timePicker: true,
+            timePicker24Hour: true,
+            timePickerIncrement: 1,
+            locale: {
+                format: 'HH:mm'
+            }
+        }).on('show.daterangepicker', function (ev, picker) {
+            picker.container.find(".calendar-table").hide();
+        });
+
         $("#example1").DataTable({
             "paging": false,
             "lengthChange": false,

@@ -19,7 +19,7 @@
     <link rel="stylesheet" href="{{ asset('css/adminlte.min.css') }}">
     <!-- overlayScrollbars -->
     <link rel="stylesheet" href="{{ asset('css/overlayScrollbars/OverlayScrollbars.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/datarangepicker.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/daterangepicker.css') }}">
     <link rel="icon" href="{{ asset('img/bkacad.png') }}">
     <style>
         @yield('css')

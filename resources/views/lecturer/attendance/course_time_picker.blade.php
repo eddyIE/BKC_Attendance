@@ -28,75 +28,7 @@
 
 {{--Chọn giờ học--}}
 
-<span class="time-picker" id="start" name="start">
-    <span class="h5">Giờ bắt đầu:</span>
-        {{--Giờ bắt đầu--}}
-        <select class="pt-1 pb-1 ps-3 pe-3 fs-4" name="start[hour]" id="start[hour]" style="appearance: none">
-            @php
-                for($i = 0; $i<=24; $i++){
-                    if($i < 10){
-                        if($i == 8){
-                            echo ("<option value='0$i' selected>0$i</option>");
-                        }
-                        else{
-                            echo ("<option value='0$i'>0$i</option>");
-                        }
-                    }
-                    else{
-                        echo ("<option value='$i'>$i</option>");
-                    }
-                }
-            @endphp
-        </select>
-        <span class="fs-4">:</span>
-        {{--Phút bắt đầu--}}
-        <select class="pt-1 pb-1 ps-3 pe-3 fs-4 fs-4 me-5" name="start[minutes]" id="start[minutes]"
-                style="appearance: none">
-            @php
-                for($i = 0; $i<=59; $i++){
-                    if($i < 10){
-                        echo ("<option value='0$i'>0$i</option>");
-                    }
-                    else{
-                        echo ("<option value='$i'>$i</option>");
-                    }
-                }
-            @endphp
-        </select>
-    </span>
-
-<span class="time-picker" id="end" name="end">
-    <span class="h5">Giờ kết thúc:</span>
-        {{--Giờ kết thúc--}}
-        <select class="pt-1 pb-1 ps-3 pe-3 fs-4 fs-4" name="end[hour]" id="end[hour]" style="appearance: none">
-            @php
-                for($i = 0; $i<=24; $i++){
-                    if($i < 10){
-                        echo ("<option value='0$i'>0$i</option>");
-                    }
-                    else{
-                        if($i == 12){
-                            echo ("<option value='$i' selected>$i</option>");
-                        }
-                        else{
-                            echo ("<option value='$i'>$i</option>");
-                        }
-                    }
-                }
-            @endphp
-        </select>
-        <span class="fs-4">:</span>
-        {{--Phút kết thúc--}}
-        <select class="pt-1 pb-1 ps-3 pe-3 fs-4 fs-4" name="end[minutes]" id="end[minutes]" style="appearance: none">
-            @php
-                for($i = 0; $i<=59; $i++){
-                    if($i < 10){
-                        echo ("<option value='0$i'>0$i</option>");
-                    }
-                    else{
-                        echo ("<option value='$i'>$i</option>");
-                    }
-                }
-            @endphp
-        </select>
-    </span>
+<span class="time-picker">
+    <label for="lesson_hours">Giờ dạy</label>
+    <input type="text" name="lesson_hours" id="lesson_hours" class="text-center">
+</span>
