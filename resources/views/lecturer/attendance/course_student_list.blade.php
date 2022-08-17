@@ -1,12 +1,13 @@
 {{--
     Danh sách điểm danh của khóa học
 --}}
-<table id="example1" class="table table-striped align-middle table-bordered">
+<table id="example1" class="table table-striped align-middle table-bordered .table-hover">
     <thead>
-    <tr class="bg-dark">
-        <th td class="text-center fs-5 text-white">STT</th>
+    <tr class="bg-primary">
+        <th class="text-center fs-5 text-white">STT</th>
+        <th class="text-center fs-5 text-white">Mã sinh viên</th>
         <th class="fs-5 text-white">Tên sinh viên</th>
-        <th td class="text-center fs-5 text-white" colspan="4">Điểm danh</th>
+        <th class="text-center fs-5 text-white" colspan="4">Điểm danh</th>
         <th class="fs-5 text-white">Ghi chú</th>
     </tr>
     </thead>
@@ -21,27 +22,61 @@
                 {{--Số thứ tự--}}
                 <td class="text-center">{{ $loop->index + 1 }}</td>
 
+                {{-- Mã sinh viên--}}
+                <td class="text-center">{{ $each->code }}</td>
+
                 {{--Thông tin chung một sinh viên: Tên, ngày sinh, số nghỉ, số phép--}}
                 <td class="">
-                    {{--Tên sinh viên--}}
-                    <span class="roll fw-bolder">
-                        <a href="#">{{ $each->full_name }}</a>
-                    </span>
+                    @php
+                        $absentPercentage = $each->absentQuan / (isset($curCourse) ?
+                                    $curCourse->{'finished_lessons'} + 1 : 1)
+                        @endphp
+                    @if($absentPercentage > 0.3 && $absentPercentage <= 0.5)
+                        {{--Tên sinh viên--}}
+                        <span class="roll fw-bolder ">
+                            <a href="#" class="text-warning">{{ $each->full_name }}</a>
+                        </span>
 
-                    {{--Số buổi nghỉ / Tổng số buổi đã học--}}
-                    <span class="text-danger fw-bold">
-                        ({{ $each->absentQuan }}
-                        /
-                        <?php echo isset($curCourse) ?
-                            $curCourse->{'finished_lessons'} + 1 : ''; ?>)
-                    </span>
+                        {{--Số buổi nghỉ / Tổng số buổi đã học--}}
+                        <span class="text-warning fw-bold">
+                            ({{ $each->absentQuan }}
+                            /
+                            <?php echo isset($curCourse) ?
+                                    $curCourse->{'finished_lessons'} + 1 : ''; ?>)
+                        </span>
+                    @elseif($absentPercentage > 0.5)
+                        {{--Tên sinh viên--}}
+                        <span class="roll fw-bolder">
+                            <a href="#" class="text-danger">{{ $each->full_name }}</a>
+                        </span>
+
+                        {{--Số buổi nghỉ / Tổng số buổi đã học--}}
+                        <span class="text-danger fw-bold">
+                            ({{ $each->absentQuan }}
+                            /
+                            <?php echo isset($curCourse) ?
+                                $curCourse->{'finished_lessons'} + 1 : ''; ?>)
+                        </span>
+                    @else
+                        {{--Tên sinh viên--}}
+                        <span class="roll fw-bolder text-primary">
+                            <a href="#">{{ $each->full_name }}</a>
+                        </span>
+
+                        {{--Số buổi nghỉ / Tổng số buổi đã học--}}
+                        <span class="text-primary fw-bold">
+                            ({{ $each->absentQuan }}
+                            /
+                            <?php echo isset($curCourse) ?
+                                $curCourse->{'finished_lessons'} + 1 : ''; ?>)
+                        </span>
+                    @endif
 
                     {{--Số buổi nghỉ có phép--}}
                     <span class="fw-bold fst-italic">
                         - P:{{ $each->permissionQuan }}
                     </span>
                     <br>
-
                     {{--Ngày sinh--}}
                     <span class="roll fw-lighter fst-italic">
                         @php

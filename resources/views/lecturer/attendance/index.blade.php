@@ -98,48 +98,53 @@
             }
         }
 
-        function courseSearch() {
-            var input, filter, ul, courses, a, i, txtValue;
-            input = document.getElementById('courseSearchInput');
-            filter = input.value.toUpperCase();
-            ul = document.getElementById("class_selector");
-            courses = ul.getElementsByName('select_course');
-
-            // Lăp qua list, ẩn các kết quả không trùng
-            for (i = 0; i < courses.length; i++) {
-                txtValue = courses.textContent || courses.innerText;
-                if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                    courses[i].style.display = "";
-                } else {
-                    courses[i].style.display = "none";
-                }
-            }
-        }
+        // // Thanh tìm kiếm khóa học
+        // function courseSearch() {
+        //     let input, filter, ul, courses, a, i, txtValue;
+        //     input = document.getElementById('courseSearchInput');
+        //     filter = input.value.toUpperCase();
+        //     ul = document.getElementById("class_selector");
+        //     courses = ul.getElementsByName('select_course');
+        //
+        //     // Lăp qua list, ẩn các kết quả không trùng
+        //     for (i = 0; i < courses.length; i++) {
+        //         txtValue = courses.textContent || courses.innerText;
+        //         if (txtValue.toUpperCase().indexOf(filter) > -1) {
+        //             courses[i].style.display = "";
+        //         } else {
+        //             courses[i].style.display = "none";
+        //         }
+        //     }
+        // }
     </script>
     <script type="text/javascript">
+        // Tìm kiếm khóa học theo tên trên thanh tìm kiếm
+
+        //
         const selected = document.querySelector(".selected");
         const courseContainer = document.querySelector(".course-container");
         const searchBox = document.querySelector(".search-box input");
 
         // Lấy tên khóa học hiện tại hiện lên phần chọn lớp
-        const a = {!! json_encode($currentCourse->{'name'} ?? null) !!};
+        const a = {!! json_encode($curCourse->{'name'} ?? null) !!};
         if (a !== null) {
             selected.innerHTML = a;
         }
 
-        const courses = document.querySelectorAll(".course");
-
+        // Ấn vào thanh chọn thì hiển thị các lớp và thanh tìm kiếm
         selected.addEventListener("click", () => {
             courseContainer.classList.toggle("active");
 
             searchBox.value = "";
             filterList("");
 
+            // Auto để trỏ chuột vào ô tìm kiếm
             if (courseContainer.classList.contains("active")) {
                 searchBox.focus();
             }
         });
 
+        const courses = document.querySelectorAll(".course");
         courses.forEach(o => {
             o.addEventListener("click", () => {
                 selected.innerHTML = o.querySelector("label").innerHTML;
@@ -168,7 +173,7 @@
                 label = label.replace('/', '');
                 label = label.replace('  ', '');
                 label = label.replace(' ', '');
-                if (label.indexOf(searchTerm) != -1) {
+                if (label.indexOf(searchTerm) !== -1) {
                     option.style.display = "block";
                 } else {
                     option.style.display = "none";

@@ -11,6 +11,7 @@ class StudentDTO extends Model
     use HasFactory;
 
     public $id;
+    public $code;
     public $class_id;
     public $full_name;
     public $birthdate;

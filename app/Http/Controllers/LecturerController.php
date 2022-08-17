@@ -103,6 +103,7 @@ class LecturerController extends Controller
             $studentDTO->full_name = $student->full_name;
             $studentDTO->birthdate = $student->birthdate;
             $studentDTO->class_id = $student->class_id;
+            $studentDTO->code = $student->code;
 
             // Lấy số buổi nghỉ của sinh viên hiện tại
             $studentDTO->absentQuan = $absentList[$studentDTO->id] ?? 0;

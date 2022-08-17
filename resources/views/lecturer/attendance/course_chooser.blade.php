@@ -124,7 +124,7 @@
 <form action="{{ asset('/course-detail') }}" method="POST" class="form">
     @csrf
     <div class="select-box">
-        <div class="course-container">
+        <div class="course-container bg-primary">
             @foreach ($courses as $course)
                 <div class="course">
                     <input type="radio" class="radio" id="{{$course->id }}" name="course-id"
@@ -133,10 +133,10 @@
                 </div>
             @endforeach
         </div>
-        <div class="selected">
+        <div class="selected bg-primary">
             CHỌN PHÂN CÔNG...
         </div>
-        <div class="search-box">
+        <div class="bg-primary search-box">
             <input type="text" placeholder="Tìm kiếm...">
         </div>
     </div>

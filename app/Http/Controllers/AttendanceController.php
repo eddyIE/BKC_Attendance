@@ -34,7 +34,7 @@ class AttendanceController extends Controller
     {
         // Check có phải request update điểm danh buổi học trong lịch sử ko?
         // Có thì gọi method updateAttendance rồi return luôn
-        if(isset($request->all()['prev-lesson-id'])){
+        if (isset($request->all()['prev-lesson-id'])) {
 
             self::updateAttendance($request);
 
@@ -103,6 +103,10 @@ class AttendanceController extends Controller
      */
     private function createLesson(Request $request)
     {
+        if (
+            !self::lecturerCourseShiftIsValid() || !self::shiftAndTimeIsValid($request)) {
+            return false;
+        }
         $newLesson = new Lesson();
         $newLesson->start = self::getLessonStart($request);
         $newLesson->end = self::getLessonEnd($request);
@@ -161,7 +165,7 @@ class AttendanceController extends Controller
      * Xem giờ thực tế để suy ra ca học hiện tại
      * Return: Ca sáng - 0, Ca chiều - 1, Ca tối - 2, Không phải giờ học - 4
      */
-    private function getShift(): int
+    private function getCurrentShift(): int
     {
         $curTime = Carbon::now("Asia/Ho_Chi_Minh");
 
@@ -181,19 +185,18 @@ class AttendanceController extends Controller
     }
 
     /*
-     * Check nếu có tồn tại buổi học trùng ca học + ngày điểm danh
+     * Check nếu có buổi học trùng đã tồn tại (dựa theo ca học và ngày học)
      * Nếu có: return buổi học đó
      * Nếu không: return null
      */
     public function getExistLesson($courseId)
     {
-        // Check buổi học có tồn tại chưa (yếu tố: ca học, ngày học)
-        $shift = self::getShift();
+        $curShift = self::getCurrentShift();
         $curDate = Carbon::now("Asia/Ho_Chi_Minh")->toDateString();
 
         $existLesson = Lesson::where('course_id', $courseId)
             ->where('created_at', 'like', '%' . $curDate . '%')
-            ->where('shift', $shift)
+            ->where('shift', $curShift)
             ->first();
 
         if ($existLesson != null) {
@@ -222,7 +225,7 @@ class AttendanceController extends Controller
      * Validate ca học và giờ bắt đầu, kết thúc
      * VD: Ca sáng thì chỉ bắt đầu từ 8h, kết thúc trước 12h01
      */
-    private function shiftAndTimeValidate(Request $request): bool
+    private function shiftAndTimeIsValid(Request $request): bool
     {
         // Lấy các thông tin từ request
         $shift = $request->{'shift'};
@@ -252,7 +255,8 @@ class AttendanceController extends Controller
     /*
      * Update điểm danh cho một buổi học trong lịch sử
      */
-    public function updateAttendance(Request $request){
+    public function updateAttendance(Request $request)
+    {
         // Lấy lesson id buổi học trước cần update
         $lessonId = $request->all()['prev-lesson-id'];
 
@@ -275,5 +279,24 @@ class AttendanceController extends Controller
                 $attendance->save();
             }
         }
+    }
+
+    /*
+     * Check một giảng viên chỉ được dạy một ca một lớp
+     */
+    private function lecturerCourseShiftIsValid(): bool
+    {
+        $curShift = self::getCurrentShift();
+        $curDate = Carbon::now("Asia/Ho_Chi_Minh")->toDateString();
+
+        $lessons = Lesson::where('created_by', Auth::user()->id)
+            ->where('shift', $curShift)
+            ->where('created_at', 'like', '%' . $curDate . '%')
+            ->get();
+
+        if ($lessons != null) {
+            return false;
+        }
+        return true;
     }
 }

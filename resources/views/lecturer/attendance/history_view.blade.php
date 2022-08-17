@@ -33,25 +33,33 @@
 @section('script')
     <script>
         function validateForm() {
+            // Nếu đang xem buổi học trong quá khứ
+            let prevLessonTime = document.getElementById('prev-lesson-time');
+            if (typeof(prevLessonTime) != 'undefined' && prevLessonTime != null)
+            {
+                return true;
+            }
+
             // Lấy thời gian hiện tại
             const now = new Date();
             const curHour = (now.getHours() < 10) ? ("0" + now.getHours()) : now.getHours();
             const curMinutes = (now.getMinutes() < 10) ? ("0" + now.getMinutes()) : now.getMinutes();
             const curTime = `${curHour}:${curMinutes}`;
 
-            // Lấy ngày tháng nếu là buổi hoc cũ => != null => ko check ngày tháng
+            // Lấy ngày tháng nếu là buổi hoc cũ
             const a = {!! json_encode($curLessonDate ?? null) !!};
             if (a !== null) {
                 return true;
             }
-            // Get data
-            const attendanceForm = document.forms["attendanceForm"];
-            let start = `${attendanceForm["start[hour]"].value}:${attendanceForm["start[minutes]"].value}`;
-            let end = `${attendanceForm["end[hour]"].value}:${attendanceForm["end[minutes]"].value}`;
+
+            // Lấy data
+            const attendanceList = document.forms["attendanceForm"];
+            let start = `${attendanceList["start[hour]"].value}:${attendanceList["start[minutes]"].value}`;
+            let end = `${attendanceList["end[hour]"].value}:${attendanceList["end[minutes]"].value}`;
 
             // VALIDATE
             try {
-                // Seperate data to calculate
+                // Tách data để tính toán
                 let curArr = curTime.split(":");
                 let endArr = end.split(":");
                 let startArr = start.split(":");
@@ -59,11 +67,14 @@
                 // - Giờ bắt đầu không sớm hơn giờ kết thúc
                 // - Giờ bắt đầu không sớm hơn hiện tại
                 // - Giờ kết thúc không muộn hơn hiện tại quá 30p
-                if (start > end || start > curTime) {
-                    alert("Thời gian buổi học không hợp lệ");
+                if (start >= end) {
+                    alert("Giờ bắt đầu phải sớm hơn giờ kết thúc.");
+                    return false;
+                } else if (start > curTime) {
+                    alert("Buổi học chưa đến giờ điểm danh.");
                     return false;
                 }
-                if ((curArr[0] - endArr[0] == 0 && curArr[1] - endArr[1] > 30) || (curArr[0] - endArr[0] > 0)) {
+                if ((curArr[0] - endArr[0] === 0 && curArr[1] - endArr[1] > 30) || (curArr[0] - endArr[0] > 0)) {
                     alert("Buổi học đã kết thúc quá 30 phút");
                     return false;
                 }
@@ -112,7 +123,7 @@
         const searchBox = document.querySelector(".search-box input");
 
         // Lấy tên khóa học hiện tại hiện lên phần chọn lớp
-        const a = {!! json_encode($currentCourse->{'name'} ?? null) !!};
+        const a = {!! json_encode($curCourse->{'name'} ?? null) !!};
         if (a !== null) {
             selected.innerHTML = a;
         }

@@ -30,6 +30,10 @@
             background-color: #006182;
             border-color: #006182;
         }
+
+        .bg-primary{
+            background-color: #006182!important;
+        }
         @yield('css')
     </style>
 </head>
