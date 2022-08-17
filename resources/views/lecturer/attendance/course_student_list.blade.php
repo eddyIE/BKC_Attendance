@@ -27,6 +27,9 @@
 
                 {{--Thông tin chung một sinh viên: Tên, ngày sinh, số nghỉ, số phép--}}
                 <td class="">
+                    <!-- Tính phần trăm số buổi nghỉ cúa sinh viên để
+                     hiển thị theo màu (50%+ màu đỏ, 30%+ màu vàng
+                     -->
                     @php
                         $absentPercentage = $each->absentQuan / (isset($curCourse) ?
                                     $curCourse->{'finished_lessons'} + 1 : 1)
@@ -136,7 +139,7 @@
                     <input type="text" class="form-control"
                            name="students[{{ $loop->index + 1 }}][absent_reason]"
                            id="{{$each->id}}_absent_reason" placeholder="Lý do nghỉ (nếu có)"
-                           value="{{ $each->absentReason }}" ?>
+                           value="{{ $each->absentReason }}">
                 </td>
             </tr>
         @endforeach

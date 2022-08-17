@@ -89,11 +89,12 @@ class AttendanceController extends Controller
      */
     private function updateLesson(Request $request, &$updatedLesson)
     {
-        $updatedLesson->start = self::getLessonStart($request);
-        $updatedLesson->end = self::getLessonEnd($request);
+        $updatedLesson->start = $request->start;
+        $updatedLesson->end = $request->end;
         $updatedLesson->note = $request->note;
         $updatedLesson->lecturer_id = Auth::user()->id;
         $updatedLesson->modified_by = Auth::user()->id;
+        $updatedLesson->updated_at = Carbon::now();
 
         $updatedLesson->save();
     }
@@ -103,13 +104,14 @@ class AttendanceController extends Controller
      */
     private function createLesson(Request $request)
     {
-        if (
-            !self::lecturerCourseShiftIsValid() || !self::shiftAndTimeIsValid($request)) {
+        // TODO: Test this
+        if (!self::lecturerCourseShiftIsValid($request->{'current-course-id'}) ||
+            !self::shiftAndTimeIsValid($request)) {
             return false;
         }
         $newLesson = new Lesson();
-        $newLesson->start = self::getLessonStart($request);
-        $newLesson->end = self::getLessonEnd($request);
+        $newLesson->start = $request->start;
+        $newLesson->end = $request->end;
         $newLesson->note = $request->note;
         $newLesson->lecturer_id = Auth::user()->id;
         $newLesson->course_id = $request->{'current-course-id'};
@@ -127,8 +129,8 @@ class AttendanceController extends Controller
     private function courseFinishedTimeAndLessonHandler($request, $prevLesson = null)
     {
         // Xử lí lấy các thông tin cơ bản
-        $start = self::getLessonStart($request);
-        $end = self::getLessonEnd($request);
+        $start = $request->start;
+        $end = $request->end;
         $courseId = $request->{'current-course-id'};
 
         // Tính thời lượng buổi học
@@ -206,53 +208,6 @@ class AttendanceController extends Controller
     }
 
     /*
-     * Đọc request ghép chuỗi giờ phút bắt đầu buổi học
-     */
-    private function getLessonStart(Request $request): string
-    {
-        return $request->start['hour'] . ":" . $request->start['minutes'];
-    }
-
-    /*
-     * Đọc request ghép chuỗi giờ phút kết thúc buổi học
-     */
-    private function getLessonEnd(Request $request): string
-    {
-        return $request->end['hour'] . ":" . $request->end['minutes'];
-    }
-
-    /*
-     * Validate ca học và giờ bắt đầu, kết thúc
-     * VD: Ca sáng thì chỉ bắt đầu từ 8h, kết thúc trước 12h01
-     */
-    private function shiftAndTimeIsValid(Request $request): bool
-    {
-        // Lấy các thông tin từ request
-        $shift = $request->{'shift'};
-        $start = self::getLessonStart($request);
-        $end = self::getLessonEnd($request);
-
-        // Ca sáng - 0; Ca chiều - 1; Ca tối - 2
-        if ($shift == 0) {
-            if (Carbon::parse($start) >= Carbon::parse(self::MORNING_SHIFT_START) &&
-                Carbon::parse($end) <= Carbon::parse(self::MORNING_SHIFT_END)) {
-                return true;
-            }
-        } else if ($shift == 1) {
-            if (Carbon::parse($start) >= Carbon::parse(self::AFTERNOON_SHIFT_START) &&
-                Carbon::parse($end) <= Carbon::parse(self::AFTERNOON_SHIFT_END)) {
-                return true;
-            }
-        } else if ($shift == 2) {
-            if (Carbon::parse($start) >= Carbon::parse(self::EVENING_SHIFT_START) &&
-                Carbon::parse($end) <= Carbon::parse(self::EVENING_SHIFT_END)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /*
      * Update điểm danh cho một buổi học trong lịch sử
      */
     public function updateAttendance(Request $request)
@@ -282,9 +237,43 @@ class AttendanceController extends Controller
     }
 
     /*
+  * Validate ca học và giờ bắt đầu, kết thúc
+  * VD: Ca sáng thì chỉ bắt đầu từ 8h, kết thúc trước 12h01
+  */
+    private function shiftAndTimeIsValid(Request $request): bool
+    {
+        // Lấy các thông tin từ request
+        $shift = $request->{'shift'};
+        $start = $request->start;
+        $end = $request->end;
+
+        dump($start);
+        dump($end);
+
+        // Ca sáng - 0; Ca chiều - 1; Ca tối - 2
+        if ($shift == 0) {
+            if (Carbon::parse($start) >= Carbon::parse(self::MORNING_SHIFT_START) &&
+                Carbon::parse($end) <= Carbon::parse(self::MORNING_SHIFT_END)) {
+                return true;
+            }
+        } else if ($shift == 1) {
+            if (Carbon::parse($start) >= Carbon::parse(self::AFTERNOON_SHIFT_START) &&
+                Carbon::parse($end) <= Carbon::parse(self::AFTERNOON_SHIFT_END)) {
+                return true;
+            }
+        } else if ($shift == 2) {
+            if (Carbon::parse($start) >= Carbon::parse(self::EVENING_SHIFT_START) &&
+                Carbon::parse($end) <= Carbon::parse(self::EVENING_SHIFT_END)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /*
      * Check một giảng viên chỉ được dạy một ca một lớp
      */
-    private function lecturerCourseShiftIsValid(): bool
+    private function lecturerCourseShiftIsValid($courseId): bool
     {
         $curShift = self::getCurrentShift();
         $curDate = Carbon::now("Asia/Ho_Chi_Minh")->toDateString();
@@ -294,7 +283,7 @@ class AttendanceController extends Controller
             ->where('created_at', 'like', '%' . $curDate . '%')
             ->get();
 
-        if ($lessons != null) {
+        if ($lessons != null && $lessons[0]->course_id != $courseId) {
             return false;
         }
         return true;

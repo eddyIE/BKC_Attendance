@@ -9,106 +9,57 @@
 <div>
     <br>
     <span class="h5">Ca học:</span>
-    <input id="morning-shift" type="radio" name="shift" value="0" class="btn-check">
+    @if(isset($existLesson) && $existLesson->shift == 0)
+        <input id="morning-shift" type="radio" name="shift" value="0" class="btn-check" checked>
+    @else
+        <input id="morning-shift" type="radio" name="shift" value="0" class="btn-check">
+    @endif
     <label class="btn btn-outline-primary  mb-3 ml-3" for="morning-shift">
         Ca sáng (8h-12h)
     </label>
 
-    <input id="afternoon-shift" type="radio" name="shift" value="1" class="btn-check">
+    @if(isset($existLesson) && $existLesson->shift == 1)
+        <input id="afternoon-shift" type="radio" name="shift" value="1" class="btn-check" checked>
+    @else
+        <input id="afternoon-shift" type="radio" name="shift" value="1" class="btn-check">
+    @endif
+
     <label class="btn btn-outline-primary  mb-3 ml-3" for="afternoon-shift">
         Ca chiều (13h-17h)
     </label>
 
-    <input id="evening-shift" type="radio" name="shift" value="2" class="btn-check">
+    @if(isset($existLesson) && $existLesson->shift == 2)
+        <input id="evening-shift" type="radio" name="shift" value="2" class="btn-check" checked>
+    @else
+        <input id="evening-shift" type="radio" name="shift" value="2" class="btn-check">
+    @endif
     <label class="btn btn-outline-primary  mb-3 ml-3" for="evening-shift">
         Ca tối (18h-21h)
     </label>
     <br>
 </div>
 
-
-{{--TODO: thẻ input--}}
 <span class="time-picker">
-    <label for="lesson_hours">Giờ dạy</label>
-    <div class="input-group date" id="timepicker" data-target-input="nearest">
-        <input type="text" class="datetimepicker-input text-center" data-target="#timepicker" value="06:00"/>
-        <div class="input-group-append" data-target="#timepicker" data-toggle="datetimepicker">
+    <label for="start" class="h5 fw-normal">Giờ bắt đầu: </label>
+    <div class="input-group date" id="start" data-target-input="nearest">
+        <input type="text" class="datetimepicker-input text-center" name="start"
+               data-target="#start" value="{{isset($existLesson) ? $existLesson->start : "08:00"}}"/>
+        <div class="input-group-append" data-target="#start" data-toggle="datetimepicker">
             <div class="input-group-text"><i class="far fa-clock"></i></div>
-      </div>
+        </div>
+    </div>
+</span>
+<br>
+<span class="time-picker">
+    <label for="end" class="h5 fw-normal">Giờ kết thúc: </label>
+    <div class="input-group date" id="end" data-target-input="nearest">
+        <input type="text" class="datetimepicker-input text-center" name="end"
+               data-target="#end" value="{{isset($existLesson) ? $existLesson->end : "12:00"}}"/>
+        <div class="input-group-append" data-target="#end" data-toggle="datetimepicker">
+            <div class="input-group-text"><i class="far fa-clock"></i></div>
+        </div>
     </div>
 </span>
 <br>
 
-{{--Chọn giờ học--}}
-<span class="time-picker" id="start" name="start">
-    <span class="h5">Giờ bắt đầu:</span>
-        {{--Giờ bắt đầu--}}
-        <select class="pt-1 pb-1 ps-3 pe-3 fs-4" name="start[hour]" id="start[hour]" style="appearance: none">
-            @php
-                for($i = 0; $i<=24; $i++){
-                    if($i < 10){
-                        if($i == 8){
-                            echo ("<option value='0$i' selected>0$i</option>");
-                        }
-                        else{
-                            echo ("<option value='0$i'>0$i</option>");
-                        }
-                    }
-                    else{
-                        echo ("<option value='$i'>$i</option>");
-                    }
-                }
-            @endphp
-        </select>
-        <span class="fs-4">:</span>
-        {{--Phút bắt đầu--}}
-        <select class="pt-1 pb-1 ps-3 pe-3 fs-4 fs-4 me-5" name="start[minutes]" id="start[minutes]"
-                style="appearance: none">
-            @php
-                for($i = 0; $i<=59; $i++){
-                    if($i < 10){
-                        echo ("<option value='0$i'>0$i</option>");
-                    }
-                    else{
-                        echo ("<option value='$i'>$i</option>");
-                    }
-                }
-            @endphp
-        </select>
-    </span>
 
-<span class="time-picker" id="end" name="end">
-    <span class="h5">Giờ kết thúc:</span>
-        {{--Giờ kết thúc--}}
-        <select class="pt-1 pb-1 ps-3 pe-3 fs-4 fs-4" name="end[hour]" id="end[hour]" style="appearance: none">
-            @php
-                for($i = 0; $i<=24; $i++){
-                    if($i < 10){
-                        echo ("<option value='0$i'>0$i</option>");
-                    }
-                    else{
-                        if($i == 12){
-                            echo ("<option value='$i' selected>$i</option>");
-                        }
-                        else{
-                            echo ("<option value='$i'>$i</option>");
-                        }
-                    }
-                }
-            @endphp
-        </select>
-        <span class="fs-4">:</span>
-        {{--Phút kết thúc--}}
-        <select class="pt-1 pb-1 ps-3 pe-3 fs-4 fs-4" name="end[minutes]" id="end[minutes]" style="appearance: none">
-            @php
-                for($i = 0; $i<=59; $i++){
-                    if($i < 10){
-                        echo ("<option value='0$i'>0$i</option>");
-                    }
-                    else{
-                        echo ("<option value='$i'>$i</option>");
-                    }
-                }
-            @endphp
-        </select>
-    </span>

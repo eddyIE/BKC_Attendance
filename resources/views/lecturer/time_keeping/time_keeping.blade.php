@@ -56,7 +56,7 @@
                 // Theme & color
                 themeSystem: 'bootstrap5',
                 eventBorderColor: '#ffffff',
-                eventColor: '#378006',
+                eventColor: '#006182',
 
                 // Toolbar
                 headerToolbar: {

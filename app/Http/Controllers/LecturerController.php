@@ -60,17 +60,25 @@ class LecturerController extends Controller
         $studentDTOs = self::studentToDTO($students, $courseId);
 
         // Lấy danh sách các buổi học trước
-        $lessons = Lesson::where('course_id', $courseId)->get();
-        // Bỏ buổi học hiện tại (nếu có) ra khỏi list
-        if ((new AttendanceController)->getExistLesson($courseId) != null) {
+        $lessons = Lesson::where('course_id', $courseId)
+            ->orderBy('created_at', 'ASC')->get();
+        $existLesson = (new AttendanceController)->getExistLesson($courseId);
+        if ($existLesson != null) {
+            // Bỏ buổi học hiện tại (nếu có) ra khỏi list
             $lessons->forget(count($lessons) - 1);
+            return view('lecturer.attendance.index', ['courses' => $courses,
+                'students' => $studentDTOs,
+                'curCourse' => $curCourse,
+                'curClass' => $curClass,
+                'lessons' => $lessons,
+                'existLesson' => $existLesson]);
+        } else {
+            return view('lecturer.attendance.index', ['courses' => $courses,
+                'students' => $studentDTOs,
+                'curCourse' => $curCourse,
+                'curClass' => $curClass,
+                'lessons' => $lessons]);
         }
-
-        return view('lecturer.attendance.index', ['courses' => $courses,
-            'students' => $studentDTOs,
-            'curCourse' => $curCourse,
-            'curClass' => $curClass,
-            'lessons' => $lessons]);
     }
 
     /*
@@ -221,7 +229,10 @@ class LecturerController extends Controller
         $studentDTOs = self::studentToDTO($students, $courseId, $lessonId);
 
         // Lấy danh sách các buổi học trước
-        $prevLessons = Lesson::where('course_id', $courseId)->get();
+        $prevLessons = Lesson::where('course_id', $courseId)
+            ->orderBy('created_at', 'ASC')->get();
+
+        dump($prevLessons);
         // Bỏ buổi học hiện tại (nếu có) ra khỏi list
         if ((new AttendanceController)->getExistLesson($courseId) != null) {
             $prevLessons->forget(count($prevLessons) - 1);

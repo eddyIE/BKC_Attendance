@@ -35,13 +35,6 @@ All rights reserved.
 <!-- Page specific script -->
 <script>
     $(function () {
-        $('#timepicker').datetimepicker({
-            format: 'HH:mm',
-            pickDate: false,
-            pickSeconds: false,
-            pick12HourFormat: false,
-        });
-
         $("#example1").DataTable({
             "paging": false,
             "lengthChange": false,

@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="{{ asset('css/overlayScrollbars/OverlayScrollbars.min.css') }}">
 
     <link rel="stylesheet" href="{{ asset('css/daterangepicker.css') }}">
-    
+
     <!-- icon bkacad -->
 
     <!-- Tempusdominus Bootstrap 4 -->
@@ -68,8 +68,8 @@
 </div>
 
 <footer class="main-footer">
-    @yield('script')
     @include('lecturer.layout.footer')
+    @yield('script')
 </footer>
 
 </body>

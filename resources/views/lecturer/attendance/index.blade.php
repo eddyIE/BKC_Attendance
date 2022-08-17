@@ -190,4 +190,48 @@
             }
         }
     </script>
+    <script>
+        $(function () {
+            $('#start').datetimepicker({
+                format: 'HH:mm',
+                pickDate: false,
+                pickSeconds: false,
+                pick12HourFormat: false,
+            });
+
+            $('#end').datetimepicker({
+                format: 'HH:mm',
+                pickDate: false,
+                pickSeconds: false,
+                pick12HourFormat: false,
+            });
+        });
+    </script>
+
+    {{-- Ấn vào nút ca nào thì hiển thị giờ tương ứng
+        VD: ấn "Ca chiều" thì giờ auto nhảy thành 13:00 và 17:00
+    --}}
+    <script>
+        const morningShift = document.querySelector('#morning-shift');
+        const afternoonShift = document.querySelector('#afternoon-shift');
+        const eveningShift = document.querySelector('#evening-shift');
+
+        const start = document.querySelector('input[name="start"]');
+        const end = document.querySelector('input[name="end"]');
+
+        morningShift.addEventListener('click', () => {
+            start.value = "08:00";
+            end.value = "12:00";
+        });
+
+        afternoonShift.addEventListener('click', ()=>{
+            start.value = "13:00";
+            end.value = "17:00";
+        });
+
+        eveningShift.addEventListener('click', ()=>{
+            start.value = "18:00";
+            end.value = "21:00";
+        });
+    </script>
 @endsection

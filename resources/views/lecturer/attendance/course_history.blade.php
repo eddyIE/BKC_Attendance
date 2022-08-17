@@ -6,7 +6,8 @@
     @isset($lessons)
         @foreach ($lessons as $lesson)
             <a href="{{ asset('lesson/'.$lesson->id) }}">
-                <button type="button" class="btn btn-outline-primary ms-1 me-1">
+                <button type="button" class="btn btn-outline-primary ms-1 me-1 mb-1 mt-1"
+                style="min-width: 200px">
                     @php
                         $shift = "";
                         if($lesson->shift == 0){

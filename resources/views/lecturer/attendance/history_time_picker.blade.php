@@ -2,11 +2,11 @@
 {{-- Nếu đang xem lại chi tiết buổi học trong phần lịch sử --}}
 @isset($prevLesson)
     <span id="prev-lesson-time"></span>
-    <span class="h5">Ngày điểm danh buổi học này: </span>
-    <input type="text" name='lesson-date'
-           class='pt-2 pb-2 ps-2 mb-2 me-4 text-success fs-5 text-center'
-           value="{{date('d/m/Y', strtotime($prevLesson->created_at))}}"
-           placeholder="dd-mm-yyyy" readonly>
+    <br>
+    <span class="h5">Bản ghi điểm danh buổi học ngày: </span>
+    <span class="me-4 text-success fs-5 fw-bold">
+        {{date('d/m/Y', strtotime($prevLesson->created_at))}}
+    </span>
 
     {{--Nút chọn ca học--}}
     <div>
@@ -43,41 +43,25 @@
     </div>
 
     {{--Hiển thị giờ học--}}
-    <span class="time-picker" id="start" name="start">
-    <span class="h5">Giờ bắt đầu:</span>
-        {{--Giờ bắt đầu--}}
-        <select class="pt-1 pb-1 ps-3 pe-3 fs-4" name="start[hour]" id="start[hour]"
-                style="appearance: none" readonly>
-            <option value='{{explode(':', $prevLesson->start)[0]}}' selected>
-                {{explode(':', $prevLesson->start)[0]}}
-            </option>
-        </select>
-        <span class="fs-4">:</span>
-        {{--Phút bắt đầu--}}
-        <select class="pt-1 pb-1 ps-3 pe-3 fs-4 fs-4 me-5" name="start[minutes]" id="start[minutes]"
-                style="appearance: none" readonly>
-            <option value='{{explode(':', $prevLesson->start)[1]}}' selected>
-                {{explode(':', $prevLesson->start)[1]}}
-            </option>
-        </select>
-    </span>
-
-    <span class="time-picker" id="end" name="end">
-    <span class="h5">Giờ kết thúc:</span>
-        {{--Giờ kết thúc--}}
-        <select class="pt-1 pb-1 ps-3 pe-3 fs-4" name="end[hour]" id="end[hour]"
-                style="appearance: none" readonly>
-            <option value='{{explode(':', $prevLesson->end)[0]}}' selected>
-                {{explode(':', $prevLesson->end)[0]}}
-            </option>
-        </select>
-        <span class="fs-4">:</span>
-        {{--Phút kết thúc--}}
-        <select class="pt-1 pb-1 ps-3 pe-3 fs-4 fs-4" name="end[minutes]" id="end[minutes]"
-                style="appearance: none" readonly>
-            <option value='{{explode(':', $prevLesson->end)[1]}}' selected>
-                {{explode(':', $prevLesson->end)[1]}}
-            </option>
-        </select>
-    </span>
+<span class="time-picker">
+<label for="start" class="h5 fw-normal">Giờ bắt đầu: </label>
+<div class="input-group date" id="start" data-target-input="nearest">
+    <input type="text" class="datetimepicker-input text-center" name="start"
+           data-target="#start" value="{{$prevLesson->start}}"/>
+    <div class="input-group-append" data-target="#start" data-toggle="datetimepicker">
+        <div class="input-group-text"><i class="far fa-clock"></i></div>
+    </div>
+</div>
+</span>
+<br>
+<span class="time-picker">
+    <label for="end" class="h5 fw-normal">Giờ kết thúc: </label>
+    <div class="input-group date" id="end" data-target-input="nearest">
+        <input type="text" class="datetimepicker-input text-center" name="end"
+               data-target="#end" value="{{$prevLesson->end}}"/>
+        <div class="input-group-append" data-target="#end" data-toggle="datetimepicker">
+            <div class="input-group-text"><i class="far fa-clock"></i></div>
+        </div>
+    </div>
+</span>
 @endisset

@@ -186,5 +186,21 @@
             }
         }
     </script>
-    <script src="{{ asset('js/daterangepicker.js') }}"></script>
+    <script>
+        $(function () {
+            $('#start').datetimepicker({
+                format: 'HH:mm',
+                pickDate: false,
+                pickSeconds: false,
+                pick12HourFormat: false,
+            });
+
+            $('#end').datetimepicker({
+                format: 'HH:mm',
+                pickDate: false,
+                pickSeconds: false,
+                pick12HourFormat: false,
+            });
+        });
+    </script>
 @endsection
