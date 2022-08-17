@@ -20,6 +20,8 @@
     <!-- overlayScrollbars -->
     <link rel="stylesheet" href="{{ asset('css/overlayScrollbars/OverlayScrollbars.min.css') }}">
 
+    <link rel="stylesheet" href="{{ asset('css/daterangepicker.css') }}">
+    
     <!-- icon bkacad -->
     <link rel="icon" href="{{ asset('img/bkacad.png') }}">
 

@@ -190,28 +190,4 @@
             }
         }
     </script>
-
-    {{--TODO: SCRIPT--}}
-    <!-- jQuery -->
-    <script src="{{ asset('js/jquery/jquery.min.js') }}"></script>
-
-    <!-- InputMask -->
-    <script src="{{ asset('js/moment.min.js') }}"></script>
-    <script src="{{ asset('js/jquery.inputmask.min.js') }}"></script>
-
-    <!-- bootstrap color picker -->
-    <script src="{{ asset('js/bootstrap-colorpicker.min.js') }}"></script>
-    <script>
-        $('#lesson-time').daterangepicker({
-            timePicker: true,
-            timePicker24Hour: true,
-            timePickerIncrement: 1,
-            locale: {
-                format: 'HH:mm'
-            }
-        }).on('show.daterangepicker', function (ev, picker) {
-            picker.container.find(".calendar-table").hide();
-        });
-    </script>
-
 @endsection

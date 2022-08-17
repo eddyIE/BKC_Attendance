@@ -28,7 +28,10 @@
 
 
 {{--TODO: thẻ input--}}
-<input type="text" class="form-control text-center" name="giờ dạy" id="lesson-time">
+<span class="time-picker">
+    <label for="lesson_hours">Giờ dạy</label>
+    <input type="text" name="lesson_hours" id="lesson_hours" class="text-center">
+</span>
 <br>
 
 {{--Chọn giờ học--}}
