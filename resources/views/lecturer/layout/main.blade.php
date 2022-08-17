@@ -23,6 +23,10 @@
     <link rel="stylesheet" href="{{ asset('css/daterangepicker.css') }}">
     
     <!-- icon bkacad -->
+
+    <!-- Tempusdominus Bootstrap 4 -->
+    <link rel="stylesheet" href="{{ asset('css/tempusdominus-bootstrap-4.min.css') }}">
+
     <link rel="icon" href="{{ asset('img/bkacad.png') }}">
 
     @yield('links')

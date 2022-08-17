@@ -30,7 +30,12 @@
 {{--TODO: thẻ input--}}
 <span class="time-picker">
     <label for="lesson_hours">Giờ dạy</label>
-    <input type="text" name="lesson_hours" id="lesson_hours" class="text-center">
+    <div class="input-group date" id="timepicker" data-target-input="nearest">
+        <input type="text" class="datetimepicker-input text-center" data-target="#timepicker" value="06:00"/>
+        <div class="input-group-append" data-target="#timepicker" data-toggle="datetimepicker">
+            <div class="input-group-text"><i class="far fa-clock"></i></div>
+      </div>
+    </div>
 </span>
 <br>
 
