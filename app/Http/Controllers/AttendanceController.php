@@ -45,16 +45,14 @@ class AttendanceController extends Controller
 
         // Check xem buổi học đã tồn tại chưa
         $lesson = $this->getExistLesson($request->{'current-course-id'});
-
         // Nếu buổi học đã tồn tại
         if ($lesson != null) {
             $lessonId = $lesson->id;
-            // Update thời lượng buổi học, note, người chỉnh sửa, etc.
-            self::updateLesson($request, $lesson);
             // Update giờ đã dạy của course dựa theo thời lượng bản ghi trước
             self::courseFinishedTimeAndLessonHandler($request, $lesson);
-
-            // Xóa các bản ghi điểm danh cũ tí tạo lại
+            // Update thời lượng buổi học, note, người chỉnh sửa, etc.
+            self::updateLesson($request, $lesson);
+            // Xóa các bản ghi điểm danh cũ, sẽ tạo lại sau
             Attendance::where('lesson_id', $lesson->id)->delete();
         } // Chưa tồn tại buổi học thì tạo mới
         else {
@@ -104,11 +102,14 @@ class AttendanceController extends Controller
      */
     private function createLesson(Request $request)
     {
-        // TODO: Test this
-        if (!self::lecturerCourseShiftIsValid($request->{'current-course-id'}) ||
-            !self::shiftAndTimeIsValid($request)) {
-            return false;
+        // TODO: Tạm thời chỉ check ở Front-end
+        if (self::lecturerCourseShiftIsValid($request->{'current-course-id'})) {
+            dump("Giảng viên đang dạy một lớp khác");
         }
+        if(!self::shiftAndTimeIsValid($request)){
+            dump("Ca học và giờ học không trùng");
+        }
+
         $newLesson = new Lesson();
         $newLesson->start = $request->start;
         $newLesson->end = $request->end;
@@ -148,7 +149,6 @@ class AttendanceController extends Controller
                     round(abs($prevLessonDuration) / 3600, 2) * 4) / 4;
             // Thời lượng mới - thời lượng cũ ra khác biệt để update
             $newDuration = $lessonDuration - $prevLessonDuration;
-
             // Cập nhật và số giờ đã dạy mà ko làm tăng số buổi đã học
             $course = Course::find($courseId);
             $course->finished_hours += $newDuration;
@@ -247,9 +247,6 @@ class AttendanceController extends Controller
         $start = $request->start;
         $end = $request->end;
 
-        dump($start);
-        dump($end);
-
         // Ca sáng - 0; Ca chiều - 1; Ca tối - 2
         if ($shift == 0) {
             if (Carbon::parse($start) >= Carbon::parse(self::MORNING_SHIFT_START) &&
@@ -280,10 +277,9 @@ class AttendanceController extends Controller
 
         $lessons = Lesson::where('created_by', Auth::user()->id)
             ->where('shift', $curShift)
-            ->where('created_at', 'like', '%' . $curDate . '%')
-            ->get();
+            ->where('created_at', 'like', '%' . $curDate . '%');
 
-        if ($lessons != null) {
+        if ($lessons->exists()) {
             return false;
         }
         return true;

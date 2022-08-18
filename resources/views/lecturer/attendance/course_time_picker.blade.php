@@ -12,7 +12,7 @@
     @if(isset($existLesson) && $existLesson->shift == 0)
         <input id="morning-shift" type="radio" name="shift" value="0" class="btn-check" checked>
     @else
-        <input id="morning-shift" type="radio" name="shift" value="0" class="btn-check" required>
+        <input id="morning-shift" type="radio" name="shift" value="0" class="btn-check">
     @endif
     <label class="btn btn-outline-primary  mb-3 ml-3" for="morning-shift">
         Ca sáng (8h-12h)
@@ -43,7 +43,7 @@
     <label for="start" class="h5 fw-normal">Giờ bắt đầu: </label>
     <div class="input-group date" id="start" data-target-input="nearest">
         <input type="text" class="datetimepicker-input text-center" name="start"
-               data-target="#start" value="{{isset($existLesson) ? $existLesson->start : "08:00"}}"/>
+               data-target="#start" value="08:00"/>
         <div class="input-group-append" data-target="#start" data-toggle="datetimepicker">
             <div class="input-group-text"><i class="far fa-clock"></i></div>
         </div>
@@ -54,7 +54,7 @@
     <label for="end" class="h5 fw-normal">Giờ kết thúc: </label>
     <div class="input-group date" id="end" data-target-input="nearest">
         <input type="text" class="datetimepicker-input text-center" name="end"
-               data-target="#end" value="{{isset($existLesson) ? $existLesson->end : "12:00"}}"/>
+               data-target="#end" value="12:00"/>
         <div class="input-group-append" data-target="#end" data-toggle="datetimepicker">
             <div class="input-group-text"><i class="far fa-clock"></i></div>
         </div>

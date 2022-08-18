@@ -202,7 +202,7 @@
         }
     </script>
     <script>
-        $(function () {
+        $( window ).on("load", function () {
             $('#start').datetimepicker({
                 format: 'HH:mm',
                 pickDate: false,
