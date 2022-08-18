@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\AttendanceExport;
 use App\Models\Attendance;
 use App\Models\Classes;
 use App\Models\Course;
@@ -11,6 +12,7 @@ use App\Models\StudentDTO;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use Maatwebsite\Excel\Facades\Excel;
 
 class LecturerController extends Controller
 {
@@ -132,8 +134,7 @@ class LecturerController extends Controller
     /*
      * Xử lí lấy số buổi nghỉ, phép, muộn của các sinh viên
      */
-    private
-    function getAbsentQuan($courseId, &$absentList,
+    private function getAbsentQuan($courseId, &$absentList,
                            &$permissionList, &$curStatusList,
                            &$reasonList, $specificLessonId = null)
     {
@@ -343,5 +344,27 @@ class LecturerController extends Controller
             'lessons' => $lessons[0],
             'totalWorkTime' => $totalWorkTime
         ]);
+    }
+
+    public function exportStudentData($courseId){
+        $curCourse = Course::find($courseId);
+        // Lấy thông tin lớp theo học khóa học
+        $curClass = Classes::find($curCourse->class_id);
+
+        // Lấy danh sách các sinh viên
+        $students = Student::where('class_id', $curCourse->class_id)->get();
+        // Lấy ds DTO chứa các thông tin số buổi nghỉ, muộn, phép
+        $studentDTOs = self::studentToDTO($students, $courseId);
+
+        // Biến đổi tên khóa học về dạng viết hoa, cách nhau bằng gạch dưới
+        $courseName = $curCourse->name;
+        $courseName = ucfirst($courseName);
+        $courseName = str_replace(" ", "_", $courseName);
+        $courseName = str_replace("-", "", $courseName);
+        $courseName = str_replace("__", "_", $courseName);
+
+
+        return (new AttendanceExport($courseId, $studentDTOs))
+            ->download($courseName.'_ds_sv_du_dieu_kien.xlsx');
     }
 }

@@ -12,7 +12,7 @@
     @if(isset($existLesson) && $existLesson->shift == 0)
         <input id="morning-shift" type="radio" name="shift" value="0" class="btn-check" checked>
     @else
-        <input id="morning-shift" type="radio" name="shift" value="0" class="btn-check">
+        <input id="morning-shift" type="radio" name="shift" value="0" class="btn-check" required>
     @endif
     <label class="btn btn-outline-primary  mb-3 ml-3" for="morning-shift">
         Ca sáng (8h-12h)

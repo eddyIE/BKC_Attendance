@@ -66,4 +66,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'role:lecturer']], funct
 
     // Chấm công
     Route::get('/time-keeping/{month?}', 'LecturerController@timeKeeping');
+
+    // Excel
+    Route::get('/course/export/{courseId}', 'LecturerController@exportStudentData');
 });

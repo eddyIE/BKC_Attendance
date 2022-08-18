@@ -283,7 +283,7 @@ class AttendanceController extends Controller
             ->where('created_at', 'like', '%' . $curDate . '%')
             ->get();
 
-        if ($lessons != null && $lessons[0]->course_id != $courseId) {
+        if ($lessons != null) {
             return false;
         }
         return true;

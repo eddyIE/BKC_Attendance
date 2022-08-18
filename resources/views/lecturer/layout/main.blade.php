@@ -40,6 +40,10 @@
         .bg-primary{
             background-color: #006182!important;
         }
+
+        .text-primary{
+            color: #006182!important;
+        }
         @yield('css')
     </style>
 </head>

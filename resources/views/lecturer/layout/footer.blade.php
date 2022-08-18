@@ -54,6 +54,8 @@ All rights reserved.
                 "sInfoFiltered": "(Lọc từ _MAX_ kết quả)",
                 "sEmptyTable" : "Không có dữ liệu",
                 "sZeroRecords" : "Không tìm thấy kết quả",
+                "sPrevious": "Trước",
+                "next" : "Sau",
                 "paginate": {
                     "sFirst": "Trang đầu",
                     "sLast": "Trang cuối",

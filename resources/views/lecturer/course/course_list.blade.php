@@ -3,11 +3,12 @@
     <tr>
         <th>ID</th>
         <th>Tên phân công</th>
-        <th>Số giờ dự kiến</th>
-        <th>Số giờ đã dạy</th>
-        <th>Số buổi đã dạy</th>
-        <th>Lần cập nhật gần nhất</th>
-        <th>Trạng thái khóa học</th>
+        <th>Giờ dự kiến</th>
+        <th>Giờ đã dạy</th>
+        <th>Buổi đã dạy</th>
+        <th>Cập nhật lần cuối</th>
+        <th>Hiển thị</th>
+        <th>Tải ds thi</th>
     </tr>
     </thead>
     <tbody>
@@ -20,11 +21,11 @@
                 <td>{{ $course->finished_hours }}</td>
                 <td>{{ $course->finished_lessons }}</td>
                 <td>{{ date('h:i:s - d/m/Y', strtotime($course->updated_at)) }}</td>
-                <td>
+                <td class="text-center">
                     <form action="{{ asset('/my-course/visibility/'.$course->id) }}" method="get">
                         @csrf
                         @if($course->status == 0)
-                            <button class="btn btn-sm btn-info" title="Khóa học chưa kết thúc">
+                            <button class="btn btn-sm btn-primary" title="Khóa học chưa kết thúc">
                                 <i class="fas fa-eye"></i>
                             </button>
                         @else
@@ -33,6 +34,12 @@
                             </button>
                         @endif
                     </form>
+                </td>
+                <td class="text-center">
+                    <a href="{{asset('/course/export/'.$course->id)}}" class="text-primary"
+                       title="Tải danh sách sinh viên đủ điều kiện thi">
+                        <i class="fa fa-download" aria-hidden="true"></i>
+                    </a>
                 </td>
             </tr>
         @endforeach

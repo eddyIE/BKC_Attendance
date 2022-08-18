@@ -41,9 +41,6 @@
         function validateForm() {
             // Lấy thời gian hiện tại
             const now = new Date();
-            const curHour = (now.getHours() < 10) ? ("0" + now.getHours()) : now.getHours();
-            const curMinutes = (now.getMinutes() < 10) ? ("0" + now.getMinutes()) : now.getMinutes();
-            const curTime = `${curHour}:${curMinutes}`;
 
             // Lấy ngày tháng nếu là buổi hoc cũ
             const a = {!! json_encode($curLessonDate ?? null) !!};
@@ -52,30 +49,62 @@
             }
 
             // Lấy data
-            const attendanceList = document.forms["attendanceForm"];
-            let start = `${attendanceList["start[hour]"].value}:${attendanceList["start[minutes]"].value}`;
-            let end = `${attendanceList["end[hour]"].value}:${attendanceList["end[minutes]"].value}`;
+            // const attendanceList = document.forms["attendanceForm"];
+            let startInput = document.querySelector('input[name="start"]').value;
+            let endInput = document.querySelector('input[name="end"]').value;
+
+            // Tạo object Date mới, cắt chuỗi để lấy HH và mm của 2 ô input
+            start = new Date(new Date().setHours(startInput.substring(0, 2), startInput.substring(3, 5)));
+            end = new Date(new Date().setHours(endInput.substring(0, 2), endInput.substring(3, 5)));
+
+            let morningShift = document.querySelector('#morning-shift');
+            let afternoonShift = document.querySelector('#afternoon-shift');
+            let eveningShift = document.querySelector('#evening-shift');
 
             // VALIDATE
             try {
-                // Tách data để tính toán
-                let curArr = curTime.split(":");
-                let endArr = end.split(":");
-                let startArr = start.split(":");
-
                 // - Giờ bắt đầu không sớm hơn giờ kết thúc
                 // - Giờ bắt đầu không sớm hơn hiện tại
                 // - Giờ kết thúc không muộn hơn hiện tại quá 30p
                 if (start >= end) {
                     alert("Giờ bắt đầu phải sớm hơn giờ kết thúc.");
                     return false;
-                } else if (start > curTime) {
+                } else if (start > now) {
                     alert("Buổi học chưa đến giờ điểm danh.");
                     return false;
                 }
-                if ((curArr[0] - endArr[0] === 0 && curArr[1] - endArr[1] > 30) || (curArr[0] - endArr[0] > 0)) {
+                if (now - end > 1000 * 60 * 30) {
                     alert("Buổi học đã kết thúc quá 30 phút");
                     return false;
+                }
+
+                if (morningShift.checked) {
+                    if (start < new Date(new Date().setHours(8, 0, 0))) {
+                        alert("Ca sáng bắt đầu từ 8h");
+                        return false;
+                    }
+                    if (end > new Date(new Date().setHours(12, 0, 59))) {
+                        alert("Ca sáng kết thúc từ 12h");
+                        return false;
+                    }
+                } else if (afternoonShift.checked) {
+                    if (start < new Date(new Date().setHours(13, 0, 0))) {
+                        alert("Ca chiều bắt đầu từ 13h");
+                        return false;
+                    }
+                    if (end > new Date(new Date().setHours(17, 0, 59))) {
+                        alert("Ca chiều kết thúc từ 17h");
+                        return false;
+                    }
+                } else if (eveningShift.checked) {
+                    if (start < new Date(new Date().setHours(18, 0, 0))) {
+                        alert("Ca tối bắt đầu từ 18h");
+                        return false;
+                    }
+                    if (end > new Date(new Date().setHours(21, 0, 59))) {
+                        alert("Ca tối kết thúc từ 21h");
+                        return false;
+                    }
                 }
             } catch (err) {
                 console.log(err.message);
@@ -98,24 +127,6 @@
             }
         }
 
-        // // Thanh tìm kiếm khóa học
-        // function courseSearch() {
-        //     let input, filter, ul, courses, a, i, txtValue;
-        //     input = document.getElementById('courseSearchInput');
-        //     filter = input.value.toUpperCase();
-        //     ul = document.getElementById("class_selector");
-        //     courses = ul.getElementsByName('select_course');
-        //
-        //     // Lăp qua list, ẩn các kết quả không trùng
-        //     for (i = 0; i < courses.length; i++) {
-        //         txtValue = courses.textContent || courses.innerText;
-        //         if (txtValue.toUpperCase().indexOf(filter) > -1) {
-        //             courses[i].style.display = "";
-        //         } else {
-        //             courses[i].style.display = "none";
-        //         }
-        //     }
-        // }
     </script>
     <script type="text/javascript">
         // Tìm kiếm khóa học theo tên trên thanh tìm kiếm
@@ -197,6 +208,7 @@
                 pickDate: false,
                 pickSeconds: false,
                 pick12HourFormat: false,
+                useCurrent: false
             });
 
             $('#end').datetimepicker({
@@ -204,34 +216,33 @@
                 pickDate: false,
                 pickSeconds: false,
                 pick12HourFormat: false,
+                useCurrent: false
             });
-        });
-    </script>
 
-    {{-- Ấn vào nút ca nào thì hiển thị giờ tương ứng
-        VD: ấn "Ca chiều" thì giờ auto nhảy thành 13:00 và 17:00
-    --}}
-    <script>
-        const morningShift = document.querySelector('#morning-shift');
-        const afternoonShift = document.querySelector('#afternoon-shift');
-        const eveningShift = document.querySelector('#evening-shift');
+            {{-- Ấn vào nút ca nào thì hiển thị giờ tương ứng
+                VD: ấn "Ca chiều" thì giờ auto nhảy thành 13:00 và 17:00
+            --}}
+            const morningShift = document.querySelector('#morning-shift');
+            const afternoonShift = document.querySelector('#afternoon-shift');
+            const eveningShift = document.querySelector('#evening-shift');
 
-        const start = document.querySelector('input[name="start"]');
-        const end = document.querySelector('input[name="end"]');
+            const start = document.querySelector('input[name="start"]');
+            const end = document.querySelector('input[name="end"]');
 
-        morningShift.addEventListener('click', () => {
-            start.value = "08:00";
-            end.value = "12:00";
-        });
+            morningShift.addEventListener('click', () => {
+                start.value = "08:00";
+                end.value = "12:00";
+            });
 
-        afternoonShift.addEventListener('click', ()=>{
-            start.value = "13:00";
-            end.value = "17:00";
-        });
+            afternoonShift.addEventListener('click', () => {
+                start.value = "13:00";
+                end.value = "17:00";
+            });
 
-        eveningShift.addEventListener('click', ()=>{
-            start.value = "18:00";
-            end.value = "21:00";
+            eveningShift.addEventListener('click', () => {
+                start.value = "18:00";
+                end.value = "21:00";
+            });
         });
     </script>
 @endsection
