@@ -45,12 +45,13 @@ class AttendanceController extends Controller
 
         // Check xem buổi học đã tồn tại chưa
         $lesson = $this->getExistLesson($request->{'current-course-id'});
+
         // Nếu buổi học đã tồn tại
         if ($lesson != null) {
             $lessonId = $lesson->id;
-            // Update giờ đã dạy của course dựa theo thời lượng bản ghi trước
+            // Update giờ đã dạy của course
             self::courseFinishedTimeAndLessonHandler($request, $lesson);
-            // Update thời lượng buổi học, note, người chỉnh sửa, etc.
+            // Update thời lượng buổi học, note, người chỉnh sửa, v.v.
             self::updateLesson($request, $lesson);
             // Xóa các bản ghi điểm danh cũ, sẽ tạo lại sau
             Attendance::where('lesson_id', $lesson->id)->delete();
@@ -62,8 +63,9 @@ class AttendanceController extends Controller
         }
 
         // Tạo (tạo lại) các bản ghi điểm danh
-        $data = $request->{'students'};
-        foreach ($data as $student) {
+        $data = array();
+        $students = $request->{'students'};
+        foreach ($students as $student) {
             if (!is_null($student["status"])) {
                 $attendance = new Attendance();
                 $attendance->student_id = $student['student_id'];
@@ -71,9 +73,11 @@ class AttendanceController extends Controller
                 $attendance->note = $student['absent_reason'];
                 $attendance->lesson_id = $lessonId;
                 $attendance->created_by = Auth::user()->id;
-                $attendance->save();
+                $data[] = $attendance->attributesToArray();
             }
         }
+        //Insert bulk cho nhanh
+        Attendance::insert($data);
 
         // Thêm request param
         $request->request->add(['course-id' => $request->{'current-course-id'}]);
@@ -106,7 +110,7 @@ class AttendanceController extends Controller
         if (self::lecturerCourseShiftIsValid($request->{'current-course-id'})) {
             dump("Giảng viên đang dạy một lớp khác");
         }
-        if(!self::shiftAndTimeIsValid($request)){
+        if (!self::shiftAndTimeIsValid($request)) {
             dump("Ca học và giờ học không trùng");
         }
 
@@ -219,6 +223,7 @@ class AttendanceController extends Controller
         Attendance::where('lesson_id', $lessonId)->delete();
 
         // Tạo lại các bản ghi điểm danh
+        $data = array();
         $students = $request->{'students'};
         foreach ($students as $student) {
             if (!is_null($student["status"])) {
@@ -231,9 +236,10 @@ class AttendanceController extends Controller
                 // IDEA: Lấy created_by của lesson
                 $attendance->created_by = Auth::user()->id;
                 $attendance->modified_by = Auth::user()->id;
-                $attendance->save();
+                $data[] = $attendance->attributesToArray();
             }
         }
+        Attendance::insert($data);
     }
 
     /*
