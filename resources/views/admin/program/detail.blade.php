@@ -78,20 +78,14 @@
                     <div class="card-body">
                         <div class="form-group">
                             <div class="select2-lightblue">
-                                <select class="form-control" multiple="multiple" data-placeholder="Vui lòng chọn môn học" data-dropdown-css-class="select2-lightblue" style="width: 100%;" name="subject" id="subject">
-                                    <option value="ITF">ITF</option>
-                                    <option value="EN1">EN1</option>
-                                    <option value="EN2">EN2</option>
-                                    <option value="EN3">EN3</option>
-                                    <option value="ADV">ADV</option>
-                                    <option value="DB">DB</option>
-                                    <option value="SDLC">SDLC</option>
-                                    <option value="NET">NET</option>
-                                    <option value="SEC">SEC</option>
-                                    <option value="WEB">WEB</option>
-                                    <option value="MAC">MAC</option>
-                                    <option value="AI">AI</option>
-                                    <option value="PRJ">PRJ</option>
+                                <select class="form-control" multiple="multiple" data-placeholder="Vui lòng chọn môn học" data-dropdown-css-class="select2-lightblue" style="width: 100%;" name="subjects[]" id="subject">
+                                    @foreach($subjects as $subject)
+                                        @if($subject->selected == true)
+                                            <option value="{{ $subject->id }}" selected>{{ $subject->name }}</option>
+                                        @else
+                                            <option value="{{ $subject->id }}">{{ $subject->name }}</option>
+                                        @endif
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
@@ -104,27 +98,14 @@
 @endsection
 @section('script')
     <script>
-        $(function (){
-            $('#subject').select2();
-
-            $('#update').click(function (){
-
-                $.ajax({
-                    url: '{{ route('program.update', $data->id) }}',
-                    type: 'PATCH',
-                    dataType: 'text',
-                    data: {
-                        name: $('#name').val(),
-                        major_id: $('#major_id').val(),
-                        session: $('#session').val(),
-                        date_range: $('#daterangepicker').val(),
-                        subject: $('#subject').val(),
-                    },
-                    success: function (result){
-
-                    },
-                });
+        $(document).ready(function () {
+            $('#daterangepicker').daterangepicker({
+                locale: {
+                    format: 'DD/MM/YYYY'
+                }
             });
-        })
+
+            $('#subject').select2();
+        });
     </script>
 @endsection

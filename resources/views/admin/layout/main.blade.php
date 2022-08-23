@@ -57,6 +57,7 @@
     <footer class="main-footer">
         @include('admin.layout.footer')
         @yield('script')
+        @livewireScripts
     </footer>
 </body>
 </html>
