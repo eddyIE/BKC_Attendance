@@ -96,7 +96,7 @@ class LecturerController extends Controller
         // Lý do nghỉ (note) của sinh viên trong buổi học
         $absentReasonList = array();
         // Lấy trạng thái đi học hiện tại hoặc một buổi trước của sinh viên
-        self::getCurrentAttendanceStatus($curStatusList,
+        self::getCurrentAttendanceStatus($courseId ,$curStatusList,
             $absentReasonList, $specificLessonId);
 
         $absentList = array();
@@ -153,7 +153,6 @@ class LecturerController extends Controller
         } // Lấy trạng thái đi học của buổi học hiện tại nếu có
         else {
             $curLesson = (new AttendanceController)->getExistLesson($courseId);
-
             if ($curLesson != null) {
                 $attendances = Attendance::where('lesson_id', $curLesson->id)->get();
                 foreach ($attendances as $attendance) {
@@ -241,7 +240,6 @@ class LecturerController extends Controller
         $prevLessons = Lesson::where('course_id', $courseId)
             ->orderBy('created_at', 'ASC')->get();
 
-        dump($prevLessons);
         // Bỏ buổi học hiện tại (nếu có) ra khỏi list
         if ((new AttendanceController)->getExistLesson($courseId) != null) {
             $prevLessons->forget(count($prevLessons) - 1);

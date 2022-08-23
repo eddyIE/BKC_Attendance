@@ -22,12 +22,14 @@
 
     <link rel="stylesheet" href="{{ asset('css/daterangepicker.css') }}">
 
+    <!-- Select2 -->
+    <link rel="stylesheet" href="{{ asset('css/select2.min.css') }}">
+
     <!-- icon bkacad -->
+    <link rel="icon" href="{{ asset('img/bkacad.png') }}">
 
     <!-- Tempusdominus Bootstrap 4 -->
     <link rel="stylesheet" href="{{ asset('css/tempusdominus-bootstrap-4.min.css') }}">
-
-    <link rel="icon" href="{{ asset('img/bkacad.png') }}">
 
     @yield('links')
 

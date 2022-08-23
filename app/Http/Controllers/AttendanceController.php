@@ -207,8 +207,9 @@ class AttendanceController extends Controller
 
         if ($existLesson != null) {
             return $existLesson;
+        } else {
+            return null;
         }
-        return null;
     }
 
     /*

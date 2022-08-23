@@ -29,6 +29,9 @@ All rights reserved.
 <script src="{{ asset('js/tempusdominus-bootstrap-4.min.js') }}"></script>
 <!-- AdminLTE App -->
 <script src="{{ asset('/js/adminlte.js') }}"></script>
+<!-- SweetAlert2 -->
+<script src="{{ asset('js/sweetalert2.min.js') }}"></script>
+
 <!-- Page specific script -->
 <script>
     $(function () {
