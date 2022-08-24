@@ -32,13 +32,7 @@ All rights reserved.
 <script src="{{ asset('/js/adminlte.min.js') }}"></script>
 
 <script>
-    $(function() {
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
-
+    $(document).ready(function () {
         var type = '{{ session('type') }}';
         var message = '{{ session('message') }}';
 

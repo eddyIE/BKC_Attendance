@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Major;
 use App\Models\Program;
+use App\Models\ProgramInfo;
+use App\Models\Subject;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 class ProgramController extends Controller
@@ -57,9 +60,27 @@ class ProgramController extends Controller
     public function show($id)
     {
         $major = Major::where('status', true)->get();
+        $subjects = Subject::where('status', true)->get();
+
+        foreach ($subjects as $subject) {
+            $selected_subject = Subject::leftJoin('program_info', 'subject.id', '=', 'program_info.subject_id')
+                ->leftJoin('program', 'program_info.program_id', '=', 'program.id')
+                ->where([
+                    ['program.id', '=', $id],
+                    ['subject.id', '=', $subject->id],
+                    ['subject.status', '=', true]
+                ])->get('subject.*');
+
+            if (count($selected_subject)){
+                $subject['selected'] = true;
+            } else {
+                $subject['selected'] = false;
+            }
+        }
+
         $data = Program::find($id);
         $data['date_range'] = date('d/m/Y', strtotime($data->start)).' - '.date('d/m/Y', strtotime($data->end));
-        return view('admin.program.detail', ['data' => $data, 'major' => $major]);
+        return view('admin.program.detail', ['data' => $data, 'major' => $major, 'subjects' => $subjects]);
     }
 
     public function update(Request $request, $id)
@@ -76,6 +97,26 @@ class ProgramController extends Controller
 
         $program = Program::find($id);
         $result = $program->update($data);
+
+        $current_subjects = ProgramInfo::where('program_id', $id)->pluck('subject_id')->toArray();
+        $selected_subjects = [];
+        if (!empty($request->subjects)){
+            $selected_subjects = $request->subjects;
+        }
+
+        foreach ($current_subjects as $current) {
+            if (!in_array($current, $selected_subjects)){
+//                ProgramInfo::where('subject_id', $current->id)->delete();
+                dd($current.': deleted!');
+            }
+        }
+
+        foreach ($selected_subjects as $selected){
+            if (!in_array($selected, $current_subjects)){
+//                ProgramInfo::create(['program_id' => $id, 'subject_id' => $selected, 'created_by' => auth()->user()->id]);
+                dd($selected.': created!');
+            }
+        }
 
         if ($result){
             Session::flash('type', 'success');

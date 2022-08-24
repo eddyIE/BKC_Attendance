@@ -92,7 +92,7 @@
 @endsection
 @section('script')
     <script>
-        $(function() {
+        $(document).ready(function () {
             $('#daterangepicker').daterangepicker({
                 locale: {
                     format: 'DD/MM/YYYY'
@@ -100,27 +100,6 @@
             });
 
             $('#subject').select2();
-
-            {{--$('#create').click(function (){--}}
-            {{--    $.ajax({--}}
-            {{--        headers: {--}}
-            {{--            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')--}}
-            {{--        },--}}
-            {{--        url: '{{ route('program.store') }}',--}}
-            {{--        type: 'POST',--}}
-            {{--        dataType: 'text',--}}
-            {{--        data: {--}}
-            {{--            name: $('#name').val(),--}}
-            {{--            major_id: $('#major_id').val(),--}}
-            {{--            session: $('#session').val(),--}}
-            {{--            date_range: $('#daterangepicker').val(),--}}
-            {{--            subject: $('#subject').val(),--}}
-            {{--        },--}}
-            {{--        success: function (result){--}}
-            {{--            location.reload();--}}
-            {{--        },--}}
-            {{--    });--}}
-            {{--});--}}
         });
     </script>
 @endsection

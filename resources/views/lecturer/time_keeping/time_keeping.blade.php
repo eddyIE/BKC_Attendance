@@ -41,6 +41,7 @@
     {{-- Chọn xem bảng chấm công tháng khác --}}
     @include('lecturer.time_keeping.prev_time_keeping')
 
+
     <div id='calendar'></div>
 @endsection
 
@@ -84,11 +85,17 @@
                 // Không hiện mờ mấy ngày của tháng khác
                 showNonCurrentDates: false,
                 navLinks: true, // can click day/week names to navigate views
+                // Ko cho edit
                 editable: false,
                 dayMaxEvents: true, // allow "more" link when too many events
 
                 // Truyền vào các buổi chấm công
                 events: [
+                    {
+                        title: "tets",
+                        start: "8/12/2022"
+                    },
+{{--                        @dd($lessons)--}}
                         @isset($lessons)
                         @foreach($lessons as $lesson)
                     {
