@@ -41,10 +41,6 @@ class ShowSubject extends Component
         }
     }
 
-    public function show($subject){
-
-    }
-
     public function render()
     {
         return view('livewire.show-subject');

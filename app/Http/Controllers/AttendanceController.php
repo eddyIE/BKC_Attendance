@@ -39,7 +39,8 @@ class AttendanceController extends Controller
             self::updateAttendance($request);
 
             $request->request->add(['course-id' => $request->{'current-course-id'}]);
-            Session::flash('alert', 'Lưu điểm danh thành công');
+            Session::flash('type', 'success');
+            Session::flash('message', 'Thay đổi điểm danh thành công');
             return (new LecturerController)->courseDetail($request);
         }
 
@@ -58,6 +59,9 @@ class AttendanceController extends Controller
         } // Chưa tồn tại buổi học thì tạo mới
         else {
             $lessonId = self::createLesson($request);
+            if(!$lessonId){
+                return false;
+            }
             // Tăng số buổi, giờ đã dạy của course
             self::courseFinishedTimeAndLessonHandler($request);
         }
@@ -81,8 +85,8 @@ class AttendanceController extends Controller
 
         // Thêm request param
         $request->request->add(['course-id' => $request->{'current-course-id'}]);
-        Session::flash('type', 'info');
-        Session::flash('message', 'Điểm danh thành công');
+        Session::flash('type', 'success');
+        Session::flash('message', 'Thay đổi điểm danh thành công');
         return (new LecturerController)->courseDetail($request);
     }
 
@@ -108,10 +112,16 @@ class AttendanceController extends Controller
     {
         // TODO: Tạm thời chỉ check ở Front-end
         if (self::lecturerCourseShiftIsValid($request->{'current-course-id'})) {
-            dump("Giảng viên đang dạy một lớp khác");
+            Session::flash('type', 'error');
+            Session::flash('message', 'Giảng viên đang dạy một lớp khác');
+            return false;
         }
+
+
         if (!self::shiftAndTimeIsValid($request)) {
-            dump("Ca học và giờ học không trùng");
+            Session::flash('type', 'error');
+            Session::flash('message', 'Ca học và giờ học không trùng');
+            return false;
         }
 
         $newLesson = new Lesson();
@@ -286,9 +296,9 @@ class AttendanceController extends Controller
             ->where('shift', $curShift)
             ->where('created_at', 'like', '%' . $curDate . '%');
 
-        if ($lessons->exists()) {
-            return false;
+        if (empty($lessons)) {
+            return true;
         }
-        return true;
+        return false;
     }
 }

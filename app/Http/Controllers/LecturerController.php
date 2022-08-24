@@ -96,7 +96,7 @@ class LecturerController extends Controller
         // Lý do nghỉ (note) của sinh viên trong buổi học
         $absentReasonList = array();
         // Lấy trạng thái đi học hiện tại hoặc một buổi trước của sinh viên
-        self::getCurrentAttendanceStatus($courseId ,$curStatusList,
+        self::getCurrentAttendanceStatus($courseId, $curStatusList,
             $absentReasonList, $specificLessonId);
 
         $absentList = array();
@@ -179,36 +179,40 @@ class LecturerController extends Controller
         //    - $absentList = ("ID_sv" => số_buổi_nghỉ, "1" => 1.3, "2" => 4)
         //    - $permissionList = ("ID_sv" => số_buổi_phép, "1" => 1, "2" => 0)
         $lessons = Lesson::where('course_id', $courseId)->get();
+
+        $lessonIds = array();
         foreach ($lessons as $lesson) {
-            // Lấy các bản ghi điểm danh để thao tác
-            $attends = Attendance::where('lesson_id', $lesson->id)->get();
-            if (is_null($attends)) {
-                return;
+            $lessonIds[] = $lesson->id;
+        }
+
+        // Lấy các bản ghi điểm danh để thao tác
+        $attends = Attendance::whereIn('lesson_id', $lessonIds)->get();
+        if (is_null($attends)) {
+            return;
+        }
+
+        foreach ($attends as $attend) {
+            // Init?
+            if (!isset($absentList[$attend->student_id])) {
+                $absentList[$attend->student_id] = 0;
+            }
+            if (!isset($permissionList[$attend->student_id])) {
+                $permissionList[$attend->student_id] = 0;
             }
 
-            foreach ($attends as $attend) {
-                // Init?
-                if (!isset($absentList[$attend->student_id])) {
-                    $absentList[$attend->student_id] = 0;
+            // Một bản ghi nghỉ không phép => +1
+            if ($attend->attendant_status == 'without reason') {
+                $absentList[$attend->student_id] += 1;
+            } // Một bản ghi đi muộn => +0.3
+            else if ($attend->attendant_status == 'late') {
+                $absentList[$attend->student_id] += 0.3;
+                // Xử lí 0.9 -> 1
+                if ($absentList[$attend->student_id] * 10 % 10 == 9) {
+                    $absentList[$attend->student_id] += 0.1;
                 }
-                if (!isset($permissionList[$attend->student_id])) {
-                    $permissionList[$attend->student_id] = 0;
-                }
-
-                // Một bản ghi nghỉ không phép => +1
-                if ($attend->attendant_status == 'without reason') {
-                    $absentList[$attend->student_id] += 1;
-                } // Một bản ghi đi muộn => +0.3
-                else if ($attend->attendant_status == 'late') {
-                    $absentList[$attend->student_id] += 0.3;
-                    // Xử lí 0.9 -> 1
-                    if ($absentList[$attend->student_id] * 10 % 10 == 9) {
-                        $absentList[$attend->student_id] += 0.1;
-                    }
-                } // Một buổi có phép => P: +1
-                else {
-                    $permissionList[$attend->student_id] += 1;
-                }
+            } // Một buổi có phép => P: +1
+            else {
+                $permissionList[$attend->student_id] += 1;
             }
         }
     }
@@ -256,7 +260,8 @@ class LecturerController extends Controller
     /*
      * Quản lí các lớp được phân công
      */
-    public function courseManagement()
+    public
+    function courseManagement()
     {
         // Lấy danh sách các lớp được phân công
         $courses = Course::select('course.*')
@@ -271,7 +276,8 @@ class LecturerController extends Controller
     /*
      * Update status của phân công
      */
-    public function courseUpdateVisibility($id)
+    public
+    function courseUpdateVisibility($id)
     {
         $course = Course::find($id);
         if ($course->status == 1) {
@@ -290,7 +296,7 @@ class LecturerController extends Controller
 
         if ($result) {
             Session::flash('type', 'info');
-            Session::flash('message', 'Khóa học đã kết thúc.');
+            Session::flash('message', 'Đã chỉnh trạng thái khóa học.');
         } else {
             Session::flash('type', 'error');
             Session::flash('message', 'Đã có sự cố xảy ra.');
@@ -313,40 +319,44 @@ class LecturerController extends Controller
             $monthEnd = date('Y-m-t');
         }
 
-        // Lấy danh sách các lớp được phân công
+        // Lấy danh sách các khóa học được phân công
         $courses = Course::select('course.*')
             ->join('lecturer_scheduling', 'course.id', '=',
                 'lecturer_scheduling.course_id')
             ->join('user', 'user.id', '=', 'lecturer_scheduling.lecturer_id')
             ->get();
 
-        // Thời gian làm việc tháng này
-        $totalWorkTime = 0;
-
-        // Lấy danh sách các buổi học
+        // Lấy ID các khóa học vừa tìm được
         $courseIds = array();
         foreach ($courses as $course) {
             $courseIds[] = $course->id;
         }
 
+        // Tìm các buổi dạy có course_id trong list các courseIds
         $queries = Lesson::whereIn('course_id', $courseIds)
             ->whereBetween('created_at', [$monthStart, $monthEnd])
             ->where('created_by', auth()->user()->id)->get();
 
-        // Set thêm tên khóa học vào các lesson
+        // Tổng thời gian dạy của tháng
+        $totalWorkTime = 0;
+
         foreach ($queries as $query) {
+            // Set thêm tên khóa học vào các lesson
             $query->course_name = Course::select('course.name')
                 ->where('id', $query->course_id)->pluck('name')->first();
+
             // Tính luôn tổng số giờ dạy tháng
             $totalWorkTime +=
                 strtotime($query->end) - strtotime($query->start);
         }
 
+        // Add data vào kết quả
         $lessons = new Collection();
         $lessons->push($queries);
 
         // Biến đổi giờ dạy từ giây sang Giờ:Phút:Giây
-        $totalWorkTime = floor($totalWorkTime / 3600) . gmdate(":i", $totalWorkTime % 3600);
+        $totalWorkTime = floor($totalWorkTime / 3600)
+            . gmdate(":i", $totalWorkTime % 3600);
 
         // Nếu đang xem theo tháng thì trả về tháng yêu cầu
         if (isset(request()->month)) {
@@ -356,6 +366,7 @@ class LecturerController extends Controller
                 'month' => request()->month
             ]);
         }
+        // Không truyền tháng cụ thể thì Fullcalendar sẽ tự hiện tháng hiện tại
         return view('lecturer.time_keeping.time_keeping', [
             'lessons' => $lessons[0],
             'totalWorkTime' => $totalWorkTime
@@ -373,7 +384,7 @@ class LecturerController extends Controller
         // Lấy ds DTO chứa các thông tin số buổi nghỉ, muộn, phép
         $studentDTOs = self::studentToDTO($students, $courseId);
 
-        // Biến đổi tên khóa học về dạng viết hoa, cách nhau bằng gạch dưới
+        // Lưu excel tên khóa học dạng viết hoa, cách bằng gạch dưới
         $courseName = $curCourse->name;
         $courseName = ucfirst($courseName);
         $courseName = str_replace(" ", "_", $courseName);

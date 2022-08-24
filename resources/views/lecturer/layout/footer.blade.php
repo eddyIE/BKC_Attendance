@@ -64,15 +64,6 @@ All rights reserved.
                 },
             }
         });
-        $('#example2').DataTable({
-            "paging": true,
-            "lengthChange": false,
-            "searching": true,
-            "ordering": true,
-            "info": true,
-            "autoWidth": false,
-            "responsive": true,
-        });
 
         $('#course_table').DataTable({
             "paging": true,
