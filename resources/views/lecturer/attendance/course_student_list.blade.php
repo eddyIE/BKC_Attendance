@@ -31,21 +31,27 @@
                      hiển thị theo màu (50%+ màu đỏ, 30%+ màu vàng
                      -->
                     @php
-                        $absentPercentage = $each->absentQuan / (isset($curCourse) ?
-                                    $curCourse->{'finished_lessons'} + 1 : 1)
-                        @endphp
+                        if(isset($curCourse) && $curCourse ->{'finished_lessons'} != 0){
+
+                            $absentPercentage =
+                                $each->absentQuan / $curCourse->{'finished_lessons'};
+                        } else {
+                            $absentPercentage = 0;
+                        }
+                    @endphp
+
                     @if($absentPercentage > 0.3 && $absentPercentage <= 0.5)
                         {{--Tên sinh viên--}}
                         <span class="roll fw-bolder ">
                             <a href="#" class="text-warning">{{ $each->full_name }}</a>
                         </span>
 
-                        {{--Số buổi nghỉ / Tổng số buổi đã học--}}
+                        {{--Hiển thị (Số buổi nghỉ / Số buổi đã học)--}}
                         <span class="text-warning fw-bold">
                             ({{ $each->absentQuan }}
                             /
                             <?php echo isset($curCourse) ?
-                                    $curCourse->{'finished_lessons'} + 1 : ''; ?>)
+                                $curCourse->{'finished_lessons'} : '0'; ?>)
                         </span>
                     @elseif($absentPercentage > 0.5)
                         {{--Tên sinh viên--}}
@@ -53,12 +59,12 @@
                             <a href="#" class="text-danger">{{ $each->full_name }}</a>
                         </span>
 
-                        {{--Số buổi nghỉ / Tổng số buổi đã học--}}
+                        {{--Hiển thị (Số buổi nghỉ / Số buổi đã học)--}}
                         <span class="text-danger fw-bold">
                             ({{ $each->absentQuan }}
                             /
                             <?php echo isset($curCourse) ?
-                                $curCourse->{'finished_lessons'} + 1 : ''; ?>)
+                                $curCourse->{'finished_lessons'} : ''; ?>)
                         </span>
                     @else
                         {{--Tên sinh viên--}}
@@ -66,12 +72,12 @@
                             <a href="#">{{ $each->full_name }}</a>
                         </span>
 
-                        {{--Số buổi nghỉ / Tổng số buổi đã học--}}
+                        {{--Hiển thị (Số buổi nghỉ / Số buổi đã học)--}}
                         <span class="text-primary fw-bold">
                             ({{ $each->absentQuan }}
                             /
                             <?php echo isset($curCourse) ?
-                                $curCourse->{'finished_lessons'} + 1 : ''; ?>)
+                                $curCourse->{'finished_lessons'} : ''; ?>)
                         </span>
                     @endif
 

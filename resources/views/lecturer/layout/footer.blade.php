@@ -35,60 +35,6 @@ All rights reserved.
 <!-- Page specific script -->
 <script>
     $(function () {
-        $("#example1").DataTable({
-            "paging": false,
-            "lengthChange": false,
-            "searching": true,
-            "ordering": true,
-            "info": false,
-            "autoWidth": false,
-            "responsive": true,
-            'aoColumnDefs': [{
-                'bSortable': false,
-                'aTargets': [-1] /* 1st one, start by the right */
-            }],
-            "oLanguage" : {
-                "sSearch" : "Tìm kiếm",
-                "sInfo" : "Hiển thị _START_ đến _END_ của _TOTAL_ kết quả",
-                "sInfoEmpty": "Hiển thị 0 kết quả",
-                "sInfoFiltered": "(Lọc từ _MAX_ kết quả)",
-                "sEmptyTable" : "Không có dữ liệu",
-                "sZeroRecords" : "Không tìm thấy kết quả",
-                "sPrevious": "Trước",
-                "next" : "Sau",
-                "paginate": {
-                    "sFirst": "Trang đầu",
-                    "sLast": "Trang cuối",
-                    "sNext": "Sau",
-                    "sPrevious": "Trước"
-                },
-            }
-        });
-
-        $('#course_table').DataTable({
-            "paging": true,
-            "lengthChange": false,
-            "searching": true,
-            "ordering": true,
-            "info": true,
-            "autoWidth": false,
-            "responsive": true,
-            "oLanguage" : {
-                "sSearch" : "Tìm kiếm",
-                "sInfo" : "Hiển thị _START_ đến _END_ của _TOTAL_ kết quả",
-                "sInfoEmpty": "Hiển thị 0 kết quả",
-                "sInfoFiltered": "(Lọc từ _MAX_ kết quả)",
-                "sEmptyTable" : "Không có dữ liệu",
-                "sZeroRecords" : "Không tìm thấy kết quả",
-                "paginate": {
-                    "sFirst": "Trang đầu",
-                    "sLast": "Trang cuối",
-                    "sNext": "Sau",
-                    "sPrevious": "Trước"
-                },
-            }
-        });
-
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -112,21 +58,6 @@ All rights reserved.
                 title: message,
             });
         }
-
-        $('#datatable').DataTable({
-            "paging": false,
-            "lengthChange": false,
-            "searching": false,
-            "ordering": true,
-            "info": true,
-            "autoWidth": true,
-            "responsive": true,
-            "columnDefs": [{
-                "targets": -1,
-                "orderable": false,
-                "searchable": false,
-            }]
-        });
     });
 </script>
 

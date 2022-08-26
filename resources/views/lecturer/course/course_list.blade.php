@@ -1,14 +1,14 @@
 <table id="course_table" class="table table-striped align-middle table-bordered">
     <thead>
     <tr>
-        <th>ID</th>
-        <th>Tên phân công</th>
-        <th>Giờ dự kiến</th>
-        <th>Giờ đã dạy</th>
-        <th>Buổi đã dạy</th>
+        <th class="no-sort">ID</th>
+        <th class="no-sort">Tên phân công</th>
+        <th class="no-sort">Giờ dự kiến</th>
+        <th class="no-sort">Giờ đã dạy</th>
+        <th class="no-sort">Buổi đã dạy</th>
         <th>Cập nhật lần cuối</th>
-        <th>Hiển thị</th>
-        <th>Tải ds thi</th>
+        <th class="no-sort">Hiển thị</th>
+        <th class="no-sort">Tải ds thi</th>
     </tr>
     </thead>
     <tbody>
