@@ -77,6 +77,14 @@
                         </p>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ asset('admin/attendance') }}" class="nav-link">
+                        <i class="nav-icon fas fa-graduation-cap"></i>
+                        <p>
+                            ĐIỂM DANH
+                        </p>
+                    </a>
+                </li>
             </ul>
         </nav>
     </div>

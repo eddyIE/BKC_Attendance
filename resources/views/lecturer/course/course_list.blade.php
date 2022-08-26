@@ -24,7 +24,7 @@
                 <td class="text-center">
                     <form action="{{ asset('/my-course/visibility/'.$course->id) }}" method="get">
                         @csrf
-                        @if($course->status == 0)
+                        @if($course->status == 1)
                             <button class="btn btn-sm btn-primary" title="Khóa học chưa kết thúc">
                                 <i class="fas fa-eye"></i>
                             </button>

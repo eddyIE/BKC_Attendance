@@ -27,14 +27,21 @@ class LecturerController extends Controller
     public function courseChooser()
     {
         // Lấy danh sách các lớp
-        $courses = Course::select('course.*')
-            ->join('lecturer_scheduling', 'course.id', '=',
-                'lecturer_scheduling.course_id')
-            ->join('user', 'user.id', '=', 'lecturer_scheduling.lecturer_id')
-            ->where('course.status', 0)
-            ->get();
-        // Trả dữ liệu về view
-        return view('lecturer.attendance.index', ['courses' => $courses]);
+        // Nếu là giáo vụ thì lấy mọi lớp
+        if (auth()->user()->role == 1) {
+            $courses = Course::where('status', 1)->get();
+            return view('admin.attendance.index', ['courses' => $courses]);
+        } // Nếu không phải giáo vụ thì chỉ lấy các lớp được phân công
+        else if (auth()->user()->role == 0) {
+            $courses = Course::select('course.*')
+                ->join('lecturer_scheduling', 'course.id', '=',
+                    'lecturer_scheduling.course_id')
+                ->join('user', 'user.id', '=', 'lecturer_scheduling.lecturer_id')
+                ->where('course.status', 1)
+                ->get();
+            // Trả dữ liệu về view
+            return view('lecturer.attendance.index', ['courses' => $courses]);
+        }
     }
 
     /* ================ LẤY TOÀN BỘ CÁC THÔNG TIN VỀ MỘT KHÓA HỌC =============
@@ -64,19 +71,27 @@ class LecturerController extends Controller
         $lessons = Lesson::where('course_id', $courseId)
             ->orderBy('created_at', 'ASC')->get();
 
+        // Chọn view để trả về dựa trên role
+        if (auth()->user()->role == 1) {
+            // Nếu đây là giáo vụ
+            $view = 'admin.attendance.index';
+        } else if (auth()->user()->role == 0) {
+            // Nếu đây là giảng viên
+            $view = 'lecturer.attendance.index';
+        }
         // Tìm và bỏ buổi học hôm nay khỏi DS lịch sử các buổi học NẾU CÓ
         $existLesson = (new AttendanceController)->getExistLesson($courseId);
         if ($existLesson != null) {
             // Bỏ buổi học hiện tại ra khỏi list
             $lessons->forget(count($lessons) - 1);
-            return view('lecturer.attendance.index', ['courses' => $courses,
+            return view($view, ['courses' => $courses,
                 'students' => $studentDTOs,
                 'curCourse' => $curCourse,
                 'curClass' => $curClass,
                 'lessons' => $lessons,
                 'existLesson' => $existLesson]);
         } else {
-            return view('lecturer.attendance.index', ['courses' => $courses,
+            return view($view, ['courses' => $courses,
                 'students' => $studentDTOs,
                 'curCourse' => $curCourse,
                 'curClass' => $curClass,
@@ -280,14 +295,14 @@ class LecturerController extends Controller
     function courseUpdateVisibility($id)
     {
         $course = Course::find($id);
-        if ($course->status == 1) {
+        if ($course->status == 0) {
             $data = [
-                'status' => 0,
+                'status' => 1,
                 'modified_by' => auth()->user()->id,
             ];
         } else {
             $data = [
-                'status' => 1,
+                'status' => 0,
                 'modified_by' => auth()->user()->id,
             ];
         }

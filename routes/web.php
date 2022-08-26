@@ -40,6 +40,13 @@ Route::group(['prefix' => '/admin', 'middleware' => ['auth', 'role:admin']], fun
 
     Route::resource('course', 'CourseController')->except('edit');
     Route::patch('course/{course}/restore', 'CourseController@restore')->name('course.restore');
+
+    // Điểm danh
+    Route::get("attendance", 'LecturerController@courseChooser');
+
+    Route::post('course-data', 'LecturerController@courseDetail');
+
+    Route::post('attendance', 'AttendanceController@createAttendance');
 });
 
 Route::group(['prefix' => '/', 'middleware' => ['auth', 'role:lecturer']], function (){
@@ -50,7 +57,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'role:lecturer']], funct
     Route::get('/course', 'LecturerController@courseChooser');
 
     // Chọn lớp điểm danh
-    Route::post('/course-detail', 'LecturerController@courseDetail');
+    Route::post('/course-data', 'LecturerController@courseDetail');
 
     // Tạo điểm danh
     Route::post('/attendance', 'AttendanceController@createAttendance');
