@@ -26,6 +26,6 @@ class ProgramInfo extends Model
     }
 
     public function course(){
-        return $this->hasMany(Course::class, 'subject_id');
+        return $this->hasMany(Course::class, 'subject_id', 'id');
     }
 }

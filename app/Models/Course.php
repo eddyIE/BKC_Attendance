@@ -36,6 +36,6 @@ class Course extends Model
     }
 
     public function program_info(){
-        return $this->belongsTo(ProgramInfo::class, 'subject_id');
+        return $this->belongsTo(ProgramInfo::class, 'subject_id', 'id');
     }
 }

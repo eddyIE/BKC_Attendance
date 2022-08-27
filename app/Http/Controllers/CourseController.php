@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Classes;
 use App\Models\Course;
 use App\Models\LecturerScheduling;
+use App\Models\Program;
+use App\Models\ProgramInfo;
 use App\Models\Subject;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -44,62 +46,51 @@ class CourseController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required',
-            'total_hours' => 'required',
-            'class' => 'required',
-            'subject' => 'required',
-            'lecturer' => 'required',
-            'scheduled_day' => 'required',
-            'scheduled_time' => 'required'
-        ]);
+        $program_id = Classes::where('id', $request->class)->pluck('program_id')->toArray();
+        $program_info = ProgramInfo::where(['program_id' => $program_id, 'subject_id' => $request->subject])->first('id');
         $course = [
             'name' => $request->name,
             'total_hours' => $request->total_hours,
             'class_id' => $request->class,
-            'subject_id' => $request->subject,
+            'subject_id' => $program_info->id,
             'scheduled_day' => json_encode($request->scheduled_day),
             'scheduled_time' => $request->start . ' - ' . $request->end,
             'created_by' => auth()->user()->id
         ];
-        dd($course);
 
-        $exist = Course::where($course)->get();
+        $new_course = Course::firstOrCreate($course);
 
-        if ($exist->isEmpty()){
-            $course['created_by'] = auth()->user()->id;
-            $new_course = Course::create($course);
-
-            if ($new_course){
-                $lecturer = [
-                    'course_id' => $new_course->id,
-                    'lecturer_id' => $request->lecturer,
-                    'substitution' => 0,
-                    'created_by' => auth()->user()->id
-                ];
-
-                $scheduled_lecturer = LecturerScheduling::create($lecturer);
-
-                if ($request->substitute_lecturer){
-                    $substitute = [
+        if ($new_course){
+            foreach ($request->lecturer as $index => $lecturer) {
+                if ($index == 0) {
+                    $new_lecturer = [
                         'course_id' => $new_course->id,
-                        'lecturer_id' => $request->substitute_lecturer,
+                        'lecturer_id' => $lecturer,
+                        'substitution' => 0,
+                        'created_by' => auth()->user()->id
+                    ];
+
+                    $scheduled_lecturer = LecturerScheduling::firstOrCreate($new_lecturer);
+                } else {
+                    $new_lecturer = [
+                        'course_id' => $new_course->id,
+                        'lecturer_id' => $lecturer,
                         'substitution' => 1,
                         'created_by' => auth()->user()->id
                     ];
 
-                    $scheduled_substitute = LecturerScheduling::create($substitute);
+                    $scheduled_lecturer = LecturerScheduling::firstOrCreate($new_lecturer);
                 }
+            }
 
-                if ($scheduled_lecturer){
-                    Session::flash('type', 'success');
-                    Session::flash('message', 'Thêm thông tin thành công.');
-                    return redirect('admin/course');
-                } else {
-                    Session::flash('type', 'error');
-                    Session::flash('message', 'Đã có sự cố xảy ra.');
-                    return redirect('admin/course');
-                }
+            if ($scheduled_lecturer){
+                Session::flash('type', 'success');
+                Session::flash('message', 'Thêm thông tin thành công.');
+                return redirect('admin/course');
+            } else {
+                Session::flash('type', 'error');
+                Session::flash('message', 'Đã có sự cố xảy ra.');
+                return redirect('admin/course');
             }
         } else {
             Session::flash('type', 'error');
@@ -110,9 +101,13 @@ class CourseController extends Controller
 
     public function show($id)
     {
-        $data = Course::find($id);
+        $course = Course::find($id);
+        $course->subject_id = ProgramInfo::where('id', $course->subject_id)->pluck('subject_id')->first();
+        $course->scheduled_day = json_decode($course->scheduled_day);
+        $course->scheduled_time = explode(' - ', $course->scheduled_time);
+        $lecturers = LecturerScheduling::where('course_id', $id)->pluck('lecturer_id')->toArray();
         $program = Program::all();
-        return view('admin.course.detail', ['data' => $data, 'program' => $program]);
+        return view('admin.course.detail', ['course' => $course, 'lecturers' => $lecturers]);
     }
 
     public function update(Request $request, $id)

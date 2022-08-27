@@ -42,14 +42,14 @@
                     <a href="{{ asset('admin/major') }}" class="nav-link">
                         <i class="nav-icon fas fa-graduation-cap"></i>
                         <p>
-                            CHUYÊN NGÀNH HỌC
+                            CHUYÊN NGÀNH
                         </p>
                     </a>
                 <li class="nav-item">
                     <a href="{{ asset('admin/subject') }}" class="nav-link">
                         <i class="nav-icon fas fa-book-open"></i>
                         <p>
-                            BỘ MÔN
+                            MÔN HỌC
                         </p>
                     </a>
                 </li>

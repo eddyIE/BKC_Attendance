@@ -32,38 +32,7 @@
 
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="lecturer">Giảng viên</label>
-                                @error('lecturer')
-                                <div class="danger text-red" style="float:right">{{ $message }}</div>
-                                @enderror
-                                <select class="form-control" name="lecturer" id="lecturer" data-placeholder="Chọn giảng viên">
-                                    <option></option>
-                                    @foreach ($lecturer as $each)
-                                        <option value="{{ $each->id }}">{{ $each->full_name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="substitute_lecturer">Giảng viên phụ (dạy thay)</label>
-                                <select class="form-control" name="substitute_lecturer" id="substitute_lecturer" data-placeholder="Chọn giảng viên">
-                                    <option></option>
-                                    @foreach ($lecturer as $each)
-                                        <option value="{{ $each->id }}">{{ $each->full_name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
                             <label for="scheduled_day">Lịch dạy</label>
-                            @error('scheduled_day')
-                            <div class="danger text-red" style="float:right">{{ $message }}</div>
-                            @enderror
                             <div class="select2-lightblue">
                                 <select class="form-control" multiple="multiple" data-placeholder="Vui lòng chọn những buổi dạy trong tuần" data-dropdown-css-class="select2-lightblue" style="width: 100%;" name="scheduled_day[]" id="scheduled_day">
                                     <option value="Monday">Thứ Hai</option>
@@ -78,15 +47,6 @@
                         </div>
                         <div class="col-md-6">
                             <label>Giờ dạy</label>
-                            @if($errors->has('start'))
-                                @error('start')
-                                <div class="danger text-red" style="float:right">{{ $message }}</div>
-                                @enderror
-                            @elseif($errors->has('end'))
-                                @error('end')
-                                <div class="danger text-red" style="float:right">{{ $message }}</div>
-                                @enderror
-                            @endif
                             <div class="row">
                                 <div class="input-group date col-md-6" id="start" data-target-input="nearest">
                                     <input type="text" name="start" class="form-control text-center" placeholder="Bắt đầu" data-target="#start" data-toggle="datetimepicker"/>
@@ -111,13 +71,6 @@
 @section('script')
     <script>
         $(document).ready(function () {
-            $('#lecturer, #substitute_lecturer').select2({
-                placeholder: "Chọn giảng viên",
-                minimumResultsForSearch: -1
-            });
-            $('#substitution').select2({
-                minimumResultsForSearch: -1
-            });
             $('#scheduled_day').select2();
 
             $('#start, #end').datetimepicker({

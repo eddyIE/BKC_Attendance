@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use App\Models\Classes;
 use App\Models\Subject;
+use App\Models\User;
 use Livewire\Component;
 
 class ShowSubject extends Component
@@ -12,8 +13,13 @@ class ShowSubject extends Component
     public $subjects;
     public $classId;
     public $subjectId;
+    public $schedule = [''];
+    public $lecturers;
+    public $new_lecturer;
+
 
     public function mount(){
+        $this->lecturers = User::where(['role' => 0, 'status' => 1])->get();
         $this->classes = Classes::where('status', 1)->get()->sortByDesc('created_at');
 
         if ($this->classId != ''){
@@ -41,8 +47,8 @@ class ShowSubject extends Component
         }
     }
 
-    public function show($subject){
-
+    public function newLecturer(){
+        $this->schedule[] = '';
     }
 
     public function render()
