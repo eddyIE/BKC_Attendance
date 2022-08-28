@@ -20,8 +20,9 @@ class ProgramController extends Controller
 
     public function create()
     {
-        $major = Major::where('status', true)->get();
-        return view('admin.program.add', ['major' => $major]);
+        $majors = Major::where('status', true)->get();
+        $subjects = Subject::where('status', true)->get();
+        return view('admin.program.add', ['majors' => $majors, 'subjects' => $subjects]);
     }
 
     public function store(Request $request)
@@ -35,21 +36,19 @@ class ProgramController extends Controller
         $data['start'] = date('Y-m-d', strtotime(str_replace('/', '-', $date_range[0])));
         $data['end'] = date('Y-m-d', strtotime(str_replace('/', '-', $date_range[1])));
 
-        $exist = Program::where($data)->get();
+        $data['created_by'] = auth()->user()->id;
+        $new_program = Program::firstOrCreate($data);
 
-        if ($exist->isEmpty()){
-            $data['created_by'] = auth()->user()->id;
-            $result = Program::create($data);
+        if ($new_program){
+            $subjects = $request->subjects;
 
-            if ($result){
-                Session::flash('type', 'success');
-                Session::flash('message', 'Thêm thông tin thành công.');
-                return redirect('admin/program');
-            } else {
-                Session::flash('type', 'error');
-                Session::flash('message', 'Đã có sự cố xảy ra.');
-                return redirect('admin/program');
+            foreach ($subjects as $subject) {
+                ProgramInfo::create(['program_id' => $new_program->id, 'subject_id' => $subject, 'created_by' => auth()->user()->id]);
             }
+
+            Session::flash('type', 'success');
+            Session::flash('message', 'Thêm thông tin thành công.');
+            return redirect('admin/program');
         } else {
             Session::flash('type', 'error');
             Session::flash('message', 'Thông tin đã tồn tại trong hệ thống.');
@@ -106,14 +105,12 @@ class ProgramController extends Controller
 
         foreach ($current_subjects as $current) {
             if (!in_array($current, $selected_subjects)){
-//                ProgramInfo::where('subject_id', $current->id)->delete();
                 dd($current.': deleted!');
             }
         }
 
         foreach ($selected_subjects as $selected){
             if (!in_array($selected, $current_subjects)){
-//                ProgramInfo::create(['program_id' => $id, 'subject_id' => $selected, 'created_by' => auth()->user()->id]);
                 dd($selected.': created!');
             }
         }

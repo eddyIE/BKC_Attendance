@@ -33,7 +33,7 @@
                         @endif
                         <td class="text-center border-0">{{ date_format($each->created_at, 'd/m/Y') }}</td>
                         <td class="border-0 align-middle text-center">
-                            <form action="{{ route('student.destroy', $each->id) }}" method="post">
+                            <form action="{{ route('course.destroy', $each->id) }}" method="post">
                                 @method('DELETE')
                                 @csrf
                                 <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
@@ -53,7 +53,7 @@
                         @endif
                         <td class="text-center border-0">{{ date_format($each->created_at, 'd/m/Y') }}</td>
                         <td class="border-0 align-middle text-center">
-                            <form action="{{ route('student.restore', $each->id) }}" method="post">
+                            <form action="{{ route('course.restore', $each->id) }}" method="post">
                                 @method('PATCH')
                                 @csrf
                                 <button class="btn btn-sm btn-outline-primary"><i class="fas fa-redo"></i></button>
