@@ -41,11 +41,13 @@ class AttendanceController extends Controller
             $request->request->add(['course-id' => $request->{'current-course-id'}]);
             Session::flash('type', 'success');
             Session::flash('message', 'Thay đổi điểm danh thành công');
-            return (new LecturerController)->courseDetail($request);
+            return (new LecturerController)->getCourseData($request);
         }
 
         // Check xem buổi học đã tồn tại chưa
+        $lesson = null;
         if (auth()->user()->role == 1) {
+            // Request từ giáo vụ có quyền chọn ngày điểm danh (lesson-date)
             $lesson = $this->getExistLesson($request->{'current-course-id'},
                 $request->{'lesson-date'});
         } else if (auth()->user()->role == 0) {
@@ -56,7 +58,7 @@ class AttendanceController extends Controller
         if ($lesson != null) {
             $lessonId = $lesson->id;
             // Update giờ đã dạy của course
-            self::courseFinishedTimeAndLessonHandler($request, $lesson);
+            self::updateCourseFinishedTimeAndLesson($request, $lesson);
             // Update thời lượng buổi học, note, người chỉnh sửa, v.v.
             self::updateLesson($request, $lesson);
             // Xóa các bản ghi điểm danh cũ, sẽ tạo lại sau
@@ -64,14 +66,17 @@ class AttendanceController extends Controller
         } // Chưa tồn tại buổi học thì tạo mới
         else {
             $lessonId = self::createLesson($request);
-            // Nếu buổi học mới không valid
-            // (e.g: Giảng viên đang dạy lớp khác, shift với time không khớp)
+
             if (!$lessonId) {
-                $request->request->add(['course-id' => $request->{'current-course-id'}]);
-                return (new LecturerController)->courseDetail($request);
+                // Nếu buổi học mới không valid thì quay về màn hình điểm danh
+                // (e.g: Giảng viên đang dạy lớp khác, shift với time không khớp)
+                $request->request->add(
+                    ['course-id' => $request->{'current-course-id'}]);
+                return (new LecturerController)->getCourseData($request);
             }
+
             // Tăng số buổi, giờ đã dạy của course
-            self::courseFinishedTimeAndLessonHandler($request);
+            self::updateCourseFinishedTimeAndLesson($request);
         }
 
         // Tạo (tạo lại) các bản ghi điểm danh
@@ -91,11 +96,11 @@ class AttendanceController extends Controller
         //Insert bulk cho nhanh
         Attendance::insert($data);
 
-        // Thêm request param
+        // Thêm request param và chuyển hướng lại màn điểm danh
         $request->request->add(['course-id' => $request->{'current-course-id'}]);
         Session::flash('type', 'success');
         Session::flash('message', 'Điểm danh thành công');
-        return (new LecturerController)->courseDetail($request);
+        return (new LecturerController)->getCourseData($request);
     }
 
     /*
@@ -118,19 +123,20 @@ class AttendanceController extends Controller
      */
     private function createLesson(Request $request)
     {
-        // TODO: Test this
-        if (!self::lecturerCourseShiftIsValid($request->{'current-course-id'})) {
+        // Validate giảng viên có đang dạy lớp nào khác không
+        if (!self::validateLecturerOneCoursePerShift($request->{'current-course-id'})) {
             Session::flash('type', 'error');
             Session::flash('message', 'Giảng viên đang dạy một lớp khác');
             return false;
         }
-
-        if (!self::shiftAndTimeIsValid($request)) {
+        // Validate giờ và ca học có khớp không
+        if (!self::validateShiftAndTime($request)) {
             Session::flash('type', 'error');
             Session::flash('message', 'Ca học và giờ học không trùng');
             return false;
         }
 
+        // Tạo buổi học mới
         $newLesson = new Lesson();
         $newLesson->start = $request->start;
         $newLesson->end = $request->end;
@@ -139,7 +145,8 @@ class AttendanceController extends Controller
         $newLesson->course_id = $request->{'current-course-id'};
         $newLesson->created_by = Auth::user()->id;
         $newLesson->shift = $request->{'shift'};
-        if(auth()->user()->role == 1){
+        // Nếu là giáo vụ điểm danh hộ thì cho chọn ngày
+        if (auth()->user()->role == 1) {
             $newLesson->created_at = $request->{'lesson-date'};
         }
 
@@ -151,7 +158,7 @@ class AttendanceController extends Controller
     /*
      * Xử lí cập nhật số giờ, số buổi đã dạy của một khóa học
      */
-    private function courseFinishedTimeAndLessonHandler($request, $prevLesson = null)
+    private function updateCourseFinishedTimeAndLesson($request, $prevLesson = null)
     {
         // Xử lí lấy các thông tin cơ bản
         $start = $request->start;
@@ -188,9 +195,9 @@ class AttendanceController extends Controller
     }
 
     /*
-     * Xem giờ thực tế để suy ra ca học hiện tại
-     * Return: Ca sáng - 0, Ca chiều - 1, Ca tối - 2, Không phải giờ học - 4
-     */
+    * Xem giờ thực tế để suy ra ca học hiện tại
+    * Return: Ca sáng - 0, Ca chiều - 1, Ca tối - 2, Không phải giờ học - 4
+    */
     private function getCurrentShift(): int
     {
         $curTime = Carbon::now("Asia/Ho_Chi_Minh");
@@ -238,7 +245,7 @@ class AttendanceController extends Controller
     /*
      * Update điểm danh cho một buổi học trong lịch sử
      */
-    public function updateAttendance(Request $request)
+    private function updateAttendance(Request $request)
     {
         // Lấy lesson id buổi học trước cần update
         $lessonId = $request->all()['prev-lesson-id'];
@@ -267,10 +274,10 @@ class AttendanceController extends Controller
     }
 
     /*
-  * Validate ca học và giờ bắt đầu, kết thúc
-  * VD: Ca sáng thì chỉ bắt đầu từ 8h, kết thúc trước 12h01
-  */
-    private function shiftAndTimeIsValid(Request $request): bool
+    * Validate ca học và giờ bắt đầu, kết thúc
+    * VD: Ca sáng thì chỉ bắt đầu từ 8h, kết thúc trước 12h01
+    */
+    private function validateShiftAndTime(Request $request): bool
     {
         // Lấy các thông tin từ request
         $shift = $request->{'shift'};
@@ -300,7 +307,7 @@ class AttendanceController extends Controller
     /*
      * Check một giảng viên chỉ được dạy một ca một lớp
      */
-    private function lecturerCourseShiftIsValid($courseId): bool
+    private function validateLecturerOneCoursePerShift($courseId): bool
     {
         // Giáo vụ thì ko check
         if (auth()->user()->role == 1) {

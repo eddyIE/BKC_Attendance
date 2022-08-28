@@ -44,7 +44,7 @@ Route::group(['prefix' => '/admin', 'middleware' => ['auth', 'role:admin']], fun
     // Điểm danh
     Route::get("attendance", 'LecturerController@courseChooser');
 
-    Route::post('course-data', 'LecturerController@courseDetail');
+    Route::post('course-data', 'LecturerController@getCourseData');
 
     Route::post('attendance', 'AttendanceController@createAttendance');
 });
@@ -57,7 +57,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'role:lecturer']], funct
     Route::get('/course', 'LecturerController@courseChooser');
 
     // Chọn lớp điểm danh
-    Route::post('/course-data', 'LecturerController@courseDetail');
+    Route::post('/course-data', 'LecturerController@getCourseData');
 
     // Tạo điểm danh
     Route::post('/attendance', 'AttendanceController@createAttendance');

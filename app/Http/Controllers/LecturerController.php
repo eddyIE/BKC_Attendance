@@ -42,6 +42,7 @@ class LecturerController extends Controller
             // Trả dữ liệu về view
             return view('lecturer.attendance.index', ['courses' => $courses]);
         }
+        return -1;
     }
 
     /* ================ LẤY TOÀN BỘ CÁC THÔNG TIN VỀ MỘT KHÓA HỌC =============
@@ -50,7 +51,7 @@ class LecturerController extends Controller
      *  - Lịch sử
      *  - ?
      */
-    public function courseDetail(Request $request)
+    public function getCourseData(Request $request)
     {
         // Lấy lại danh sách các khóa học
         // để truyền lên thanh tìm kiếm khóa học
@@ -72,6 +73,7 @@ class LecturerController extends Controller
             ->orderBy('created_at', 'ASC')->get();
 
         // Chọn view để trả về dựa trên role
+        $view = '';
         if (auth()->user()->role == 1) {
             // Nếu đây là giáo vụ
             $view = 'admin.attendance.index';
@@ -232,6 +234,9 @@ class LecturerController extends Controller
         }
     }
 
+    /*
+     * Xem buổi học trong quá khứ
+     */
     public function prevLessonDetail($lessonId)
     {
         // Lấy lại danh sách các khóa học
@@ -241,7 +246,7 @@ class LecturerController extends Controller
         // Lấy các thông tin về previous lesson được chọn
         $prevLesson = Lesson::find($lessonId);
         if (is_null($prevLesson)) {
-            return;
+            return -1;
         }
 
         // Lấy thông tin của khóa học
@@ -388,6 +393,9 @@ class LecturerController extends Controller
         ]);
     }
 
+    /*
+     * Export danh sách xét điều kiện thi ra Excel
+     */
     public function exportStudentData($courseId)
     {
         $curCourse = Course::find($courseId);
