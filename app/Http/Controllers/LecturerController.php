@@ -11,6 +11,7 @@ use App\Models\Student;
 use App\Models\StudentDTO;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 class LecturerController extends Controller
@@ -37,7 +38,7 @@ class LecturerController extends Controller
                 ->join('lecturer_scheduling', 'course.id', '=',
                     'lecturer_scheduling.course_id')
                 ->join('user', 'user.id', '=', 'lecturer_scheduling.lecturer_id')
-                ->where('course.status', 1)
+                ->where(['course.status' => 1, 'lecturer_scheduling.lecturer_id' => auth()->user()->id])
                 ->get();
             // Trả dữ liệu về view
             return view('lecturer.attendance.index', ['courses' => $courses]);
@@ -283,6 +284,7 @@ class LecturerController extends Controller
             ->join('lecturer_scheduling', 'course.id', '=',
                 'lecturer_scheduling.course_id')
             ->join('user', 'user.id', '=', 'lecturer_scheduling.lecturer_id')
+            ->where('lecturer_scheduling.lecturer_id', auth()->user()->id)
             ->get();
         // Trả dữ liệu về view
         return view('lecturer.course.course', ['courses' => $courses]);
