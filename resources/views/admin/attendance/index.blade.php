@@ -1,20 +1,15 @@
-@extends('lecturer.layout.main')
+@extends('admin.layout.main')
 
 @section('title', 'BKACAD - Điểm danh')
 
-@section('links')
-    {{-- Thư viện daterangepicker--}}
-    <link rel="stylesheet" href="{{ asset('css/daterangepicker.css') }}">
-@endsection
-
 @section('content')
     {{-- Thanh chọn lớp điểm danh--}}
-    @include('lecturer.attendance.course_chooser')
+    @include('admin.attendance.course_chooser')
 
     {{--Thông tin chung của khóa học vừa chọn--}}
     @include('lecturer.attendance.course_info')
 
-    <form action="{{asset('/attendance')}}" method="POST" onsubmit="return validateForm()" name="attendanceForm">
+    <form action="{{asset('admin/attendance')}}" method="POST" onsubmit="return validateForm()" name="attendanceForm">
         @csrf
         {{-- Thông tin khóa học đang được chọn --}}
         @isset($curCourse)
@@ -28,7 +23,7 @@
         @include('lecturer.attendance.course_history')
 
         {{--Phần chọn thời gian--}}
-        @include('lecturer.attendance.course_time_picker')
+        @include('admin.attendance.course_time_picker')
 
         {{--Phần ghi chú và các nút--}}
         @include('lecturer.attendance.course_submit_btn')
@@ -68,13 +63,6 @@
                 // - Giờ kết thúc không muộn hơn hiện tại quá 30p
                 if (start >= end) {
                     alert("Giờ bắt đầu phải sớm hơn giờ kết thúc.");
-                    return false;
-                } else if (start > now) {
-                    alert("Buổi học chưa đến giờ điểm danh.");
-                    return false;
-                }
-                if (now - end > 1000 * 60 * 30) {
-                    alert("Buổi học đã kết thúc quá 30 phút");
                     return false;
                 }
 

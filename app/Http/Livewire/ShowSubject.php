@@ -50,7 +50,7 @@ class ShowSubject extends Component
     public function newLecturer(){
         $this->schedule[] = '';
     }
-
+    
     public function render()
     {
         return view('livewire.show-subject');

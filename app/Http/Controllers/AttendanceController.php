@@ -39,12 +39,18 @@ class AttendanceController extends Controller
             self::updateAttendance($request);
 
             $request->request->add(['course-id' => $request->{'current-course-id'}]);
-            Session::flash('alert', 'Lưu điểm danh thành công');
+            Session::flash('type', 'success');
+            Session::flash('message', 'Thay đổi điểm danh thành công');
             return (new LecturerController)->courseDetail($request);
         }
 
         // Check xem buổi học đã tồn tại chưa
-        $lesson = $this->getExistLesson($request->{'current-course-id'});
+        if (auth()->user()->role == 1) {
+            $lesson = $this->getExistLesson($request->{'current-course-id'},
+                $request->{'lesson-date'});
+        } else if (auth()->user()->role == 0) {
+            $lesson = $this->getExistLesson($request->{'current-course-id'});
+        }
 
         // Nếu buổi học đã tồn tại
         if ($lesson != null) {
@@ -58,6 +64,12 @@ class AttendanceController extends Controller
         } // Chưa tồn tại buổi học thì tạo mới
         else {
             $lessonId = self::createLesson($request);
+            // Nếu buổi học mới không valid
+            // (e.g: Giảng viên đang dạy lớp khác, shift với time không khớp)
+            if (!$lessonId) {
+                $request->request->add(['course-id' => $request->{'current-course-id'}]);
+                return (new LecturerController)->courseDetail($request);
+            }
             // Tăng số buổi, giờ đã dạy của course
             self::courseFinishedTimeAndLessonHandler($request);
         }
@@ -81,7 +93,7 @@ class AttendanceController extends Controller
 
         // Thêm request param
         $request->request->add(['course-id' => $request->{'current-course-id'}]);
-        Session::flash('type', 'info');
+        Session::flash('type', 'success');
         Session::flash('message', 'Điểm danh thành công');
         return (new LecturerController)->courseDetail($request);
     }
@@ -106,12 +118,17 @@ class AttendanceController extends Controller
      */
     private function createLesson(Request $request)
     {
-        // TODO: Tạm thời chỉ check ở Front-end
-        if (self::lecturerCourseShiftIsValid($request->{'current-course-id'})) {
-            dump("Giảng viên đang dạy một lớp khác");
+        // TODO: Test this
+        if (!self::lecturerCourseShiftIsValid($request->{'current-course-id'})) {
+            Session::flash('type', 'error');
+            Session::flash('message', 'Giảng viên đang dạy một lớp khác');
+            return false;
         }
+
         if (!self::shiftAndTimeIsValid($request)) {
-            dump("Ca học và giờ học không trùng");
+            Session::flash('type', 'error');
+            Session::flash('message', 'Ca học và giờ học không trùng');
+            return false;
         }
 
         $newLesson = new Lesson();
@@ -122,6 +139,9 @@ class AttendanceController extends Controller
         $newLesson->course_id = $request->{'current-course-id'};
         $newLesson->created_by = Auth::user()->id;
         $newLesson->shift = $request->{'shift'};
+        if(auth()->user()->role == 1){
+            $newLesson->created_at = $request->{'lesson-date'};
+        }
 
         $newLesson->save();
 
@@ -195,20 +215,24 @@ class AttendanceController extends Controller
      * Nếu có: return buổi học đó
      * Nếu không: return null
      */
-    public function getExistLesson($courseId)
+    public function getExistLesson($courseId, $lessonDate = null)
     {
         $curShift = self::getCurrentShift();
-        $curDate = Carbon::now("Asia/Ho_Chi_Minh")->toDateString();
+        // Không có ngày thì set là ngày hiện tại
+        if ($lessonDate == null) {
+            $lessonDate = Carbon::now("Asia/Ho_Chi_Minh")->toDateString();
+        }
 
         $existLesson = Lesson::where('course_id', $courseId)
-            ->where('created_at', 'like', '%' . $curDate . '%')
+            ->where('created_at', 'like', '%' . $lessonDate . '%')
             ->where('shift', $curShift)
             ->first();
 
         if ($existLesson != null) {
             return $existLesson;
+        } else {
+            return null;
         }
-        return null;
     }
 
     /*
@@ -278,6 +302,11 @@ class AttendanceController extends Controller
      */
     private function lecturerCourseShiftIsValid($courseId): bool
     {
+        // Giáo vụ thì ko check
+        if (auth()->user()->role == 1) {
+            return true;
+        }
+
         $curShift = self::getCurrentShift();
         $curDate = Carbon::now("Asia/Ho_Chi_Minh")->toDateString();
 
@@ -285,9 +314,9 @@ class AttendanceController extends Controller
             ->where('shift', $curShift)
             ->where('created_at', 'like', '%' . $curDate . '%');
 
-        if ($lessons->exists()) {
-            return false;
+        if (empty($lessons)) {
+            return true;
         }
-        return true;
+        return false;
     }
 }
