@@ -1,42 +1,163 @@
 @extends('lecturer.layout.main')
 
-@section('title', 'Lecturer Dashboard')
+@section('title', 'Lịch sử điểm danh')
+
+@section('links')
+    {{--Thư viện lịch FullCalendar--}}
+    <link rel='stylesheet' href="{{ asset('js/fullcalendar/lib/main.css') }}"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
+@endsection
+
+@section('css')
+
+    #calendar {
+    width: 100%;
+    margin: 0 auto;
+    }
+
+    /* Full calendar hiện tên Tháng Năm in hoa chữ đầu*/
+    .fc-toolbar { text-transform: capitalize; }
+
+    /* Hiện border đậm màu hơn */
+    .fc-scrollgrid{
+    border-collapse: collapse!important;
+    }
+    .fc-scrollgrid td, .fc-scrollgrid th  {
+    border: 1px solid black!important;
+    }
+
+    .fc-event-main{
+    padding: 5px;
+    }
+@endsection
 
 @section('content')
-    {{-- Thanh chọn lớp điểm danh--}}
-    @include('lecturer.attendance.course_chooser')
 
-    {{--Thông tin chung của khóa học vừa chọn--}}
-    @include('lecturer.attendance.course_info')
+    {{--Lịch sử các buổi học--}}
+    @include('lecturer.attendance.attendance_history.course_history')
 
-    <form action="{{asset('/attendance')}}" method="POST" onsubmit="return validateForm()" name="attendanceForm">
-        @csrf
-        {{-- Thông tin khóa học đang được chọn --}}
-        @isset($curCourse)
-            <input type="hidden" name='current-course-id' value='{{$curCourse->id}}'>
-        @endisset
+    @isset($prevLesson)
+        {{--Thông tin chung của khóa học vừa chọn--}}
+        @include('lecturer.attendance.course_info')
+        <form action="{{asset('/attendance')}}" method="POST" onsubmit="return validateForm()" name="attendanceForm">
+            @csrf
+            {{-- Thông tin khóa học đang được chọn --}}
+            @isset($curCourse)
+                <input type="hidden" name='current-course-id' value='{{$curCourse->id}}'>
+            @endisset
 
-        {{--Danh sách sinh viên--}}
-        @include('lecturer.attendance.course_student_list')
+            {{--Danh sách sinh viên--}}
+            @include('lecturer.attendance.student_list')
 
-        {{--Lịch sử các buổi học--}}
-        @include('lecturer.attendance.course_history')
+            {{--Phần chọn thời gian--}}
+            @include('lecturer.attendance.attendance_history.history_time_picker')
 
-        {{--Phần chọn thời gian--}}
-        @include('lecturer.attendance.history_time_picker')
-
-        {{--Phần ghi chú và các nút--}}
-        @include('lecturer.attendance.history_submit_btn')
-    </form>
+            {{--Phần ghi chú và các nút--}}
+            @include('lecturer.attendance.attendance_history.history_submit_btn')
+        </form>
+        @include('lecturer.attendance.attendance_history.history_back_btn')
+    @endisset
 @endsection
 
 @section('script')
+
+    <script src="{{asset('js/fullcalendar/lib/main.js')}}"></script>
+    <script src="{{asset('fullcalendar/lib/locales/vi.js') }}"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            let calendarEl = document.getElementById('calendar');
+
+            let calendar = new FullCalendar.Calendar(calendarEl, {
+                // Display
+                themeSystem: 'bootstrap5',
+                eventBorderColor: '#ffffff',
+                eventColor: '#006182',
+                height: 650,
+
+
+                // Toolbar
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,dayGridWeek,dayGridDay'
+                },
+
+                buttonIcons:
+                    {
+                        prev: 'bi bi-arrow-left',
+                        next: 'bi bi-arrow-right',
+                    },
+
+                // Dịch sang tiếng Việt
+                locale: 'vi',
+                buttonText: {
+                    today: 'Hôm nay',
+                    day: 'Xem ngày',
+                    week: 'Xem tuần',
+                    month: 'Xem tháng',
+                },
+
+                // Thứ 2 là ngày đầu tuần ~
+                firstDay: 1,
+                // Không hiện mờ mấy ngày của tháng khác
+                showNonCurrentDates: false,
+                navLinks: true, // can click day/week names to navigate views
+                // Ko cho edit
+                editable: false,
+                dayMaxEvents: true, // allow "more" link when too many events
+
+                // Truyền vào các buổi chấm công
+                events: [
+                        @isset($lessons)
+                        @foreach($lessons as $lesson)
+                    {
+                        title:
+                        @php
+                            /*
+                             * Title buổi điểm danh có dạng:
+                             *  Ca học: Giờ phút bắt đầu - Giờ phút kết thúc
+                             */
+                            // Convert ca học từ số sang chữ
+                            $title = "";
+                            if($lesson->shift == 0){
+                                $title .= "Ca Sáng";
+                            }else if($lesson->shift == 1){
+                                $title .= "Ca Chiều";
+                            }else if($lesson->shift == 2){
+                                $title .= "Ca Tối";
+                            }
+
+                            // Cắt bỏ phần giây :00 ở giờ bắt đầu / kết thúc
+                            $lessonStart = date('H:i', strtotime($lesson->start));
+                            $lessonEnd = date('H:i', strtotime($lesson->end));
+                            // Gắn thêm giờ bắt đầu và kết thúc
+                            $title .= ": $lessonStart - $lessonEnd";
+
+                            echo (json_encode($title));
+                        @endphp,
+                        start: @php echo json_encode($lesson->created_at->format('Y-m-d')) @endphp,
+                        url: @php echo json_encode(asset('lesson/'.$lesson->id)) @endphp
+                    },
+                    @endforeach
+                    @endisset
+                ],
+                // Làm thuộc tính title có thể xuống dòng
+                eventContent: function (arg) {
+                    return {
+                        html: arg.event.title.replace(/\n/g, '<br>')
+                    }
+                },
+            });
+            calendar.render();
+        });
+    </script>
+
     <script>
         function validateForm() {
             // Nếu đang xem buổi học trong quá khứ
             let prevLessonTime = document.getElementById('prev-lesson-time');
-            if (typeof(prevLessonTime) != 'undefined' && prevLessonTime != null)
-            {
+            if (typeof (prevLessonTime) != 'undefined' && prevLessonTime != null) {
                 return true;
             }
 
@@ -91,8 +212,10 @@
 
         function showPrevLesson() {
             let x = document.getElementById("prev-lesson");
-            if (x.style.display == "none") {
+            if (x.style.display === "none") {
                 x.style.display = "block";
+                $("#calendar").fullCalendar('render');
+                $('#calendar').fullCalendar('refetchEvents');
             } else {
                 x.style.display = "none";
             }

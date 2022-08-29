@@ -11,7 +11,6 @@ use App\Models\Student;
 use App\Models\StudentDTO;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 class LecturerController extends Controller
@@ -38,7 +37,8 @@ class LecturerController extends Controller
                 ->join('lecturer_scheduling', 'course.id', '=',
                     'lecturer_scheduling.course_id')
                 ->join('user', 'user.id', '=', 'lecturer_scheduling.lecturer_id')
-                ->where(['course.status' => 1, 'lecturer_scheduling.lecturer_id' => auth()->user()->id])
+                ->where(['course.status' => 1,
+                    'lecturer_scheduling.lecturer_id' => auth()->user()->id])
                 ->get();
             // Trả dữ liệu về view
             return view('lecturer.attendance.index', ['courses' => $courses]);
@@ -69,10 +69,6 @@ class LecturerController extends Controller
         // Lấy ds DTO chứa các thông tin số buổi nghỉ, muộn, phép
         $studentDTOs = self::studentToDTO($students, $courseId);
 
-        // Lấy danh sách các buổi học trước
-        $lessons = Lesson::where('course_id', $courseId)
-            ->orderBy('created_at', 'ASC')->get();
-
         // Chọn view để trả về dựa trên role
         $view = '';
         if (auth()->user()->role == 1) {
@@ -82,24 +78,11 @@ class LecturerController extends Controller
             // Nếu đây là giảng viên
             $view = 'lecturer.attendance.index';
         }
-        // Tìm và bỏ buổi học hôm nay khỏi DS lịch sử các buổi học NẾU CÓ
-        $existLesson = (new AttendanceController)->getExistLesson($courseId);
-        if ($existLesson != null) {
-            // Bỏ buổi học hiện tại ra khỏi list
-            $lessons->forget(count($lessons) - 1);
-            return view($view, ['courses' => $courses,
-                'students' => $studentDTOs,
-                'curCourse' => $curCourse,
-                'curClass' => $curClass,
-                'lessons' => $lessons,
-                'existLesson' => $existLesson]);
-        } else {
-            return view($view, ['courses' => $courses,
-                'students' => $studentDTOs,
-                'curCourse' => $curCourse,
-                'curClass' => $curClass,
-                'lessons' => $lessons]);
-        }
+
+        return view($view, ['courses' => $courses,
+            'students' => $studentDTOs,
+            'curCourse' => $curCourse,
+            'curClass' => $curClass]);
     }
 
     /*
@@ -236,6 +219,29 @@ class LecturerController extends Controller
     }
 
     /*
+     * Trang xem lịch sử của khóa học
+     */
+    public function history($courseId)
+    {
+        // Lấy danh sách các buổi học trước
+        $lessons = Lesson::where('course_id', $courseId)
+            ->orderBy('created_at', 'ASC')->get();
+
+        // Tìm và bỏ buổi học hôm nay khỏi DS lịch sử các buổi học NẾU CÓ
+        $existLesson = (new AttendanceController)->getExistLesson($courseId);
+
+        if ($existLesson == null) {
+            return view('lecturer.attendance.attendance_history.main_history',
+                ['lessons' => $lessons]);
+        }
+
+        $lessons->forget(count($lessons) - 1);
+        return view('lecturer.attendance.attendance_history.main_history', [
+                'lessons' => $lessons,
+                'existLesson' => $existLesson]);
+    }
+
+    /*
      * Xem buổi học trong quá khứ
      */
     public function prevLessonDetail($lessonId)
@@ -270,12 +276,13 @@ class LecturerController extends Controller
             $prevLessons->forget(count($prevLessons) - 1);
         }
 
-        return view('lecturer.attendance.history_view', ['courses' => $courses,
-            'students' => $studentDTOs,
-            'curCourse' => $curCourse,
-            'curClass' => $curClass,
-            'lessons' => $prevLessons,
-            'prevLesson' => $prevLesson]);
+        return view('lecturer.attendance.attendance_history.main_history',
+            ['courses' => $courses,
+                'students' => $studentDTOs,
+                'curCourse' => $curCourse,
+                'curClass' => $curClass,
+                'lessons' => $prevLessons,
+                'prevLesson' => $prevLesson]);
     }
 
     /*

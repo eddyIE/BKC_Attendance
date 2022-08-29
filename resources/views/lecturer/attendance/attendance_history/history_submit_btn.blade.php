@@ -2,7 +2,7 @@
 
 {{--Ghi chú--}}
 <textarea class="form-control mb-4 mt-4" placeholder="Ghi chú:" name="note"
-          rows="4">
+          rows="3">
     <?php
     echo isset($lessonNote) && $lessonNote != '' ? $lessonNote : '';
     ?>
@@ -18,14 +18,5 @@
         <button id="submit" class="btn btn-success mb-3" type="submit">
             Cập nhật điểm danh
         </button>
-        {{--Không xóa, tag đóng cho form điểm danh--}}
-        </form>
-        <form action="{{ asset('/course-detail') }}" method="POST">
-            @csrf
-            <input type="hidden" name='course-id' value='{{$curCourse->id}}'>
-            <button id="" class="btn btn-primary" type="submit">
-                Trở về buổi học hiện tại
-            </button>
-        </form>
     @endisset
 @endisset

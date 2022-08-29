@@ -19,19 +19,20 @@
         {{-- Thông tin khóa học đang được chọn --}}
         @isset($curCourse)
             <input type="hidden" name='current-course-id' value='{{$curCourse->id}}'>
+
+            {{--Danh sách sinh viên--}}
+            @include('lecturer.attendance.student_list')
+
+            {{--Lịch sử các buổi học--}}
+            @include('lecturer.attendance.course_history_btn')
+
+            {{--Phần chọn thời gian--}}
+            @include('lecturer.attendance.time_picker')
+
+            {{--Phần ghi chú và các nút--}}
+            @include('lecturer.attendance.course_submit_btn')
         @endisset
 
-        {{--Danh sách sinh viên--}}
-        @include('lecturer.attendance.course_student_list')
-
-        {{--Lịch sử các buổi học--}}
-        @include('lecturer.attendance.course_history')
-
-        {{--Phần chọn thời gian--}}
-        @include('lecturer.attendance.course_time_picker')
-
-        {{--Phần ghi chú và các nút--}}
-        @include('lecturer.attendance.course_submit_btn')
     </form>
 @endsection
 
@@ -202,7 +203,7 @@
         }
     </script>
     <script>
-        $( window ).on("load", function () {
+        $(window).on("load", function () {
             $('#start').datetimepicker({
                 format: 'HH:mm',
                 pickDate: false,
@@ -246,7 +247,7 @@
         });
     </script>
     <script>
-        $(function (){
+        $(function () {
             $("#example1").DataTable({
                 "paging": false,
                 "lengthChange": false,
@@ -259,15 +260,15 @@
                     'bSortable': false,
                     'aTargets': [-1] /* 1st one, start by the right */
                 }],
-                "oLanguage" : {
-                    "sSearch" : "Tìm kiếm",
-                    "sInfo" : "Hiển thị _START_ đến _END_ của _TOTAL_ kết quả",
+                "oLanguage": {
+                    "sSearch": "Tìm kiếm",
+                    "sInfo": "Hiển thị _START_ đến _END_ của _TOTAL_ kết quả",
                     "sInfoEmpty": "Hiển thị 0 kết quả",
                     "sInfoFiltered": "(Lọc từ _MAX_ kết quả)",
-                    "sEmptyTable" : "Không có dữ liệu",
-                    "sZeroRecords" : "Không tìm thấy kết quả",
+                    "sEmptyTable": "Không có dữ liệu",
+                    "sZeroRecords": "Không tìm thấy kết quả",
                     "sPrevious": "Trước",
-                    "next" : "Sau",
+                    "next": "Sau",
                     "paginate": {
                         "sFirst": "Trang đầu",
                         "sLast": "Trang cuối",

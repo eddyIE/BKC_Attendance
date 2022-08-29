@@ -62,6 +62,9 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'role:lecturer']], funct
     // Tạo điểm danh
     Route::post('/attendance', 'AttendanceController@createAttendance');
 
+    // Vào trang xem lịch sử các buổi học
+    Route::get('/history/{courseId}', 'LecturerController@history');
+
     // Chi tiết buổi học trong lịch sử
     Route::get('/lesson/{id}', 'LecturerController@prevLessonDetail');
 

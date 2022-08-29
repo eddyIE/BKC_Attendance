@@ -319,9 +319,10 @@ class AttendanceController extends Controller
 
         $lessons = Lesson::where('created_by', Auth::user()->id)
             ->where('shift', $curShift)
-            ->where('created_at', 'like', '%' . $curDate . '%');
+            ->where('created_at', 'like', '%' . $curDate . '%')
+            ->get();
 
-        if (empty($lessons)) {
+        if (count($lessons) == 0) {
             return true;
         }
         return false;
