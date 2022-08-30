@@ -26,9 +26,13 @@
     border: 1px solid black!important;
     }
 
-    .fc-event-main{
-    padding: 5px;
-    }
+    /*.fc-daygrid-event{*/
+    /*margin: 20px;*/
+    /*}*/
+    /*.fc-event-main{*/
+    /*margin: 5px;*/
+    /*font-size: 16px;*/
+    /*}*/
 
 @endsection
 
@@ -48,41 +52,35 @@
         document.addEventListener('DOMContentLoaded', function () {
             let calendarEl = document.getElementById('calendar');
 
-            let count = 0;
             let calendar = new FullCalendar.Calendar(calendarEl, {
-                slotLabelFormat: function (date) {
-                    const shifts = ["Sáng (8h-12h)",
-                        "Chiều (13h-17h)", "Tối (18h-21h)"];
-                    return "Ca " + shifts[count++];
-                },
-                // Week layout
-                initialView: 'timeGridWeek',
-
-                slotDuration: '04:00:00',
-                slotMinTime: '08:00:00',
-                slotMaxTime: '19:00:00',
-
+                initialView: 'dayGridWeek',
+                // Ẩn dòng "Cả ngày"
                 allDaySlot: false,
+                // Thời gian bắt đầu và kết thúc
+                slotMinTime: '08:00:00',
+                slotMaxTime: '21:00:00',
 
-                // slotLabelFormat: {
-                //     hour: 'numeric',
-                //     minute: '2-digit',
-                //     omitZeroMinute: false,
-                //     meridiem: 'short'
-                // },
-                dayHeaderFormat: {weekday: 'short'},
+                // Chiều cao hàng
+                expandRows: true,
 
-                // Theme & color
+                // Format giờ trong timeGridWeek
+                slotLabelFormat: {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    omitZeroMinute: false,
+                    meridiem: 'short'
+                },
+
+                // Display
                 themeSystem: 'bootstrap5',
                 eventBorderColor: '#ffffff',
                 eventColor: '#006182',
-                height: 300,
 
                 // Toolbar
                 headerToolbar: {
                     left: 'today',
                     center: '',
-                    right: 'dayGridMonth,dayGridWeek,dayGridDay'
+                    right: 'dayGridWeek,dayGridDay,timeGridWeek'
                 },
 
                 // Dịch sang tiếng Việt
@@ -93,6 +91,9 @@
                     week: 'Xem tuần',
                     month: 'Xem tháng'
                 },
+
+                // Chỉ hiện thị thứ không hiển thị ngày
+                dayHeaderFormat: {weekday: 'short'},
 
                 // Thứ 2 là ngày đầu tuần ~
                 firstDay: 1,
@@ -106,10 +107,9 @@
                 // Truyền vào các buổi chấm công
                 events: [
                     {
-                        title: "tets",
-                        daysOfWeek: [5]
+                        title: "test",
+                        daysOfWeek: [5],
                     },
-                        {{--                        @dd($lessons)--}}
                         @isset($courses)
                         @foreach($courses as $course)
                     {
@@ -122,14 +122,15 @@
                              */
                             // Lấy tên lớp học
                             // và convert ca học từ số sang chữ
-                            $title = "$course->name";
+                            $title = "$course->name \n";
+                            $title .= "$course->start"." - "."$course->end";
 
                             echo (json_encode($title));
                         @endphp,
-                        daysOfWeek: @php
-                                echo json_encode($course->scheduled_day)
-                            @endphp,
-                            start: "08:00"
+                        daysOfWeek: {{$course->scheduled_day}},
+                        startTime: '{{$course->start}}',
+                        endTime: '{{$course->end}}',
+                        display: 'block'
                     },
                     @endforeach
                     @endisset

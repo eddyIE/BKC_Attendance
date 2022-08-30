@@ -418,7 +418,11 @@ class LecturerController extends Controller
      */
     public function schedule(){
         $courses = (new Course)->findCoursesOfLecturer(auth()->user()->id);
-        dump($courses);
+        foreach($courses as $course){
+            $course->scheduled_time = explode('-', $course->scheduled_time);
+            $course->start = $course->scheduled_time[0];
+            $course->end = $course->scheduled_time[1];
+        }
         return view('lecturer.schedule.schedule', ['courses' => $courses]);
     }
 }
