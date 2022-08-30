@@ -79,4 +79,8 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'role:lecturer']], funct
 
     // Excel
     Route::get('/course/export/{courseId}', 'LecturerController@exportStudentData');
+
+    // Thời khóa biểu
+    Route::get('/schedule', 'LecturerController@schedule');
+
 });

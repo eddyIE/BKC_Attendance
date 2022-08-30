@@ -39,7 +39,7 @@
                         <li class="nav-item">
                             <a href="{{ asset('/my-course') }}" class="nav-link">
                                 &emsp;<i class="fas fa-circle nav-icon"></i>
-                                <p>Danh sách phân công</p>
+                                <p>Danh sách các phân công</p>
                             </a>
                         </li>
                     </ul>
@@ -47,7 +47,13 @@
                 <li class="nav-item">
                     <a href="{{ asset('/time-keeping') }}" class="nav-link">
                         <i class="nav-icon fas fa-chart-area"></i>
-                        <p>BẢNG GIỜ DẠY</p>
+                        <p>LỊCH SỬ GIỜ DẠY TRONG THÁNG</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ asset('/schedule') }}" class="nav-link">
+                        <i class="nav-icon fa fa-table"></i>
+                        <p>THỜI KHÓA BIỂU</p>
                     </a>
                 </li>
             </ul>

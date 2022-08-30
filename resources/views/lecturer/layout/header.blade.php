@@ -11,7 +11,7 @@
         <div class="navbar-header">
             <a class="navbar-brand text-uppercase text-white fw-bold fs-2"
                href="{{ asset('/') }}">
-                Hệ thống điểm danh - Học viện
+                Hệ thống điểm danh học viện
             </a>
         </div>
         <ul class="navbar-nav float-right" style="float:right">

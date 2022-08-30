@@ -33,13 +33,7 @@ class LecturerController extends Controller
             return view('admin.attendance.index', ['courses' => $courses]);
         } // Nếu không phải giáo vụ thì chỉ lấy các lớp được phân công
         else if (auth()->user()->role == 0) {
-            $courses = Course::select('course.*')
-                ->join('lecturer_scheduling', 'course.id', '=',
-                    'lecturer_scheduling.course_id')
-                ->join('user', 'user.id', '=', 'lecturer_scheduling.lecturer_id')
-                ->where(['course.status' => 1,
-                    'lecturer_scheduling.lecturer_id' => auth()->user()->id])
-                ->get();
+            $courses = (new Course)->findCoursesOfLecturer(auth()->user()->id);
             // Trả dữ liệu về view
             return view('lecturer.attendance.index', ['courses' => $courses]);
         }
@@ -56,7 +50,7 @@ class LecturerController extends Controller
     {
         // Lấy lại danh sách các khóa học
         // để truyền lên thanh tìm kiếm khóa học
-        $courses = Course::all();
+        $courses = (new Course)->findCoursesOfLecturer(auth()->user()->id);
 
         // Lấy thông tin của khóa học
         $courseId = $request->all()['course-id'];
@@ -248,7 +242,7 @@ class LecturerController extends Controller
     {
         // Lấy lại danh sách các khóa học
         // để truyền lên thanh tìm kiếm khóa học
-        $courses = Course::all();
+        $courses = (new Course)->findCoursesOfLecturer(auth()->user()->id);
 
         // Lấy các thông tin về previous lesson được chọn
         $prevLesson = Lesson::find($lessonId);
@@ -292,12 +286,7 @@ class LecturerController extends Controller
     function courseManagement()
     {
         // Lấy danh sách các lớp được phân công
-        $courses = Course::select('course.*')
-            ->join('lecturer_scheduling', 'course.id', '=',
-                'lecturer_scheduling.course_id')
-            ->join('user', 'user.id', '=', 'lecturer_scheduling.lecturer_id')
-            ->where('lecturer_scheduling.lecturer_id', auth()->user()->id)
-            ->get();
+        $courses = (new Course)->findCoursesOfLecturer(auth()->user()->id);
         // Trả dữ liệu về view
         return view('lecturer.course.course', ['courses' => $courses]);
     }
@@ -349,11 +338,7 @@ class LecturerController extends Controller
         }
 
         // Lấy danh sách các khóa học được phân công
-        $courses = Course::select('course.*')
-            ->join('lecturer_scheduling', 'course.id', '=',
-                'lecturer_scheduling.course_id')
-            ->join('user', 'user.id', '=', 'lecturer_scheduling.lecturer_id')
-            ->get();
+        $courses = (new Course)->findCoursesOfLecturer(auth()->user()->id);
 
         // Lấy ID các khóa học vừa tìm được
         $courseIds = array();
@@ -426,5 +411,14 @@ class LecturerController extends Controller
 
         return (new AttendanceExport($courseId, $studentDTOs))
             ->download($courseName . '_ds_sv_du_dieu_kien.xlsx');
+    }
+
+    /*
+     * Xem thời khóa biểu
+     */
+    public function schedule(){
+        $courses = (new Course)->findCoursesOfLecturer(auth()->user()->id);
+        dump($courses);
+        return view('lecturer.schedule.schedule', ['courses' => $courses]);
     }
 }
