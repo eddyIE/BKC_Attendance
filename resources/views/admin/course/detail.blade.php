@@ -25,13 +25,13 @@
                         <label for="scheduled_day">Lịch dạy</label>
                         <div class="select2-lightblue">
                             <select class="form-control" multiple="multiple" data-placeholder="Vui lòng chọn những buổi dạy trong tuần" data-dropdown-css-class="select2-lightblue" style="width: 100%;" name="scheduled_day[]" id="scheduled_day">
-                                <option value="Monday">Thứ Hai</option>
-                                <option value="Tuesday">Thứ Ba</option>
-                                <option value="Wednesday">Thứ Tư</option>
-                                <option value="Thursday">Thứ Năm</option>
-                                <option value="Friday">Thứ Sáu</option>
-                                <option value="Saturday">Thứ Bảy</option>
-                                <option value="Sunday">Chủ Nhật</option>
+                                <option value="1">Thứ Hai</option>
+                                <option value="2">Thứ Ba</option>
+                                <option value="3">Thứ Tư</option>
+                                <option value="4">Thứ Năm</option>
+                                <option value="5">Thứ Sáu</option>
+                                <option value="6">Thứ Bảy</option>
+                                <option value="0">Chủ Nhật</option>
                             </select>
                         </div>
                     </div>
