@@ -53,7 +53,7 @@ class CourseController extends Controller
             'total_hours' => $request->total_hours,
             'class_id' => $request->class,
             'subject_id' => $program_info->id,
-            'scheduled_day' => json_encode($request->scheduled_day),
+            'scheduled_day' => json_encode($request->scheduled_day,JSON_NUMERIC_CHECK),
             'scheduled_time' => $request->start . ' - ' . $request->end,
             'created_by' => auth()->user()->id
         ];
