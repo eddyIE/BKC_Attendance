@@ -47,6 +47,9 @@ Route::group(['prefix' => '/admin', 'middleware' => ['auth', 'role:admin']], fun
     Route::post('course-data', 'LecturerController@getCourseData');
 
     Route::post('attendance', 'AttendanceController@createAttendance');
+
+    // Thống kê
+    Route::get('statistic', 'AdminController@statistic');
 });
 
 Route::group(['prefix' => '/', 'middleware' => ['auth', 'role:lecturer']], function (){

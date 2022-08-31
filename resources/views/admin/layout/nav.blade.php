@@ -93,6 +93,14 @@
                         </p>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ asset('admin/statistic') }}" class="nav-link">
+                        <i class="nav-icon fas fa-chart-bar"></i>
+                        <p>
+                            TỔNG QUAN HỌC VIỆN
+                        </p>
+                    </a>
+                </li>
             </ul>
         </nav>
     </div>

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\Student;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -21,5 +23,16 @@ class AdminController extends Controller
             $course->total_lessons = $course->total_hours/(count($course->scheduled_time));
         }
         return view('admin.index', ['courses' => $courses]);
+    }
+
+    public function statistic(){
+        $lecturerQuan = User::where('role', 0)->count();
+        $courseQuan = Course::where('status', 1)->count();
+        $studentQuan = Student::where('status', 1)->count();
+        return view('admin.statistic.index', [
+            'lecturerQuan' => $lecturerQuan,
+            'courseQuan' => $courseQuan,
+            'studentQuan' => $studentQuan
+        ]);
     }
 }
