@@ -10,6 +10,13 @@
                 @csrf
                 <div class="card-body">
                     <div class="form-group">
+                        <label for="code">Mã sinh viên</label>
+                        @error('code')
+                        <div class="danger text-red" style="float:right">{{ $message }}</div>
+                        @enderror
+                        <input type="text" class="form-control" id="code" name="code">
+                    </div>
+                    <div class="form-group">
                         <label for="full_name">Họ & tên</label>
                         @error('full_name')
                         <div class="danger text-red" style="float:right">{{ $message }}</div>
