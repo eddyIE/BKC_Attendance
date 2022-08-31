@@ -198,7 +198,7 @@ class AttendanceController extends Controller
     * Xem giờ thực tế để suy ra ca học hiện tại
     * Return: Ca sáng - 0, Ca chiều - 1, Ca tối - 2, Không phải giờ học - 4
     */
-    private function getCurrentShift(): int
+    public function getCurrentShift(): int
     {
         $curTime = Carbon::now("Asia/Ho_Chi_Minh");
 

@@ -26,13 +26,14 @@
     border: 1px solid black!important;
     }
 
-    /*.fc-daygrid-event{*/
-    /*margin: 20px;*/
-    /*}*/
-    /*.fc-event-main{*/
-    /*margin: 5px;*/
-    /*font-size: 16px;*/
-    /*}*/
+    .fc-daygrid-event{
+    margin: 20px;
+    }
+    .fc-event-main{
+    padding: 5px;
+    font-size: 16px;
+    min-height: 100px;
+    }
 
 @endsection
 
@@ -89,7 +90,8 @@
                     today: 'Hôm nay',
                     day: 'Xem ngày',
                     week: 'Xem tuần',
-                    month: 'Xem tháng'
+                    month: 'Xem tháng',
+                    timeGridWeek: 'Chi tiết tuần'
                 },
 
                 // Chỉ hiện thị thứ không hiển thị ngày

@@ -73,10 +73,22 @@ class LecturerController extends Controller
             $view = 'lecturer.attendance.index';
         }
 
+        $curShift = (new AttendanceController)->getCurrentShift();
+        // Check xem có phải hôm nay lớp đã điểm danh không
+        $existLesson = (new AttendanceController)->getExistLesson($courseId);
+        if ($existLesson != null) {
+            return view($view, ['courses' => $courses,
+                'students' => $studentDTOs,
+                'curCourse' => $curCourse,
+                'curClass' => $curClass,
+                'existLesson' => $existLesson,
+                'curShift' => $curShift]);
+        }
         return view($view, ['courses' => $courses,
             'students' => $studentDTOs,
             'curCourse' => $curCourse,
-            'curClass' => $curClass]);
+            'curClass' => $curClass,
+            'curShift' => $curShift]);
     }
 
     /*
@@ -231,8 +243,8 @@ class LecturerController extends Controller
 
         $lessons->forget(count($lessons) - 1);
         return view('lecturer.attendance.attendance_history.main_history', [
-                'lessons' => $lessons,
-                'existLesson' => $existLesson]);
+            'lessons' => $lessons,
+            'existLesson' => $existLesson]);
     }
 
     /*
@@ -416,9 +428,10 @@ class LecturerController extends Controller
     /*
      * Xem thời khóa biểu
      */
-    public function schedule(){
+    public function schedule()
+    {
         $courses = (new Course)->findCoursesOfLecturer(auth()->user()->id);
-        foreach($courses as $course){
+        foreach ($courses as $course) {
             $course->scheduled_time = explode('-', $course->scheduled_time);
             $course->start = $course->scheduled_time[0];
             $course->end = $course->scheduled_time[1];
