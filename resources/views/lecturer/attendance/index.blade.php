@@ -65,9 +65,11 @@
 
             let currentWeekDayDigit = new Date().getDay();
             let courseScheduledDays = ['none'];
+            let courseScheduledTime = "";
             @isset($curCourse)
                 courseScheduledDays = {{$curCourse->scheduled_day}};
-            {{--let courseScheduleTime = {{$curCourse->scheduled_time}}.split('-');--}}
+                courseScheduledTime = @php echo json_encode($curCourse->scheduled_time) @endphp;
+                courseScheduledTime = courseScheduledTime.split("-");
             @endisset
             // VALIDATE
             try {
@@ -120,6 +122,15 @@
                     if (isConfirm === false) {
                         return false;
                     }
+                }
+                console.log(end);
+                console.log(end.toString());
+                console.log(courseScheduledTime);
+                console.log(courseScheduledTime[1]);
+                console.log(end.toString() !== courseScheduledTime[1]);
+                if (end.toString() !== courseScheduledTime[1]) {
+
+                    confirm("Giờ học khác với lịch, tiếp tục?");
                 }
             } catch (err) {
                 console.log(err.message);
