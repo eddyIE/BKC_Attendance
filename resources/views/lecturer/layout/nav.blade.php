@@ -47,7 +47,7 @@
                 <li class="nav-item">
                     <a href="{{ asset('/time-keeping') }}" class="nav-link">
                         <i class="nav-icon fas fa-chart-area"></i>
-                        <p>LỊCH SỬ GIỜ DẠY TRONG THÁNG</p>
+                        <p>LỊCH SỬ DẠY</p>
                     </a>
                 </li>
                 <li class="nav-item">

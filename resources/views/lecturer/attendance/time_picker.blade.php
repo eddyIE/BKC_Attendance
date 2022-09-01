@@ -63,6 +63,7 @@
             </label>
             <br>
         @endif
+        <input id="shift" type="hidden" name="shift">
     @else
         <input id="shift" type="hidden" name="shift">
     @endif

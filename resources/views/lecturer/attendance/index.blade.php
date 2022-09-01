@@ -69,7 +69,7 @@
             @isset($curCourse)
                 courseScheduledDays = {{$curCourse->scheduled_day}};
                 courseScheduledTime = @php echo json_encode($curCourse->scheduled_time) @endphp;
-                courseScheduledTime = courseScheduledTime.split("-");
+                courseScheduledTime = courseScheduledTime.split(" - ");
             @endisset
             // VALIDATE
             try {
@@ -123,14 +123,11 @@
                         return false;
                     }
                 }
-                console.log(end);
-                console.log(end.toString());
-                console.log(courseScheduledTime);
+                console.log(endInput);
                 console.log(courseScheduledTime[1]);
-                console.log(end.toString() !== courseScheduledTime[1]);
-                if (end.toString() !== courseScheduledTime[1]) {
-
-                    confirm("Giờ học khác với lịch, tiếp tục?");
+                console.log(endInput !== courseScheduledTime[1]);
+                if (endInput !== courseScheduledTime[1]) {
+                    return confirm("Giờ học khác với lịch, tiếp tục?");
                 }
             } catch (err) {
                 console.log(err.message);
