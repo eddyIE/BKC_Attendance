@@ -432,7 +432,7 @@ class LecturerController extends Controller
     {
         $courses = (new Course)->findCoursesOfLecturer(auth()->user()->id);
         foreach ($courses as $course) {
-            $course->scheduled_time = explode('-', $course->scheduled_time);
+            $course->scheduled_time = explode(' - ', $course->scheduled_time);
             $course->start = $course->scheduled_time[0];
             $course->end = $course->scheduled_time[1];
         }

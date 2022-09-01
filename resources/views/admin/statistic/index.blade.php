@@ -44,7 +44,7 @@
                         <p>Sinh viên đang theo học</p>
                     </div>
                     <div class="icon">
-                        <i class="fas fa-user-graduate"></i>
+                        <i class="fa fa-users" aria-hidden="true"></i>
                     </div>
                     <a href="#" class="small-box-footer">
                         Chi tiết <i class="fas fa-arrow-circle-right"></i>
