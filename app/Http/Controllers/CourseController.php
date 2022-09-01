@@ -7,10 +7,9 @@ use App\Models\Course;
 use App\Models\LecturerScheduling;
 use App\Models\Program;
 use App\Models\ProgramInfo;
-use App\Models\Subject;
+use App\Models\Student;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 class CourseController extends Controller
@@ -18,19 +17,19 @@ class CourseController extends Controller
     public function index()
     {
         $data = Course::with([
-            'class' => function($query){
+            'class' => function ($query) {
                 $query->where('class.status', true);
             },
-            'program_info' => function($query){
+            'program_info' => function ($query) {
                 $query->where('program_info.status', true);
             },
-            'program_info.subject' => function($query){
+            'program_info.subject' => function ($query) {
                 $query->where('subject.status', true);
             },
-            'lecturer_scheduling' => function($query){
+            'lecturer_scheduling' => function ($query) {
                 $query->where('lecturer_scheduling.status', true);
             },
-            'lecturer_scheduling.user' => function($query){
+            'lecturer_scheduling.user' => function ($query) {
                 $query->where('user.status', true);
             },
         ])->get()->sortByDesc('course.created_at');
@@ -53,14 +52,14 @@ class CourseController extends Controller
             'total_hours' => $request->total_hours,
             'class_id' => $request->class,
             'subject_id' => $program_info->id,
-            'scheduled_day' => json_encode($request->scheduled_day,JSON_NUMERIC_CHECK),
+            'scheduled_day' => json_encode($request->scheduled_day, JSON_NUMERIC_CHECK),
             'scheduled_time' => $request->start . ' - ' . $request->end,
             'created_by' => auth()->user()->id
         ];
 
         $new_course = Course::firstOrCreate($course);
 
-        if ($new_course){
+        if ($new_course) {
             foreach ($request->lecturer as $index => $lecturer) {
                 if ($index == 0) {
                     $new_lecturer = [
@@ -83,7 +82,7 @@ class CourseController extends Controller
                 }
             }
 
-            if ($scheduled_lecturer){
+            if ($scheduled_lecturer) {
                 Session::flash('type', 'success');
                 Session::flash('message', 'Thêm thông tin thành công.');
                 return redirect('admin/course');
@@ -121,7 +120,7 @@ class CourseController extends Controller
         $course = Course::find($id);
         $result = $course->update($data);
 
-        if ($result){
+        if ($result) {
             Session::flash('type', 'success');
             Session::flash('message', 'Sửa thông tin thành công.');
             return redirect('admin/course');
@@ -142,7 +141,7 @@ class CourseController extends Controller
         $course = Course::find($id);
         $result = $course->update($data);
 
-        if ($result){
+        if ($result) {
             Session::flash('type', 'info');
             Session::flash('message', 'Thông tin đã bị ẩn khỏi hệ thống.');
             return redirect('admin/course');
@@ -163,7 +162,7 @@ class CourseController extends Controller
         $course = Course::find($id);
         $result = $course->update($data);
 
-        if ($result){
+        if ($result) {
             Session::flash('type', 'info');
             Session::flash('message', 'Thông tin đã được khôi phục.');
             return redirect('admin/course');
@@ -172,5 +171,41 @@ class CourseController extends Controller
             Session::flash('message', 'Đã có sự cố xảy ra.');
             return redirect('admin/course');
         }
+    }
+
+    public function qualifiedStudent($courseId)
+    {
+        // Lấy thông tin khóa học
+        $curCourse = Course::find($courseId);
+
+        // Lấy danh sách các sinh viên
+        $students = Student::where('class_id', $curCourse->class_id)->get();
+        // Lấy ds DTO chứa các thông tin số buổi nghỉ, muộn, phép
+        $studentDTOs = (new LecturerController)->studentToDTO($students, $courseId);
+
+        $failQuan = 0;
+        $passQuan = 0;
+        $almostFailQuan = 0;
+        foreach ($studentDTOs as $student) {
+            // Tính % nghỉ và làm tròn
+            $absentPercentage = $student->absentQuan / $curCourse->finished_lessons * 100;
+            $absentPercentage = number_format((float)$absentPercentage, 2);
+
+            // Nghỉ quá 50% học lại, quá 30% thi lại
+            if ($absentPercentage > 50) {
+                $failQuan++;
+            } else if ($absentPercentage > 30) {
+                $almostFailQuan++;
+            } else {
+                $passQuan++;
+            }
+        }
+
+        $dataset = [
+            "data" => [$passQuan, $almostFailQuan, $failQuan],
+            "backgroundColor" => ['#5cb85c', '#f0ad4e', '#d9534f']
+        ];
+
+        return $dataset;
     }
 }

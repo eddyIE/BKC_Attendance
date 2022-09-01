@@ -26,7 +26,7 @@ class AdminController extends Controller
         return view('admin.index', ['courses' => $courses]);
     }
 
-    public function statistic()
+    public function statistic($courseId = 2)
     {
         // Thống kê chung
         $lecturerQuan = User::where('role', 0)->count();
@@ -34,14 +34,23 @@ class AdminController extends Controller
         $studentQuan = Student::where('status', 1)->count();
         $classQuan = Classes::where('status', 1)->count();
 
-        $attendanceAbsents = self::getStudentAbsentTooMuch(15, 1, 0);
+        $attendanceAbsents = self::getStudentAbsentTooMuch(30, 2, 0);
+
+        $courses = Course::all();
+
+        $dataset = (new CourseController)->qualifiedStudent($courseId);
+
+        $lecturers = User::where('role', 0)->get();
 
         return view('admin.statistic.index', [
             'lecturerQuan' => $lecturerQuan,
             'courseQuan' => $courseQuan,
             'studentQuan' => $studentQuan,
             'classQuan' => $classQuan,
-            'attendanceNoReason' => $attendanceAbsents
+            'attendanceNoReason' => $attendanceAbsents,
+            'courses' => $courses,
+            'courseDataSet' => $dataset,
+            'lecturers' => $lecturers
         ]);
     }
 
@@ -68,11 +77,6 @@ class AdminController extends Controller
         for ($i = 0; $i < $count; $i++) {
             if ($results[$i]->count <= $times) {
                 $results->forget($i);
-            } else{
-                $results[$i]->class_name =
-                    Classes::select('name')
-                        ->where('id', $results[$i]->class_id)
-                        ->pluck('name')->first();
             }
         }
         return $results;

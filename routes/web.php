@@ -49,7 +49,7 @@ Route::group(['prefix' => '/admin', 'middleware' => ['auth', 'role:admin']], fun
     Route::post('attendance', 'AttendanceController@createAttendance');
 
     // Thống kê
-    Route::get('statistic', 'AdminController@statistic');
+    Route::get('statistic/{courseId?}', 'AdminController@statistic');
 });
 
 Route::group(['prefix' => '/', 'middleware' => ['auth', 'role:lecturer']], function (){

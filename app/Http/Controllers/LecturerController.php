@@ -94,8 +94,8 @@ class LecturerController extends Controller
     /*
      * Chuyển Model Student sang StudentDTO để chứa thêm thông tin số ngày nghỉ
      */
-    private function studentToDTO($students, $courseId,
-                                  $specificLessonId = null): array
+    public function studentToDTO($students, $courseId,
+                                 $specificLessonId = null): array
     {
         $result = array();
 
