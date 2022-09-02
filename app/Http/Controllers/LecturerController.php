@@ -298,7 +298,7 @@ class LecturerController extends Controller
     function courseManagement()
     {
         // Lấy danh sách các lớp được phân công
-        $courses = (new Course)->findCoursesOfLecturer(auth()->user()->id);
+        $courses = (new Course)->findCoursesOfLecturer(auth()->user()->id, false);
         // Trả dữ liệu về view
         return view('lecturer.course.course', ['courses' => $courses]);
     }
@@ -350,7 +350,7 @@ class LecturerController extends Controller
         }
 
         // Lấy danh sách các khóa học được phân công
-        $courses = (new Course)->findCoursesOfLecturer(auth()->user()->id);
+        $courses = (new Course)->findCoursesOfLecturer(auth()->user()->id, false);
 
         // Lấy ID các khóa học vừa tìm được
         $courseIds = array();

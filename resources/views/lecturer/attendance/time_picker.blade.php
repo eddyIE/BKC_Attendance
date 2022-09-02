@@ -30,6 +30,12 @@
     </tr>
 </table>
 
+<div class="text-info mt-4 mb-4">
+    - Ca sáng: 8-12h | Ca chiều: 13-17h | Ca tối: 18-21h <br>
+    - Giờ bắt đầu không sớm hơn hiện tại <br>
+    - Không điểm danh sau khi buổi học kết thúc quá 30p
+</div>
+
 <label for="lesson-date" class="h5 text-primary fw-normal">
     Ngày điểm danh:
 </label>
@@ -38,6 +44,7 @@
        value="<?php echo date('Y-m-d'); ?>"
        placeholder="dd-mm-yyyy" readonly>
 
+<br>
 {{--Nút chọn ca học--}}
 <div>
     <br>
@@ -69,27 +76,27 @@
     @endif
 </div>
 
-<span class="time-picker">
-    <label for="start" class="h5 fw-normal">Giờ bắt đầu: </label>
-    <div class="input-group date" id="start" data-target-input="nearest">
-        <input type="text" class="datetimepicker-input text-center" name="start"
-               data-target="#start" value="08:00"/>
-        <div class="input-group-append" data-target="#start" data-toggle="datetimepicker">
-            <div class="input-group-text"><i class="far fa-clock"></i></div>
+<div class="row mb-3">
+    <span class="time-picker col justify-content-center">
+        <label for="start" class="h5 fw-normal">Giờ bắt đầu: </label>
+        <div class="input-group date" id="start" data-target-input="nearest">
+            <input type="text" class="datetimepicker-input text-center" name="start"
+                   data-target="#start" value="08:00"/>
+            <div class="input-group-append" data-target="#start" data-toggle="datetimepicker">
+                <div class="input-group-text"><i class="far fa-clock"></i></div>
+            </div>
         </div>
-    </div>
-</span>
-<br>
-<span class="time-picker">
-    <label for="end" class="h5 fw-normal">Giờ kết thúc: </label>
-    <div class="input-group date" id="end" data-target-input="nearest">
-        <input type="text" class="datetimepicker-input text-center" name="end"
-               data-target="#end" value="12:00"/>
-        <div class="input-group-append" data-target="#end" data-toggle="datetimepicker">
-            <div class="input-group-text"><i class="far fa-clock"></i></div>
+    </span>
+    <span class="time-picker col justify-content-center">
+        <label for="end" class="h5 fw-normal">Giờ kết thúc: </label>
+        <div class="input-group date" id="end" data-target-input="nearest">
+            <input type="text" class="datetimepicker-input text-center" name="end"
+                   data-target="#end" value="12:00"/>
+            <div class="input-group-append" data-target="#end" data-toggle="datetimepicker">
+                <div class="input-group-text"><i class="far fa-clock"></i></div>
+            </div>
         </div>
-    </div>
-</span>
-<br>
+    </span>
+</div>
 
 
