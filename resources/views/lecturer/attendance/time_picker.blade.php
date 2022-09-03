@@ -3,7 +3,7 @@
 {{--Hiển thị lịch dự kiến của lớp môn học--}}
 <table title="Lịch môn này" class="table table-bordered">
     <tr>
-        <th colspan="8" class="fs-5">Lịch lớp môn học</th>
+        <th colspan="8" class="fs-5">Lịch lớp môn học này</th>
     </tr>
     <tr>
         <td>Ngày</td>
