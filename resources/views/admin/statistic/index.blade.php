@@ -6,7 +6,7 @@
     {{--Thông tin chung--}}
     @include('admin.statistic.general_info')
     {{--Chart thống kê chuyên cần--}}
-    @include('admin.statistic.course_qualified_chart')
+    @include('admin.statistic.course_chart')
 
     {{--Danh sách sinh viên nghỉ nhiều--}}
     @include('admin.statistic.student_absent_table')

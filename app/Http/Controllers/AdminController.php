@@ -7,6 +7,7 @@ use App\Models\Course;
 use App\Models\Student;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
@@ -34,12 +35,20 @@ class AdminController extends Controller
         $studentQuan = Student::where('status', 1)->count();
         $classQuan = Classes::where('status', 1)->count();
 
+        // Danh sách sinh viên nghỉ nhiều
         $attendanceAbsents = self::getStudentAbsentTooMuch(30, 2, 0);
 
+        // Danh sách các khóa học
         $courses = Course::all();
-
+        // Tên khóa học được chọn
+        $chosenCourseName = Course::where('id', $courseId)->first();
+        $chosenCourseName = $chosenCourseName->name;
+        // Chart chuyên cần của khóa học
         $dataset = (new CourseController)->qualifiedStudent($courseId);
+        // Lấy danh sách các giảng viên dạy trong một khóa học
+        $taughtTimeInCourse = (new CourseController)->getTaughtTime($courseId);
 
+        // Danh sách giảng viên
         $lecturers = User::where('role', 0)->get();
 
         return view('admin.statistic.index', [
@@ -50,7 +59,9 @@ class AdminController extends Controller
             'attendanceNoReason' => $attendanceAbsents,
             'courses' => $courses,
             'courseDataSet' => $dataset,
-            'lecturers' => $lecturers
+            'chosenCourseName' => $chosenCourseName,
+            'lecturers' => $lecturers,
+            'taughtTimeInCourse' => $taughtTimeInCourse
         ]);
     }
 

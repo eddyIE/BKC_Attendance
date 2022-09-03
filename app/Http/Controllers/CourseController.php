@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Classes;
 use App\Models\Course;
 use App\Models\LecturerScheduling;
+use App\Models\Lesson;
 use App\Models\Program;
 use App\Models\ProgramInfo;
 use App\Models\Student;
@@ -203,9 +204,37 @@ class CourseController extends Controller
 
         $dataset = [
             "data" => [$passQuan, $almostFailQuan, $failQuan],
-            "backgroundColor" => ['#5cb85c', '#f0ad4e', '#d9534f']
+            "backgroundColor" => ['#28A745', '#ffc107', '#DC3545']
         ];
 
         return $dataset;
+    }
+
+    // Tính số giờ các giảng viên đã dạy trong một khóa học
+    public function getTaughtTime($courseId)
+    {
+        $lecturerIds = LecturerScheduling::select('lecturer_id')
+            ->where('course_id', $courseId)->get();
+
+        $lecturers = User::whereIn('id', $lecturerIds)->get();
+
+        $result = [];
+        foreach ($lecturers as $lecturer) {
+            $lessons = Lesson::where('created_by', $lecturer->id)
+                ->where('course_id', $courseId)->get();
+
+            $timeKeeping = 0;
+            foreach ($lessons as $lesson) {
+                $timeKeeping += strtotime($lesson->end) - strtotime($lesson->start);
+            }
+            // Biến đổi giờ dạy từ giây sang Giờ:Phút:Giây
+            $timeKeeping = floor($timeKeeping / 3600)
+                . gmdate(":i", $timeKeeping % 3600);
+            $lecturer->timeKeeping = $timeKeeping;
+
+            $result[] = $lecturer;
+        }
+
+        return $result;
     }
 }
