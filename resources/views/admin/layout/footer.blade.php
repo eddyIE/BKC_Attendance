@@ -28,17 +28,14 @@ All rights reserved.
 <script src="{{ asset('js/bootstrap-colorpicker.min.js') }}"></script>
 <!--Tempusdominus Bootstrap 4-->
 <script src="{{ asset('js/tempusdominus-bootstrap-4.min.js') }}"></script>
+<!-- Fullcalendar -->
+<script src="{{ asset('js/fullcalendar/lib/main.js') }}"></script>
+<script src="{{ asset('js/fullcalendar/lib/locales/vi.js') }}"></script>
 <!-- AdminLTE App -->
 <script src="{{ asset('/js/adminlte.min.js') }}"></script>
 
 <script>
-    $(function() {
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
-
+    $(document).ready(function () {
         var type = '{{ session('type') }}';
         var message = '{{ session('message') }}';
 

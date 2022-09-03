@@ -40,6 +40,16 @@ Route::group(['prefix' => '/admin', 'middleware' => ['auth', 'role:admin']], fun
 
     Route::resource('course', 'CourseController')->except('edit');
     Route::patch('course/{course}/restore', 'CourseController@restore')->name('course.restore');
+
+    // Điểm danh
+    Route::get("attendance", 'LecturerController@courseChooser');
+
+    Route::post('course-data', 'LecturerController@getCourseData');
+
+    Route::post('attendance', 'AttendanceController@createAttendance');
+
+    // Thống kê
+    Route::get('statistic/{courseId?}', 'AdminController@statistic');
 });
 
 Route::group(['prefix' => '/', 'middleware' => ['auth', 'role:lecturer']], function (){
@@ -50,10 +60,13 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'role:lecturer']], funct
     Route::get('/course', 'LecturerController@courseChooser');
 
     // Chọn lớp điểm danh
-    Route::post('/course-detail', 'LecturerController@courseDetail');
+    Route::post('/course-data', 'LecturerController@getCourseData');
 
     // Tạo điểm danh
     Route::post('/attendance', 'AttendanceController@createAttendance');
+
+    // Vào trang xem lịch sử các buổi học
+    Route::get('/history/{courseId}', 'LecturerController@history');
 
     // Chi tiết buổi học trong lịch sử
     Route::get('/lesson/{id}', 'LecturerController@prevLessonDetail');
@@ -65,6 +78,12 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'role:lecturer']], funct
     Route::get('/my-course/visibility/{id}', 'LecturerController@courseUpdateVisibility');
 
     // Chấm công
-    Route::get('/time-keeping', 'LecturerController@timeKeeping');
+    Route::get('/time-keeping/{month?}', 'LecturerController@timeKeeping');
+
+    // Excel
+    Route::get('/course/export/{courseId}', 'LecturerController@exportStudentData');
+
+    // Thời khóa biểu
+    Route::get('/schedule', 'LecturerController@schedule');
 
 });

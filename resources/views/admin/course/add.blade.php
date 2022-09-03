@@ -1,5 +1,5 @@
 @extends('admin.layout.main')
-@section('title', 'THÊM KHÓA HỌC')
+@section('title', 'Thêm khóa học')
 @section('content')
     <div class="col-md-6">
         <!-- general form elements -->
@@ -9,105 +9,77 @@
             </div>
             <!-- /.card-header -->
             <!-- form start -->
-            <form action="{{ route('store_course') }}" method="post">
+            <form action="{{ route('course.store') }}" method="post">
                 @csrf
                 <div class="card-body">
                     <div class="form-group">
                         <label for="name">Tên khóa học</label>
-                        @error('courseName')
+                        @error('name')
                             <div class="danger text-red" style="float:right">{{ $message }}</div>
                         @enderror
-                        <input type="text" class="form-control" id="name" name="courseName" autocomplete="off">
+                        <input type="text" class="form-control" id="name" name="name" autocomplete="off">
                     </div>
                     <div class="form-group">
-                        <label for="credit_hours">Tổng số giờ</label>
-                        @error('creditHours')
+                        <label for="total_hours">Thời lượng môn</label>
+                        @error('total_hours')
                             <div class="danger text-red" style="float:right">{{ $message }}</div>
                         @enderror
-                        <input type="text" class="form-control" id="credit_hours" name="creditHours" autocomplete="off">
+                        <input type="text" class="form-control" id="total_hours" name="total_hours" autocomplete="off">
                     </div>
+
+                    {{--LIVEWIRE NIÈ :DDD--}}
+                    <livewire:show-subject/>
+
                     <div class="row">
-                        <div class="col">
-                            <!-- select -->
-                            <div class="form-group">
-                                <label>Lớp học</label>
-                                <select class="form-control" name="class" id="inputClass"
-                                    onchange="makeSubmenu(this.value)" size="1">
-                                    <option value="" disabled selected>Chọn lớp</option>
-                                    @foreach ($class as $each)
-                                        <option value="{{ $each->id }}">{{ $each->name }}</option>
-                                    @endforeach
+                        <div class="col-md-6">
+                            <label for="scheduled_day">Lịch dạy</label>
+                            <div class="select2-lightblue">
+                                <select class="form-control" multiple="multiple" data-placeholder="Vui lòng chọn những buổi dạy trong tuần" data-dropdown-css-class="select2-lightblue" style="width: 100%;" name="scheduled_day[]" id="scheduled_day">
+                                    <option value="1">Thứ Hai</option>
+                                    <option value="2">Thứ Ba</option>
+                                    <option value="3">Thứ Tư</option>
+                                    <option value="4">Thứ Năm</option>
+                                    <option value="5">Thứ Sáu</option>
+                                    <option value="6">Thứ Bảy</option>
+                                    <option value="0">Chủ Nhật</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="col">
-                            <!-- select -->
-                            <div class="form-group">
-                                <label>Môn học</label>
-                                <select class="form-control" name="subject" id="inputSubject" size="1">
-                                    <option value="" disabled selected>Chọn môn học</option>
-                                    {{-- @foreach ($subject as $each)
-                                        <option value="{{ $each->id }}">{{ $each->name }}</option>
-                                    @endforeach --}}
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <!-- select -->
-                            <div class="form-group">
-                                <label>Giảng viên</label>
-                                <select class="form-control" name="lecturer">
-                                    @foreach ($lecturer as $each)
-                                        <option value="{{ $each->id }}">{{ $each->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <!-- select -->
-                            <div class="form-group">
-                                <label>Trạng thái</label>
-                                <select class="form-control" name="type">
-                                    <option value="0">Giảng viên chính</option>
-                                    <option value="1">Giảng viên phụ</option>
-                                </select>
+                        <div class="col-md-6">
+                            <label>Giờ dạy</label>
+                            <div class="row">
+                                <div class="input-group date col-md-6" id="start" data-target-input="nearest">
+                                    <input type="text" name="start" class="form-control text-center" placeholder="Bắt đầu" data-target="#start" data-toggle="datetimepicker"/>
+                                </div>
+                                <div class="input-group date col-md-6" id="end" data-target-input="nearest">
+                                    <input type="text" name="end" class="form-control text-center" placeholder="Kết thúc" data-target="#end" data-toggle="datetimepicker"/>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <!-- /.card-body -->
 
                 <div class="card-footer">
                     <input type="submit" class="btn btn-success" value="Hoàn tất">
-                    <a href="{{ route('course') }}" class="btn btn-secondary">Quay lại</a>
+                    <a href="{{ route('course.index') }}" class="btn btn-secondary">Quay lại</a>
                 </div>
             </form>
         </div>
     </div>
-    <div style="display: none;" id="courseCheck">
-        {{ $checkCourse }}
-    </div>
+@endsection
+
+@section('script')
     <script>
-        var data = JSON.parse(document.querySelector("#courseCheck").innerHTML);
-        console.log(data);
+        $(document).ready(function () {
+            $('#scheduled_day').select2();
 
-        function makeSubmenu(value) {
-            if (value.length == 0) {
-                document.getElementById("inputSubject").innerHTML = "<option></option>";
-            } else {
-                var subjectOptions = "";
-                for (subject in data[value]) {
-                    subjectOptions += `<option value='${data[value][subject][1]}'>${data[value][subject][0]}</option>`;
-                }
-                document.getElementById("inputSubject").innerHTML = subjectOptions;
-            }
-        }
-
-        function resetSelection() {
-            document.getElementById("inputClass").selectedIndex = 0;
-            document.getElementById("inputSubject").selectedIndex = 0;
-        }
+            $('#start, #end').datetimepicker({
+                format: 'HH:mm',
+                pickDate: false,
+                pickSeconds: false,
+                pick12HourFormat: false,
+                stepping: 15,
+            });
+        });
     </script>
 @endsection

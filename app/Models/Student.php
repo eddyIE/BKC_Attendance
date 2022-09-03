@@ -16,6 +16,7 @@ class Student extends Model
         'status',
         'created_by',
         'modified_by',
+        'code'
     ];
 
     public function attendance(){

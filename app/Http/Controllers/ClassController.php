@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Classes;
 use App\Models\Program;
+use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 
@@ -18,7 +19,8 @@ class ClassController extends Controller
     public function create()
     {
         $program = Program::where('status', true)->get();
-        return view('admin.class.add', ['program' => $program]);
+        $students = Student::where('status', true)->get();
+        return view('admin.class.add', ['program' => $program, 'students' => $students]);
     }
 
     public function store(Request $request)

@@ -2,6 +2,11 @@
 
 @section('title', 'BKACAD - Điểm danh')
 
+@section('links')
+    {{-- Thư viện daterangepicker--}}
+    <link rel="stylesheet" href="{{ asset('css/daterangepicker.css') }}">
+@endsection
+
 @section('content')
     {{-- Thanh chọn lớp điểm danh--}}
     @include('lecturer.attendance.course_chooser')
@@ -14,19 +19,19 @@
         {{-- Thông tin khóa học đang được chọn --}}
         @isset($curCourse)
             <input type="hidden" name='current-course-id' value='{{$curCourse->id}}'>
+
+            {{--Danh sách sinh viên--}}
+            @include('lecturer.attendance.student_list')
+
+            {{--Lịch sử các buổi học--}}
+            @include('lecturer.attendance.course_history_btn')
+
+            {{--Phần chọn thời gian--}}
+            @include('lecturer.attendance.time_picker')
+
+            {{--Phần ghi chú và các nút--}}
+            @include('lecturer.attendance.course_submit_btn')
         @endisset
-
-        {{--Danh sách sinh viên--}}
-        @include('lecturer.attendance.course_student_list')
-
-        {{--Lịch sử các buổi học--}}
-        @include('lecturer.attendance.course_history')
-
-        {{--Phần chọn thời gian--}}
-        @include('lecturer.attendance.course_time_picker')
-
-        {{--Phần ghi chú và các nút--}}
-        @include('lecturer.attendance.course_submit_btn')
     </form>
 @endsection
 
@@ -36,9 +41,6 @@
         function validateForm() {
             // Lấy thời gian hiện tại
             const now = new Date();
-            const curHour = (now.getHours() < 10) ? ("0" + now.getHours()) : now.getHours();
-            const curMinutes = (now.getMinutes() < 10) ? ("0" + now.getMinutes()) : now.getMinutes();
-            const curTime = `${curHour}:${curMinutes}`;
 
             // Lấy ngày tháng nếu là buổi hoc cũ
             const a = {!! json_encode($curLessonDate ?? null) !!};
@@ -46,35 +48,90 @@
                 return true;
             }
 
-            // Lấy data
-            const attendanceList = document.forms["attendanceForm"];
-            let start = `${attendanceList["start[hour]"].value}:${attendanceList["start[minutes]"].value}`;
-            let end = `${attendanceList["end[hour]"].value}:${attendanceList["end[minutes]"].value}`;
+            // Lấy data giờ bắt đầu và kết thúc
+            let startInput = document.querySelector('input[name="start"]').value;
+            let endInput = document.querySelector('input[name="end"]').value;
 
+            // Tạo object Date mới, cắt chuỗi để lấy HH và mm của 2 ô input
+            let start = new Date(new Date().setHours(startInput.substring(0, 2), startInput.substring(3, 5)));
+            let end = new Date(new Date().setHours(endInput.substring(0, 2), endInput.substring(3, 5)));
+
+            const MORNING_START = new Date(new Date().setHours(8, 0));
+            const MORNING_END = new Date(new Date().setHours(12, 0));
+            const AFTERNOON_START = new Date(new Date().setHours(13, 0));
+            const AFTERNOON_END = new Date(new Date().setHours(17, 0));
+            const EVENING_START = new Date(new Date().setHours(18, 0));
+            const EVENING_END = new Date(new Date().setHours(21, 0));
+
+            let currentWeekDayDigit = new Date().getDay();
+            let courseScheduledDays = ['none'];
+            let courseScheduledTime = "";
+            @isset($curCourse)
+                courseScheduledDays = {{$curCourse->scheduled_day}};
+                courseScheduledTime = @php echo json_encode($curCourse->scheduled_time) @endphp;
+                courseScheduledTime = courseScheduledTime.split(" - ");
+            @endisset
             // VALIDATE
             try {
-                // Tách data để tính toán
-                let curArr = curTime.split(":");
-                let endArr = end.split(":");
-                let startArr = start.split(":");
-
                 // - Giờ bắt đầu không sớm hơn giờ kết thúc
                 // - Giờ bắt đầu không sớm hơn hiện tại
                 // - Giờ kết thúc không muộn hơn hiện tại quá 30p
                 if (start >= end) {
                     alert("Giờ bắt đầu phải sớm hơn giờ kết thúc.");
                     return false;
-                }
-                else if(start > curTime){
+                } else if (start > now) {
                     alert("Buổi học chưa đến giờ điểm danh.");
                     return false;
                 }
-                if ((curArr[0] - endArr[0] === 0 && curArr[1] - endArr[1] > 30) || (curArr[0] - endArr[0] > 0)) {
+                if (now - end > 1000 * 60 * 30) {
                     alert("Buổi học đã kết thúc quá 30 phút");
                     return false;
                 }
+
+                // Check thời gian ca học
+                if (start < MORNING_START) {
+                    alert("Bắt đầu làm việc từ 8h");
+                    return false
+                } else if (start >= MORNING_START && start <= MORNING_END) {
+                    document.getElementById('shift').value = 0;
+                    if (end > MORNING_END) {
+                        alert("Ca sáng kết thúc lúc 12h");
+                        return false
+                    }
+                } else if (start >= AFTERNOON_START && start <= AFTERNOON_END) {
+                    document.getElementById('shift').value = 1;
+                    if (end > AFTERNOON_END) {
+                        alert("Ca chiều kết thúc lúc 17h");
+                        return false
+                    }
+                } else if (start >= EVENING_START && start <= EVENING_END) {
+                    document.getElementById('shift').value = 2;
+                    if (end > EVENING_END) {
+                        alert("Ca tối kết thúc lúc 21h");
+                        return false
+                    }
+                } else {
+                    alert("Không trong ca học");
+                    return false
+                }
+
+                // Check xem hôm nay có lịch học không
+                if (courseScheduledDays.indexOf(currentWeekDayDigit) === -1) {
+                    let isConfirm = confirm("Lớp môn học này không có lịch vào hôm nay. " +
+                        "Bạn có chắc muốn điểm danh?");
+                    if (isConfirm === false) {
+                        return false;
+                    }
+                }
+                console.log(endInput);
+                console.log(courseScheduledTime[1]);
+                console.log(endInput !== courseScheduledTime[1]);
+                if (endInput !== courseScheduledTime[1]) {
+                    return confirm("Giờ học khác với lịch, tiếp tục?");
+                }
             } catch (err) {
                 console.log(err.message);
+                return false;
             }
         }
 
@@ -94,54 +151,42 @@
             }
         }
 
-        function courseSearch() {
-            var input, filter, ul, courses, a, i, txtValue;
-            input = document.getElementById('courseSearchInput');
-            filter = input.value.toUpperCase();
-            ul = document.getElementById("class_selector");
-            courses = ul.getElementsByName('select_course');
-
-            // Lăp qua list, ẩn các kết quả không trùng
-            for (i = 0; i < courses.length; i++) {
-                txtValue = courses.textContent || courses.innerText;
-                if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                    courses[i].style.display = "";
-                } else {
-                    courses[i].style.display = "none";
-                }
-            }
-        }
     </script>
     <script type="text/javascript">
+        // Tìm kiếm khóa học theo tên trên thanh tìm kiếm
+
+        //
         const selected = document.querySelector(".selected");
         const courseContainer = document.querySelector(".course-container");
         const searchBox = document.querySelector(".search-box input");
 
         // Lấy tên khóa học hiện tại hiện lên phần chọn lớp
-        const a = {!! json_encode($currentCourse->{'name'} ?? null) !!};
-        if (a !== null) {
+        const a = {!! json_encode($curCourse->{'name'} ?? null) !!}
+        if(a !== null)
+        {
             selected.innerHTML = a;
         }
 
-        const courses = document.querySelectorAll(".course");
-
+        // Ấn vào thanh chọn thì hiển thị các lớp và thanh tìm kiếm
         selected.addEventListener("click", () => {
             courseContainer.classList.toggle("active");
 
             searchBox.value = "";
             filterList("");
 
+            // Auto để trỏ chuột vào ô tìm kiếm
             if (courseContainer.classList.contains("active")) {
                 searchBox.focus();
             }
-        });
+        })
 
+        const courses = document.querySelectorAll(".course");
         courses.forEach(o => {
             o.addEventListener("click", () => {
                 selected.innerHTML = o.querySelector("label").innerHTML;
                 courseContainer.classList.remove("active");
-            });
-        });
+            })
+        })
 
         searchBox.addEventListener("keyup", function (e) {
             filterList(e.target.value);
@@ -164,13 +209,13 @@
                 label = label.replace('/', '');
                 label = label.replace('  ', '');
                 label = label.replace(' ', '');
-                if (label.indexOf(searchTerm) != -1) {
+                if (label.indexOf(searchTerm) !== -1) {
                     option.style.display = "block";
                 } else {
                     option.style.display = "none";
                 }
-            });
-        };
+            })
+        }
     </script>
     <script>
         export default {
@@ -181,5 +226,56 @@
             }
         }
     </script>
-    <script src="{{ asset('js/daterangepicker.js') }}"></script>
+    <script>
+        $(window).on("load", function () {
+            $('#start').datetimepicker({
+                format: 'HH:mm',
+                pickDate: false,
+                pickSeconds: false,
+                pick12HourFormat: false,
+                useCurrent: false
+            })
+
+            $('#end').datetimepicker({
+                format: 'HH:mm',
+                pickDate: false,
+                pickSeconds: false,
+                pick12HourFormat: false,
+                useCurrent: false
+            })
+        });
+    </script>
+    <script>
+        $(function () {
+            $("#example1").DataTable({
+                "paging": false,
+                "lengthChange": false,
+                "searching": true,
+                "ordering": true,
+                "info": false,
+                "autoWidth": false,
+                "responsive": true,
+                'aoColumnDefs': [{
+                    'bSortable': false,
+                    'aTargets': [-1] /* 1st one, start by the right */
+                }],
+                "oLanguage": {
+                    "sSearch": "Tìm kiếm",
+                    "sInfo": "Hiển thị _START_ đến _END_ của _TOTAL_ kết quả",
+                    "sInfoEmpty": "Hiển thị 0 kết quả",
+                    "sInfoFiltered": "(Lọc từ _MAX_ kết quả)",
+                    "sEmptyTable": "Không có dữ liệu",
+                    "sZeroRecords": "Không tìm thấy kết quả",
+                    "sPrevious": "Trước",
+                    "next": "Sau",
+                    "paginate": {
+                        "sFirst": "Trang đầu",
+                        "sLast": "Trang cuối",
+                        "sNext": "Sau",
+                        "sPrevious": "Trước"
+                    },
+                }
+            })
+        });
+    </script>
 @endsection

@@ -32,13 +32,13 @@
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
                             <a href="{{ asset('/course') }}" class="nav-link">
-                                &emsp;<i class="fas fa-circle nav-icon"></i>
-                                <p>Điểm danh</p>
+                                <i class="fas fa-circle nav-icon"></i>
+                                <p>Điểm danh lớp môn học</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ asset('/my-course') }}" class="nav-link">
-                                &emsp;<i class="fas fa-circle nav-icon"></i>
+                                <i class="fas fa-circle nav-icon"></i>
                                 <p>Danh sách phân công</p>
                             </a>
                         </li>
@@ -46,8 +46,14 @@
                 </li>
                 <li class="nav-item">
                     <a href="{{ asset('/time-keeping') }}" class="nav-link">
-                        <i class="nav-icon fas fa-chart-area"></i>
-                        <p>BẢNG GIỜ DẠY</p>
+                        <i class="nav-icon fas fa-clipboard-list"></i>
+                        <p>LỊCH SỬ DẠY</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ asset('/schedule') }}" class="nav-link">
+                        <i class="nav-icon far fa-calendar-alt"></i>
+                        <p>THỜI KHÓA BIỂU</p>
                     </a>
                 </li>
             </ul>

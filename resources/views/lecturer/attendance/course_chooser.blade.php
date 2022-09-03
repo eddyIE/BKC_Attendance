@@ -11,7 +11,7 @@
     }
 
     .select-box .course-container {
-    background: #2f3648;
+    background: #006182;
     color: #f5f6fa;
     max-height: 0;
     width: 100%;
@@ -24,7 +24,7 @@
     }
 
     .selected {
-    background: #2f3640;
+    background: #006182;
     border-radius: 8px;
     margin-bottom: 8px;
     color: #f5f6fa;
@@ -67,7 +67,7 @@
     }
 
     .select-box .course-container::-webkit-scrollbar-thumb {
-    background: #525861;
+    background: #006182;
     border-radius: 0 8px 8px 0;
     }
 
@@ -121,10 +121,10 @@
 @endsection
 
 {{--Form chọn lớp học được phân công cho giảng viên--}}
-<form action="{{ asset('/course-detail') }}" method="POST" class="form">
+<form action="{{ asset('/course-data') }}" method="POST" class="form">
     @csrf
     <div class="select-box">
-        <div class="course-container">
+        <div class="course-container bg-primary">
             @foreach ($courses as $course)
                 <div class="course">
                     <input type="radio" class="radio" id="{{$course->id }}" name="course-id"
@@ -133,14 +133,14 @@
                 </div>
             @endforeach
         </div>
-        <div class="selected">
+        <div class="selected bg-primary">
             CHỌN PHÂN CÔNG...
         </div>
-        <div class="search-box">
+        <div class="bg-primary search-box">
             <input type="text" placeholder="Tìm kiếm...">
         </div>
     </div>
 
-    <input type="submit" class="btn btn-outline-success fs-5 fw-bold fst-italic mt-2 mb-2 float-right"
+    <input type="submit" class="btn btn-outline-primary fs-5 fw-bold fst-italic mt-2 mb-2 float-right"
            value="Lấy danh sách điểm danh"/>
 </form>

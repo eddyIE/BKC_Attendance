@@ -1,5 +1,5 @@
 @extends('admin.layout.main')
-@section('title', 'Thêm niên khóa ')
+@section('title', 'Thêm chương trình học ')
 @section('content')
 
     <form action="{{ route('program.store') }}" method="post">
@@ -25,8 +25,8 @@
                             @enderror
                             <select class="form-control" name="major_id" id="major_id" size="1">
                                 <option value="" selected disabled hidden>Chọn chuyên ngành</option>
-                                @foreach ($major as $each)
-                                    <option value="{{ $each->id }}">{{ $each->name }}</option>
+                                @foreach ($majors as $major)
+                                    <option value="{{ $major->id }}">{{ $major->name }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -66,20 +66,10 @@
                     <div class="card-body">
                         <div class="form-group">
                             <div class="select2-lightblue">
-                                <select class="form-control" multiple="multiple" data-placeholder="Vui lòng chọn môn học" data-dropdown-css-class="select2-lightblue" style="width: 100%;" name="subject" id="subject">
-                                    <option>ITF</option>
-                                    <option>EN1</option>
-                                    <option>EN2</option>
-                                    <option>EN3</option>
-                                    <option>ADV</option>
-                                    <option>DB</option>
-                                    <option>SDLC</option>
-                                    <option>NET</option>
-                                    <option>SEC</option>
-                                    <option>WEB</option>
-                                    <option>MAC</option>
-                                    <option>AI</option>
-                                    <option>PRJ</option>
+                                <select class="form-control" multiple="multiple" data-placeholder="Vui lòng chọn môn học" data-dropdown-css-class="select2-lightblue" style="width: 100%;" name="subjects[]" id="subject">
+                                    @foreach($subjects as $subject)
+                                        <option value="{{ $subject->id }}">{{ $subject->name }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
@@ -92,7 +82,7 @@
 @endsection
 @section('script')
     <script>
-        $(function() {
+        $(document).ready(function () {
             $('#daterangepicker').daterangepicker({
                 locale: {
                     format: 'DD/MM/YYYY'
@@ -100,27 +90,6 @@
             });
 
             $('#subject').select2();
-
-            {{--$('#create').click(function (){--}}
-            {{--    $.ajax({--}}
-            {{--        headers: {--}}
-            {{--            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')--}}
-            {{--        },--}}
-            {{--        url: '{{ route('program.store') }}',--}}
-            {{--        type: 'POST',--}}
-            {{--        dataType: 'text',--}}
-            {{--        data: {--}}
-            {{--            name: $('#name').val(),--}}
-            {{--            major_id: $('#major_id').val(),--}}
-            {{--            session: $('#session').val(),--}}
-            {{--            date_range: $('#daterangepicker').val(),--}}
-            {{--            subject: $('#subject').val(),--}}
-            {{--        },--}}
-            {{--        success: function (result){--}}
-            {{--            location.reload();--}}
-            {{--        },--}}
-            {{--    });--}}
-            {{--});--}}
         });
     </script>
 @endsection

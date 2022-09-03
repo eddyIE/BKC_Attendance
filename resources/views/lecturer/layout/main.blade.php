@@ -19,12 +19,66 @@
     <link rel="stylesheet" href="{{ asset('css/adminlte.min.css') }}">
     <!-- overlayScrollbars -->
     <link rel="stylesheet" href="{{ asset('css/overlayScrollbars/OverlayScrollbars.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/datarangepicker.css') }}">
+
+    <link rel="stylesheet" href="{{ asset('css/daterangepicker.css') }}">
+
+    <!-- Select2 -->
+    <link rel="stylesheet" href="{{ asset('css/select2.min.css') }}">
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="{{ asset('css/sweetalert2.min.css') }}">
+
+    <!-- icon bkacad -->
     <link rel="icon" href="{{ asset('img/bkacad.png') }}">
 
-    {{--Thư viện lịch FullCalendar--}}
-    <link rel='stylesheet' href="{{ asset('js/fullcalendar/lib/main.css') }}"/>
+    <!-- Tempusdominus Bootstrap 4 -->
+    <link rel="stylesheet" href="{{ asset('css/tempusdominus-bootstrap-4.min.css') }}">
+
+    @yield('links')
+
     <style>
+        .btn-primary, .btn-primary:hover, .btn-primary:active, .btn-primary:visited {
+            background-color: #006182;
+            border-color: #006182;
+        }
+
+        .bg-primary {
+            background-color: #006182 !important;
+        }
+
+        .text-primary {
+            color: #006182 !important;
+        }
+        .colored-toast.swal2-icon-success {
+            background-color: #a5dc86 !important;
+        }
+
+        .colored-toast.swal2-icon-error {
+            background-color: #f27474 !important;
+        }
+
+        .colored-toast.swal2-icon-warning {
+            background-color: #f8bb86 !important;
+        }
+
+        .colored-toast.swal2-icon-info {
+            background-color: #3fc3ee !important;
+        }
+
+        .colored-toast.swal2-icon-question {
+            background-color: #87adbd !important;
+        }
+
+        .colored-toast .swal2-title {
+            color: white;
+        }
+
+        .colored-toast .swal2-close {
+            color: white;
+        }
+
+        .colored-toast .swal2-html-container {
+            color: white;
+        }
         @yield('css')
     </style>
 </head>
@@ -53,8 +107,8 @@
 </div>
 
 <footer class="main-footer">
-    @yield('script')
     @include('lecturer.layout.footer')
+    @yield('script')
 </footer>
 
 </body>

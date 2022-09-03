@@ -3,7 +3,7 @@
 @section('content')
     <div class="row form-group">
         <div class="col-md-3 offset-9 text-right">
-            <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#file"><i class="fas fa-file-csv"></i>  Xuất/Nhập file</button>
+{{--            <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#file"><i class="fas fa-file-csv"></i>  Xuất/Nhập file</button>--}}
             <a class="btn btn-primary" href="{{ route('major.create') }}">Tạo mới</a>
         </div>
     </div>

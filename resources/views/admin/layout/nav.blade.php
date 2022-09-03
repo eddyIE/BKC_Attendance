@@ -42,14 +42,14 @@
                     <a href="{{ asset('admin/major') }}" class="nav-link">
                         <i class="nav-icon fas fa-graduation-cap"></i>
                         <p>
-                            CHUYÊN NGÀNH HỌC
+                            CHUYÊN NGÀNH
                         </p>
                     </a>
                 <li class="nav-item">
                     <a href="{{ asset('admin/subject') }}" class="nav-link">
                         <i class="nav-icon fas fa-book-open"></i>
                         <p>
-                            BỘ MÔN
+                            MÔN HỌC
                         </p>
                     </a>
                 </li>
@@ -74,6 +74,30 @@
                         <i class="nav-icon fas fa-chalkboard-teacher"></i>
                         <p>
                             KHÓA HỌC
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ asset('admin/timetable') }}" class="nav-link">
+                        <i class="nav-icon fas fa-chalkboard-teacher"></i>
+                        <p>
+                            BÓC LỊCH
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ asset('admin/attendance') }}" class="nav-link">
+                        <i class="nav-icon fas fa-graduation-cap"></i>
+                        <p>
+                            ĐIỂM DANH
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ asset('admin/statistic') }}" class="nav-link">
+                        <i class="nav-icon fas fa-chart-bar"></i>
+                        <p>
+                            TỔNG QUAN HỌC VIỆN
                         </p>
                     </a>
                 </li>
