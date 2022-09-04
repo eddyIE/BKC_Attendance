@@ -26,10 +26,14 @@
                         <td class="text-center border-0">{{ $each->class->name }}</td>
                         <td class="text-center border-0">{{ $each->program_info->subject->name }}</td>
                         <td class="text-center border-0">{{ (float) $each->total_hours . ' giờ' }}</td>
-                        @if($each->lecturer_scheduling[0]->substitution == false)
-                            <td class="text-center border-0">{{ $each->lecturer_scheduling[0]->user->full_name }}</td>
+                        @if(isset($each->lecturer_scheduling[0]))
+                            @if($each->lecturer_scheduling[0]->substitution == 0)
+                                <td class="text-center border-0">{{ $each->lecturer_scheduling[0]->user->full_name }}</td>
+                            @else
+                                <td class="text-center border-0">{{ $each->lecturer_scheduling[0]->user->full_name . ' (dạy thay)' }}</td>
+                            @endif
                         @else
-                            <td class="text-center border-0">{{ $each->lecturer_scheduling->user->full_name . ' (dạy thay)' }}</td>
+                            <td class="text-center border-0 text-danger">Chưa phân công</td>
                         @endif
                         <td class="text-center border-0">{{ date_format($each->created_at, 'd/m/Y') }}</td>
                         <td class="border-0 align-middle text-center">
@@ -46,10 +50,10 @@
                         <td class="text-center border-0">{{ $each->class->name }}</td>
                         <td class="text-center border-0">{{ $each->program_info->subject->name }}</td>
                         <td class="text-center border-0">{{ (float) $each->total_hours . ' giờ' }}</td>
-                        @if($each->lecturer_scheduling[0]->substitution == false)
+                        @if($each->lecturer_scheduling[0]->substitution == 0)
                             <td class="text-center border-0">{{ $each->lecturer_scheduling[0]->user->full_name }}</td>
                         @else
-                            <td class="text-center border-0">{{ $each->lecturer_scheduling->user->full_name . ' (dạy thay)' }}</td>
+                            <td class="text-center border-0">{{ $each->lecturer_scheduling[0]->user->full_name . ' (dạy thay)' }}</td>
                         @endif
                         <td class="text-center border-0">{{ date_format($each->created_at, 'd/m/Y') }}</td>
                         <td class="border-0 align-middle text-center">

@@ -1,5 +1,5 @@
 @extends('admin.layout.main')
-@section('title', 'Administrator side')
+@section('title', 'Index')
 
 @section('css')
     a, .fc-daygrid-day-number{
