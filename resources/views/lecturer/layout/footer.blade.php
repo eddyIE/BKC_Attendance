@@ -35,12 +35,6 @@ All rights reserved.
 <!-- Page specific script -->
 <script>
     $(function () {
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
-
         var type = '{{ session('type') }}';
         var message = '{{ session('message') }}';
 

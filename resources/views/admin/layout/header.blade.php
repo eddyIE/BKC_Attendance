@@ -32,3 +32,5 @@
 <link rel="stylesheet" href="{{ asset('js/fullcalendar/lib/main.css') }}"/>
 <!-- Theme style -->
 <link rel="stylesheet" href="{{ asset('css/adminlte.min.css') }}">
+<!-- jQuery -->
+<script src="{{ asset('js/jquery/jquery.min.js') }}"></script>
