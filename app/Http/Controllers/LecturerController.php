@@ -33,7 +33,7 @@ class LecturerController extends Controller
             return view('admin.attendance.index', ['courses' => $courses]);
         } // Nếu không phải giáo vụ thì chỉ lấy các lớp được phân công
         else if (auth()->user()->role == 0) {
-            $courses = self::findCoursesOfLecturer(auth()->user()->id, true, true, true);
+            $courses = self::findCoursesOfLecturer(auth()->user()->id, true, true, false);
             // Trả dữ liệu về view
             return view('lecturer.attendance.index', ['courses' => $courses]);
         }
@@ -50,7 +50,7 @@ class LecturerController extends Controller
     {
         // Lấy lại danh sách các khóa học
         // để truyền lên thanh tìm kiếm khóa học
-        $courses = self::findCoursesOfLecturer(auth()->user()->id, true, true, true);
+        $courses = self::findCoursesOfLecturer(auth()->user()->id, true, true, false);
 
         // Lấy thông tin của khóa học
         $courseId = $request->all()['course-id'];
@@ -349,7 +349,7 @@ class LecturerController extends Controller
             $monthEnd = date('Y-m-t');
         }
 
-        // Lấy danh sách các khóa học được phân công
+        // Lấy danh sách các khóa học có thể đã dạy
         $courses = self::findCoursesOfLecturer(auth()->user()->id, false, false, false);
 
         // Lấy ID các khóa học vừa tìm được
