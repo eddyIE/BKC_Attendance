@@ -7,7 +7,6 @@ use App\Models\Course;
 use App\Models\LecturerScheduling;
 use App\Models\Lesson;
 use App\Models\Program;
-use App\Models\Lesson;
 use App\Models\ProgramInfo;
 use App\Models\Student;
 use App\Models\Subject;
