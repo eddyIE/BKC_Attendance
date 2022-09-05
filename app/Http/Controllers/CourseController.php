@@ -6,6 +6,7 @@ use App\Models\Classes;
 use App\Models\Course;
 use App\Models\LecturerScheduling;
 use App\Models\Program;
+use App\Models\Lesson;
 use App\Models\ProgramInfo;
 use App\Models\Subject;
 use App\Models\User;
@@ -64,13 +65,13 @@ class CourseController extends Controller
         $program_info = ProgramInfo::where(['program_id' => $program_id, 'subject_id' => $request->subject])->first('id');
         //khoảng cách giữa giờ bắt đầu và kết thúc học
         $time_gap = floor((strtotime($request->end) - strtotime($request->start)) / 3600);
-        if ($time_gap <= 4){
+        if ($time_gap <= 4) {
             $course = [
                 'name' => $request->name,
                 'total_hours' => $request->total_hours,
                 'class_id' => $request->class,
                 'subject_id' => $program_info->id,
-                'scheduled_day' => json_encode($request->scheduled_day,JSON_NUMERIC_CHECK),
+                'scheduled_day' => json_encode($request->scheduled_day, JSON_NUMERIC_CHECK),
                 'scheduled_time' => $request->start . ' - ' . $request->end,
                 'created_by' => auth()->user()->id
             ];
@@ -110,11 +111,12 @@ class CourseController extends Controller
     }
 
     //kiểm tra nếu giảng viên có lịch trùng với lớp môn học khác đã được phân công (true = không trùng, false = trùng)
-    public function checkDuplicateSchedule($course, $lecturer_id){
+    public function checkDuplicateSchedule($course, $lecturer_id)
+    {
         $validated = true;
 
         $scheduled_lecturer = LecturerScheduling::select('course.scheduled_day', 'course.scheduled_time')
-            ->leftJoin('course','course.id','=','lecturer_scheduling.course_id')
+            ->leftJoin('course', 'course.id', '=', 'lecturer_scheduling.course_id')
             ->where([
                 ['lecturer_scheduling.lecturer_id', '=', $lecturer_id],
                 ['lecturer_scheduling.course_id', '!=', $course->id],
@@ -122,15 +124,15 @@ class CourseController extends Controller
                 ['course.status', '=', 1]
             ])->get();
 
-        if (count($scheduled_lecturer)){
+        if (count($scheduled_lecturer)) {
             foreach ($scheduled_lecturer as $scheduled) {
                 $scheduled->scheduled_day = json_decode($scheduled->scheduled_day);
-                $scheduled->scheduled_time = explode(' - ',$scheduled->scheduled_time);
+                $scheduled->scheduled_time = explode(' - ', $scheduled->scheduled_time);
                 $scheduled->start = strtotime($scheduled->scheduled_time[0]);
                 $scheduled->end = strtotime($scheduled->scheduled_time[1]);
 
-                if (array_intersect($course->scheduled_day,$scheduled->scheduled_day)){
-                    if (($course->start >= $scheduled->start && $course->start <= $scheduled->end) || ($course->end >= $scheduled->start && $course->end <= $scheduled->end)){
+                if (array_intersect($course->scheduled_day, $scheduled->scheduled_day)) {
+                    if (($course->start >= $scheduled->start && $course->start <= $scheduled->end) || ($course->end >= $scheduled->start && $course->end <= $scheduled->end)) {
                         $validated = false;
                     }
                 }
@@ -148,14 +150,14 @@ class CourseController extends Controller
         ]);
 
         $course = Course::find($id);
-        if ($course->status == 0){
+        if ($course->status == 0) {
             Session::flash('type', 'info');
             Session::flash('message', 'Lớp môn học đã kết thúc.');
             return redirect('admin/course/' . $id);
         }
 
         $course->scheduled_day = $request->scheduled_day;
-        $course->scheduled_time = explode(' - ',$request->scheduled_time);
+        $course->scheduled_time = explode(' - ', $request->scheduled_time);
         $course->start = strtotime($request->start);
         $course->end = strtotime($request->end);
 
@@ -182,7 +184,7 @@ class CourseController extends Controller
                 'total_hours' => $request->total_hours,
                 'class_id' => $request->class,
                 'subject_id' => $program_info->id,
-                'scheduled_day' => json_encode($request->scheduled_day,JSON_NUMERIC_CHECK),
+                'scheduled_day' => json_encode($request->scheduled_day, JSON_NUMERIC_CHECK),
                 'scheduled_time' => $request->start . ' - ' . $request->end,
                 'updated_by' => auth()->user()->id
             ];
@@ -203,7 +205,7 @@ class CourseController extends Controller
         }
     }
 
-        public function destroy($id)
+    public function destroy($id)
     {
         $data = [
             'status' => 0,
@@ -243,5 +245,70 @@ class CourseController extends Controller
             Session::flash('message', 'Đã có sự cố xảy ra.');
             return redirect('admin/course');
         }
+    }
+
+    // Lấy data xét chuyên cần sinh viên trong khóa học
+    public function qualifiedStudent($courseId)
+    {
+        // Lấy thông tin khóa học
+        $curCourse = Course::find($courseId);
+
+        // Lấy danh sách các sinh viên
+        $students = Student::where('class_id', $curCourse->class_id)->get();
+        // Lấy ds DTO chứa các thông tin số buổi nghỉ, muộn, phép
+        $studentDTOs = (new LecturerController)->studentToDTO($students, $courseId);
+
+        $failQuan = 0;
+        $passQuan = 0;
+        $almostFailQuan = 0;
+        foreach ($studentDTOs as $student) {
+            // Tính % nghỉ và làm tròn
+            $absentPercentage = $student->absentQuan / $curCourse->finished_lessons * 100;
+            $absentPercentage = number_format((float)$absentPercentage, 2);
+
+            // Nghỉ quá 50% học lại, quá 30% thi lại
+            if ($absentPercentage > 50) {
+                $failQuan++;
+            } else if ($absentPercentage > 30) {
+                $almostFailQuan++;
+            } else {
+                $passQuan++;
+            }
+        }
+
+        $dataset = [
+            "data" => [$passQuan, $almostFailQuan, $failQuan],
+            "backgroundColor" => ['#28A745', '#ffc107', '#DC3545']
+        ];
+
+        return $dataset;
+    }
+
+    // Tính số giờ các giảng viên đã dạy trong một khóa học
+    public function getTaughtTime($courseId)
+    {
+        $lecturerIds = LecturerScheduling::select('lecturer_id')
+            ->where('course_id', $courseId)->get();
+
+        $lecturers = User::whereIn('id', $lecturerIds)->get();
+
+        $result = [];
+        foreach ($lecturers as $lecturer) {
+            $lessons = Lesson::where('created_by', $lecturer->id)
+                ->where('course_id', $courseId)->get();
+
+            $timeKeeping = 0;
+            foreach ($lessons as $lesson) {
+                $timeKeeping += strtotime($lesson->end) - strtotime($lesson->start);
+            }
+            // Biến đổi giờ dạy từ giây sang Giờ:Phút:Giây
+            $timeKeeping = floor($timeKeeping / 3600)
+                . gmdate(":i", $timeKeeping % 3600);
+            $lecturer->timeKeeping = $timeKeeping;
+
+            $result[] = $lecturer;
+        }
+
+        return $result;
     }
 }
