@@ -6,10 +6,14 @@ use App\Models\Classes;
 use App\Models\Course;
 use App\Models\LecturerScheduling;
 use App\Models\Lesson;
+use App\Models\Program;
+use App\Models\Lesson;
 use App\Models\ProgramInfo;
 use App\Models\Student;
+use App\Models\Subject;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 class CourseController extends Controller
@@ -17,22 +21,25 @@ class CourseController extends Controller
     public function index()
     {
         $data = Course::with([
-            'class' => function ($query) {
+            'class' => function($query){
                 $query->where('class.status', true);
             },
-            'program_info' => function ($query) {
+            'program_info' => function($query){
                 $query->where('program_info.status', true);
             },
-            'program_info.subject' => function ($query) {
+            'program_info.subject' => function($query){
                 $query->where('subject.status', true);
             },
-            'lecturer_scheduling' => function ($query) {
+            'lecturer_scheduling' => function($query){
                 $query->where('lecturer_scheduling.status', true);
             },
-            'lecturer_scheduling.user' => function ($query) {
+            'lecturer_scheduling.user' => function($query){
                 $query->where('user.status', true);
             },
-        ])->get()->sortByDesc('course.created_at');
+        ])->orderBy('course.created_at')->simplePaginate(10);
+        foreach ($data as $index => $each) {
+            $each->index = $index + 1;
+        }
         return view('admin.course.index', ['data' => $data]);
     }
 
@@ -61,7 +68,6 @@ class CourseController extends Controller
         ]);
         $program_id = Classes::where('id', $request->class)->pluck('program_id')->toArray();
         $program_info = ProgramInfo::where(['program_id' => $program_id, 'subject_id' => $request->subject])->first('id');
-
         //khoảng cách giữa giờ bắt đầu và kết thúc học
         $time_gap = floor((strtotime($request->end) - strtotime($request->start)) / 3600);
         if ($time_gap <= 4) {
@@ -214,7 +220,7 @@ class CourseController extends Controller
         $course = Course::find($id);
         $result = $course->update($data);
 
-        if ($result) {
+        if ($result){
             Session::flash('type', 'info');
             Session::flash('message', 'Thông tin đã bị ẩn khỏi hệ thống.');
             return redirect('admin/course');
@@ -235,7 +241,7 @@ class CourseController extends Controller
         $course = Course::find($id);
         $result = $course->update($data);
 
-        if ($result) {
+        if ($result){
             Session::flash('type', 'info');
             Session::flash('message', 'Thông tin đã được khôi phục.');
             return redirect('admin/course');
@@ -261,9 +267,13 @@ class CourseController extends Controller
         $passQuan = 0;
         $almostFailQuan = 0;
         foreach ($studentDTOs as $student) {
-            // Tính % nghỉ và làm tròn
-            $absentPercentage = $student->absentQuan / $curCourse->finished_lessons * 100;
-            $absentPercentage = number_format((float)$absentPercentage, 2);
+            if ($curCourse->finished_lessons == 0){
+                $absentPercentage = 0;
+            } else {
+                // Tính % nghỉ và làm tròn
+                $absentPercentage = $student->absentQuan / $curCourse->finished_lessons * 100;
+                $absentPercentage = number_format((float)$absentPercentage, 2);
+            }
 
             // Nghỉ quá 50% học lại, quá 30% thi lại
             if ($absentPercentage > 50) {

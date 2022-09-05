@@ -16,7 +16,7 @@
                             @error('name')
                             <div class="danger text-red" style="float:right">{{ $message }}</div>
                             @enderror
-                            <input type="text" class="form-control" id="name" name="name" autocomplete="off">
+                            <input type="text" class="form-control" id="name" name="name" autocomplete="off" placeholder="Tên">
                         </div>
                         <div class="form-group">
                             <label for="major_id">Chuyên ngành</label>
@@ -35,7 +35,7 @@
                             @error('session')
                             <div class="danger text-red" style="float:right">{{ $message }}</div>
                             @enderror
-                            <input type="text" class="form-control" id="session" name="session" autocomplete="off">
+                            <input type="text" class="form-control" id="session" name="session" autocomplete="off" placeholder="Niên khóa">
                         </div>
                         <div class="form-group">
                             <label for="start">Năm học</label>
@@ -44,9 +44,7 @@
                             @enderror
                             <div class="input-group">
                                 <div class="input-group-prepend">
-                      <span class="input-group-text">
-                        <i class="far fa-calendar-alt"></i>
-                      </span>
+                                    <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
                                 </div>
                                 <input type="text" name="date_range" class="form-control float-right" id="daterangepicker">
                             </div>

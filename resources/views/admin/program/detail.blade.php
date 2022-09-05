@@ -21,7 +21,7 @@
                                 @error('name')
                                 <div class="danger text-red" style="float:right">{{ $message }}</div>
                                 @enderror
-                                <input type="text" class="form-control" id="name" name="name" autocomplete="off" value="{{ $data->name }}">
+                                <input type="text" class="form-control" id="name" name="name" autocomplete="off" value="{{ $data->name }}" placeholder="Tên">
                             </div>
                             <div class="form-group">
                                 <label for="major_id">Chuyên ngành</label>
@@ -43,7 +43,7 @@
                                 @error('session')
                                 <div class="danger text-red" style="float:right">{{ $message }}</div>
                                 @enderror
-                                <input type="text" class="form-control" id="session" name="session" autocomplete="off" value="{{ $data->session }}">
+                                <input type="text" class="form-control" id="session" name="session" autocomplete="off" value="{{ $data->session }}" placeholder="Niên khóa">
                             </div>
                             <div class="form-group">
                                 <label for="start">Năm học</label>

@@ -15,14 +15,14 @@
                         @error('name')
                         <div class="danger text-red" style="float:right">{{ $message }}</div>
                         @enderror
-                        <input type="text" class="form-control" id="name" name="name" value="{{ $data->name }}">
+                        <input type="text" class="form-control" id="name" name="name" value="{{ $data->name }}" placeholder="Tên">
                     </div>
                     <div class="form-group">
-                        <label for="recommend_hours">Thời lượng môn(dự kiến)</label>
+                        <label for="recommend_hours">Thời lượng môn</label>
                         @error('recommend_hours')
                         <div class="danger text-red" style="float:right">{{ $message }}</div>
                         @enderror
-                        <input type="text" class="form-control" id="recommend_hours" name="recommend_hours" value="{{ $data->recommend_hours }}">
+                        <input type="text" class="form-control" id="recommend_hours" name="recommend_hours" value="{{ $data->recommend_hours }}" placeholder="Giờ">
                     </div>
                     <div class="row">
                         <p>Ngày tạo: {{ date_format($data->created_at, 'd/m/Y') }}</p>

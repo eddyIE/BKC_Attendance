@@ -103,16 +103,33 @@ class ProgramController extends Controller
             $selected_subjects = $request->subjects;
         }
 
+        $delete = false;
+        $delete_data = [];
         foreach ($current_subjects as $current) {
             if (!in_array($current, $selected_subjects)){
+                $delete = true;
+                $delete_data[] = $current->id;
                 dd($current.': deleted!');
             }
         }
+        if ($delete == true){
+            ProgramInfo::destroy($delete_data);
+        }
 
+        $insert = false;
+        $insert_data = [];
         foreach ($selected_subjects as $selected){
             if (!in_array($selected, $current_subjects)){
-                dd($selected.': created!');
+                $insert = true;
+                $insert_data = [
+                    'program_id' => $id,
+                    'subject_id' => $selected,
+                    'created_by' => auth()->user()->id
+                ];
             }
+        }
+        if ($insert == true){
+            ProgramInfo::insert($insert_data);
         }
 
         if ($result){
