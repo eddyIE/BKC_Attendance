@@ -244,4 +244,68 @@ class CourseController extends Controller
             return redirect('admin/course');
         }
     }
+
+    public function qualifiedStudent($courseId)
+    {
+        // Lấy thông tin khóa học
+        $curCourse = Course::find($courseId);
+
+        // Lấy danh sách các sinh viên
+        $students = Student::where('class_id', $curCourse->class_id)->get();
+        // Lấy ds DTO chứa các thông tin số buổi nghỉ, muộn, phép
+        $studentDTOs = (new LecturerController)->studentToDTO($students, $courseId);
+
+        $failQuan = 0;
+        $passQuan = 0;
+        $almostFailQuan = 0;
+        foreach ($studentDTOs as $student) {
+            // Tính % nghỉ và làm tròn
+            $absentPercentage = $student->absentQuan / $curCourse->finished_lessons * 100;
+            $absentPercentage = number_format((float)$absentPercentage, 2);
+
+            // Nghỉ quá 50% học lại, quá 30% thi lại
+            if ($absentPercentage > 50) {
+                $failQuan++;
+            } else if ($absentPercentage > 30) {
+                $almostFailQuan++;
+            } else {
+                $passQuan++;
+            }
+        }
+
+        $dataset = [
+            "data" => [$passQuan, $almostFailQuan, $failQuan],
+            "backgroundColor" => ['#28A745', '#ffc107', '#DC3545']
+        ];
+
+        return $dataset;
+    }
+
+    // Tính số giờ các giảng viên đã dạy trong một khóa học
+    public function getTaughtTime($courseId)
+    {
+        $lecturerIds = LecturerScheduling::select('lecturer_id')
+            ->where('course_id', $courseId)->get();
+
+        $lecturers = User::whereIn('id', $lecturerIds)->get();
+
+        $result = [];
+        foreach ($lecturers as $lecturer) {
+            $lessons = Lesson::where('created_by', $lecturer->id)
+                ->where('course_id', $courseId)->get();
+
+            $timeKeeping = 0;
+            foreach ($lessons as $lesson) {
+                $timeKeeping += strtotime($lesson->end) - strtotime($lesson->start);
+            }
+            // Biến đổi giờ dạy từ giây sang Giờ:Phút:Giây
+            $timeKeeping = floor($timeKeeping / 3600)
+                . gmdate(":i", $timeKeeping % 3600);
+            $lecturer->timeKeeping = $timeKeeping;
+
+            $result[] = $lecturer;
+        }
+
+        return $result;
+    }
 }
