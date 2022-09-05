@@ -109,9 +109,8 @@ class CourseController extends Controller
         return view('admin.course.detail', ['course' => $course, 'lecturers' => $lecturers, 'week_days' => $week_days]);
     }
 
-    //kiểm tra nếu giảng viên có lịch trùng với lớp môn học khác đã được phân công
+    //kiểm tra nếu giảng viên có lịch trùng với lớp môn học khác đã được phân công (true = không trùng, false = trùng)
     public function checkDuplicateSchedule($course, $lecturer_id){
-
         $validated = true;
 
         $scheduled_lecturer = LecturerScheduling::select('course.scheduled_day', 'course.scheduled_time')
@@ -123,17 +122,20 @@ class CourseController extends Controller
                 ['course.status', '=', 1]
             ])->get();
 
-        foreach ($scheduled_lecturer as $scheduled) {
-            $scheduled->scheduled_day = json_decode($scheduled->scheduled_day);
-            $scheduled->scheduled_time = explode(' - ',$scheduled->scheduled_time);
-            $scheduled->start = strtotime($scheduled->scheduled_time[0]);
-            $scheduled->end = strtotime($scheduled->scheduled_time[1]);
+        if (count($scheduled_lecturer)){
+            foreach ($scheduled_lecturer as $scheduled) {
+                $scheduled->scheduled_day = json_decode($scheduled->scheduled_day);
+                $scheduled->scheduled_time = explode(' - ',$scheduled->scheduled_time);
+                $scheduled->start = strtotime($scheduled->scheduled_time[0]);
+                $scheduled->end = strtotime($scheduled->scheduled_time[1]);
 
-            if (array_intersect($course->scheduled_day,$scheduled->scheduled_day) || ($course->start >= $scheduled->start && $course->start <= $scheduled->end) || ($course->end >= $scheduled->start && $course->end <= $scheduled->end)){
-                $validated = false;
+                if (array_intersect($course->scheduled_day,$scheduled->scheduled_day)){
+                    if (($course->start >= $scheduled->start && $course->start <= $scheduled->end) || ($course->end >= $scheduled->start && $course->end <= $scheduled->end)){
+                        $validated = false;
+                    }
+                }
             }
         }
-
         return $validated;
     }
 
@@ -144,11 +146,37 @@ class CourseController extends Controller
             'start' => 'date_format:H:i|before:end',
             'end' => 'date_format:H:i'
         ]);
-        $program_id = Classes::where('id', $request->class)->pluck('program_id')->toArray();
-        $program_info = ProgramInfo::where(['program_id' => $program_id, 'subject_id' => $request->subject])->first('id');
-        //khoảng cách giữa giờ bắt đầu và kết thúc học
+
+        $course = Course::find($id);
+        if ($course->status == 0){
+            Session::flash('type', 'info');
+            Session::flash('message', 'Lớp môn học đã kết thúc.');
+            return redirect('admin/course/' . $id);
+        }
+
+        $course->scheduled_day = $request->scheduled_day;
+        $course->scheduled_time = explode(' - ',$request->scheduled_time);
+        $course->start = strtotime($request->start);
+        $course->end = strtotime($request->end);
+
+        $lecturers = LecturerScheduling::where(['course_id' => $id, 'status' => 1])->pluck('lecturer_id')->toArray();
+        if (count($lecturers)) {
+            foreach ($lecturers as $lecturer) {
+                $validated = $this->checkDuplicateSchedule($course, $lecturer);
+                if ($validated == false) {
+                    Session::flash('type', 'error');
+                    Session::flash('message', 'Trùng lịch của giảng viên với lớp môn học khác.');
+                    return redirect('admin/course/' . $id);
+                }
+            }
+        }
+
+        //kiểm khoảng cách giữa giờ bắt đầu và kết thúc học (không quá 4 tiếng)
         $time_gap = floor((strtotime($request->end) - strtotime($request->start)) / 3600);
-        if ($time_gap <= 4){
+        if ($time_gap <= 4 && $time_gap > 0) {
+            $program_id = Classes::where('id', $request->class)->pluck('program_id')->toArray();
+            $program_info = ProgramInfo::where(['program_id' => $program_id, 'subject_id' => $request->subject])->first('id');
+
             $course = [
                 'name' => $request->name,
                 'total_hours' => $request->total_hours,
@@ -159,28 +187,23 @@ class CourseController extends Controller
                 'updated_by' => auth()->user()->id
             ];
 
-            $lecturers = LecturerScheduling::where(['course_id' => $id, 'status' => 1])->pluck('lecturer_id')->toArray();
-            foreach ($lecturers as $lecturer) {
-                $validated = $this->checkDuplicateSchedule($id, $lecturer);
-            }
-
             $new_course = Course::updateOrCreate(
                 ['id' => $id],
                 $course
             );
             if ($new_course) {
-                Session::flash('message', 'Sửa thông tin thành công.');
                 Session::flash('type', 'success');
+                Session::flash('message', 'Cập nhật thông tin thành công.');
                 return redirect('admin/course/' . $id);
             }
         } else {
             Session::flash('type', 'error');
             Session::flash('message', 'Đã có lỗi xảy ra.');
-            return redirect('admin/course/create');
+            return redirect('admin/course/' . $id);
         }
     }
 
-    public function destroy($id)
+        public function destroy($id)
     {
         $data = [
             'status' => 0,

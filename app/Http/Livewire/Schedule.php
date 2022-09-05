@@ -28,7 +28,7 @@ class Schedule extends Component
         $this->lecturer = array_values($this->lecturer);
     }
 
-    //kiểm tra nếu giảng viên có lịch trùng với lớp môn học khác đã được phân công
+    //kiểm tra nếu giảng viên có lịch trùng với lớp môn học khác đã được phân công (true = không trùng, false = trùng)
     public function checkDuplicateSchedule($course_id, $lecturer_id){
         $course = Course::select('scheduled_day', 'scheduled_time')->where(['id' => $course_id, 'status' => 1])->first();
         $course->scheduled_day = json_decode($course->scheduled_day);
@@ -53,8 +53,10 @@ class Schedule extends Component
             $scheduled->start = strtotime($scheduled->scheduled_time[0]);
             $scheduled->end = strtotime($scheduled->scheduled_time[1]);
 
-            if (array_intersect($course->scheduled_day,$scheduled->scheduled_day) || ($course->start >= $scheduled->start && $course->start <= $scheduled->end) || ($course->end >= $scheduled->start && $course->end <= $scheduled->end)){
-                $validated = false;
+            if (array_intersect($course->scheduled_day,$scheduled->scheduled_day)){
+                if (($course->start >= $scheduled->start && $course->start <= $scheduled->end) || ($course->end >= $scheduled->start && $course->end <= $scheduled->end)){
+                    $validated = false;
+                }
             }
         }
 
@@ -129,7 +131,7 @@ class Schedule extends Component
                         }
                     } else {
                         $type = 'error';
-                        $message = 'Trùng lịch dạy của giảng viên trong lớp môn học khác.';
+                        $message = 'Trùng lịch của giảng viên với lớp môn học khác.';
                     }
                 }
             }
