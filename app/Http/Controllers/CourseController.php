@@ -7,6 +7,7 @@ use App\Models\Course;
 use App\Models\LecturerScheduling;
 use App\Models\Lesson;
 use App\Models\Program;
+use App\Models\Lesson;
 use App\Models\ProgramInfo;
 use App\Models\Student;
 use App\Models\Subject;
@@ -69,13 +70,13 @@ class CourseController extends Controller
         $program_info = ProgramInfo::where(['program_id' => $program_id, 'subject_id' => $request->subject])->first('id');
         //khoảng cách giữa giờ bắt đầu và kết thúc học
         $time_gap = floor((strtotime($request->end) - strtotime($request->start)) / 3600);
-        if ($time_gap <= 4){
+        if ($time_gap <= 4) {
             $course = [
                 'name' => $request->name,
                 'total_hours' => $request->total_hours,
                 'class_id' => $request->class,
                 'subject_id' => $program_info->id,
-                'scheduled_day' => json_encode($request->scheduled_day,JSON_NUMERIC_CHECK),
+                'scheduled_day' => json_encode($request->scheduled_day, JSON_NUMERIC_CHECK),
                 'scheduled_time' => $request->start . ' - ' . $request->end,
                 'created_by' => auth()->user()->id
             ];
@@ -115,11 +116,12 @@ class CourseController extends Controller
     }
 
     //kiểm tra nếu giảng viên có lịch trùng với lớp môn học khác đã được phân công (true = không trùng, false = trùng)
-    public function checkDuplicateSchedule($course, $lecturer_id){
+    public function checkDuplicateSchedule($course, $lecturer_id)
+    {
         $validated = true;
 
         $scheduled_lecturer = LecturerScheduling::select('course.scheduled_day', 'course.scheduled_time')
-            ->leftJoin('course','course.id','=','lecturer_scheduling.course_id')
+            ->leftJoin('course', 'course.id', '=', 'lecturer_scheduling.course_id')
             ->where([
                 ['lecturer_scheduling.lecturer_id', '=', $lecturer_id],
                 ['lecturer_scheduling.course_id', '!=', $course->id],
@@ -127,15 +129,15 @@ class CourseController extends Controller
                 ['course.status', '=', 1]
             ])->get();
 
-        if (count($scheduled_lecturer)){
+        if (count($scheduled_lecturer)) {
             foreach ($scheduled_lecturer as $scheduled) {
                 $scheduled->scheduled_day = json_decode($scheduled->scheduled_day);
-                $scheduled->scheduled_time = explode(' - ',$scheduled->scheduled_time);
+                $scheduled->scheduled_time = explode(' - ', $scheduled->scheduled_time);
                 $scheduled->start = strtotime($scheduled->scheduled_time[0]);
                 $scheduled->end = strtotime($scheduled->scheduled_time[1]);
 
-                if (array_intersect($course->scheduled_day,$scheduled->scheduled_day)){
-                    if (($course->start >= $scheduled->start && $course->start <= $scheduled->end) || ($course->end >= $scheduled->start && $course->end <= $scheduled->end)){
+                if (array_intersect($course->scheduled_day, $scheduled->scheduled_day)) {
+                    if (($course->start >= $scheduled->start && $course->start <= $scheduled->end) || ($course->end >= $scheduled->start && $course->end <= $scheduled->end)) {
                         $validated = false;
                     }
                 }
@@ -153,14 +155,14 @@ class CourseController extends Controller
         ]);
 
         $course = Course::find($id);
-        if ($course->status == 0){
+        if ($course->status == 0) {
             Session::flash('type', 'info');
             Session::flash('message', 'Lớp môn học đã kết thúc.');
             return redirect('admin/course/' . $id);
         }
 
         $course->scheduled_day = $request->scheduled_day;
-        $course->scheduled_time = explode(' - ',$request->scheduled_time);
+        $course->scheduled_time = explode(' - ', $request->scheduled_time);
         $course->start = strtotime($request->start);
         $course->end = strtotime($request->end);
 
@@ -187,7 +189,7 @@ class CourseController extends Controller
                 'total_hours' => $request->total_hours,
                 'class_id' => $request->class,
                 'subject_id' => $program_info->id,
-                'scheduled_day' => json_encode($request->scheduled_day,JSON_NUMERIC_CHECK),
+                'scheduled_day' => json_encode($request->scheduled_day, JSON_NUMERIC_CHECK),
                 'scheduled_time' => $request->start . ' - ' . $request->end,
                 'updated_by' => auth()->user()->id
             ];
@@ -208,7 +210,7 @@ class CourseController extends Controller
         }
     }
 
-        public function destroy($id)
+    public function destroy($id)
     {
         $data = [
             'status' => 0,
