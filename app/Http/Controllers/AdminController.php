@@ -53,7 +53,7 @@ class AdminController extends Controller
 
         dump($absents);
 
-        $absents = self::countAbsent(0, $absents);
+        $absents = self::countAbsent(3, $absents);
 
         // Danh sách các khóa học
         $courses = Course::all();
