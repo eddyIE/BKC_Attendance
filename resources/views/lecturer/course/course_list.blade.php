@@ -8,7 +8,7 @@
         <th class="no-sort">Buổi đã dạy</th>
         <th>Cập nhật lần cuối</th>
         <th class="no-sort">Hiển thị</th>
-        <th class="no-sort">Tải ds thi</th>
+        <th class="no-sort">Tải ds xét điều kiện chuyên cần</th>
     </tr>
     </thead>
     <tbody>
@@ -37,7 +37,7 @@
                 </td>
                 <td class="text-center">
                     <a href="{{asset('/course/export/'.$course->id)}}" class="text-primary"
-                       title="Tải danh sách sinh viên đủ điều kiện thi">
+                       title="Tải danh sách xét chuyên cần sinh viên">
                         <i class="fa fa-download" aria-hidden="true"></i>
                     </a>
                 </td>

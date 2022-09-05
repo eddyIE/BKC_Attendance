@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Course extends Model
@@ -23,19 +22,23 @@ class Course extends Model
         'modified_by',
     ];
 
-    public function lesson(){
+    public function lesson()
+    {
         return $this->hasMany(Lesson::class);
     }
 
-    public function lecturer_scheduling(){
+    public function lecturer_scheduling()
+    {
         return $this->hasMany(LecturerScheduling::class);
     }
 
-    public function class(){
+    public function class()
+    {
         return $this->belongsTo(Classes::class);
     }
 
-    public function program_info(){
+    public function program_info()
+    {
         return $this->belongsTo(ProgramInfo::class, 'subject_id', 'id');
     }
 }
