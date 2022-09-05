@@ -7,7 +7,6 @@ use App\Models\Course;
 use App\Models\Student;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
@@ -36,7 +35,25 @@ class AdminController extends Controller
         $classQuan = Classes::where('status', 1)->count();
 
         // Danh sách sinh viên nghỉ nhiều
-        $attendanceAbsents = self::getStudentAbsentTooMuch(30, 2, 0);
+        $absents = self::getStudentAbsentTooMuch(30, 0);
+        $absentsWithReason = self::getStudentAbsentTooMuch(30, 2);
+        dump($absentsWithReason);
+        foreach ($absentsWithReason as $absentWithReason) {
+            $flag = false;
+            foreach ($absents as $absent) {
+                if ($absentWithReason->id == $absent->id) {
+                    $absent->count += $absentWithReason->count;
+                    $flag = true;
+                }
+            }
+            if (!$flag) {
+                $absents->push($absentWithReason);
+            }
+        }
+
+        dump($absents);
+
+        $absents = self::countAbsent(0, $absents);
 
         // Danh sách các khóa học
         $courses = Course::all();
@@ -56,7 +73,7 @@ class AdminController extends Controller
             'courseQuan' => $courseQuan,
             'studentQuan' => $studentQuan,
             'classQuan' => $classQuan,
-            'attendanceNoReason' => $attendanceAbsents,
+            'attendanceNoReason' => $absents,
             'courses' => $courses,
             'courseDataSet' => $dataset,
             'chosenCourseName' => $chosenCourseName,
@@ -71,7 +88,8 @@ class AdminController extends Controller
      * times: Số lần vi phạm tối đa
      * $status: Trạng thái nghỉ (0 - Nghỉ, 1 - Muộn, 2 - Nghỉ có phép
      */
-    private function getStudentAbsentTooMuch($duration, $times, $status){
+    private function getStudentAbsentTooMuch($duration, $status)
+    {
         $statusConvert = ["without reason", "late", "with reason"];
         $date = Carbon::now()->subDays($duration);
 
@@ -84,12 +102,17 @@ class AdminController extends Controller
             ->having('attendance.attendant_status', $statusConvert[$status])
             ->get();
 
-        $count = count($results);
+        return $results;
+    }
+
+    private function countAbsent($times, $data)
+    {
+        $count = count($data);
         for ($i = 0; $i < $count; $i++) {
-            if ($results[$i]->count <= $times) {
-                $results->forget($i);
+            if ($data[$i]->count <= $times) {
+                $data->forget($i);
             }
         }
-        return $results;
+        return $data;
     }
 }
