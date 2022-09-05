@@ -11,7 +11,6 @@ use App\Models\Student;
 use App\Models\StudentDTO;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 class LecturerController extends Controller
@@ -34,15 +33,11 @@ class LecturerController extends Controller
             return view('admin.attendance.index', ['courses' => $courses]);
         } // Nếu không phải giáo vụ thì chỉ lấy các lớp được phân công
         else if (auth()->user()->role == 0) {
-            $courses = Course::select('course.*')
-                ->join('lecturer_scheduling', 'course.id', '=',
-                    'lecturer_scheduling.course_id')
-                ->join('user', 'user.id', '=', 'lecturer_scheduling.lecturer_id')
-                ->where(['course.status' => 1, 'lecturer_scheduling.lecturer_id' => auth()->user()->id])
-                ->get();
+            $courses = self::findCoursesOfLecturer(auth()->user()->id, true, true, false);
             // Trả dữ liệu về view
             return view('lecturer.attendance.index', ['courses' => $courses]);
         }
+        return -1;
     }
 
     /* ================ LẤY TOÀN BỘ CÁC THÔNG TIN VỀ MỘT KHÓA HỌC =============
@@ -51,11 +46,11 @@ class LecturerController extends Controller
      *  - Lịch sử
      *  - ?
      */
-    public function courseDetail(Request $request)
+    public function getCourseData(Request $request)
     {
         // Lấy lại danh sách các khóa học
         // để truyền lên thanh tìm kiếm khóa học
-        $courses = Course::all();
+        $courses = self::findCoursesOfLecturer(auth()->user()->id, true, true, false);
 
         // Lấy thông tin của khóa học
         $courseId = $request->all()['course-id'];
@@ -68,11 +63,8 @@ class LecturerController extends Controller
         // Lấy ds DTO chứa các thông tin số buổi nghỉ, muộn, phép
         $studentDTOs = self::studentToDTO($students, $courseId);
 
-        // Lấy danh sách các buổi học trước
-        $lessons = Lesson::where('course_id', $courseId)
-            ->orderBy('created_at', 'ASC')->get();
-
         // Chọn view để trả về dựa trên role
+        $view = '';
         if (auth()->user()->role == 1) {
             // Nếu đây là giáo vụ
             $view = 'admin.attendance.index';
@@ -80,31 +72,30 @@ class LecturerController extends Controller
             // Nếu đây là giảng viên
             $view = 'lecturer.attendance.index';
         }
-        // Tìm và bỏ buổi học hôm nay khỏi DS lịch sử các buổi học NẾU CÓ
+
+        $curShift = (new AttendanceController)->getCurrentShift();
+        // Check xem có phải hôm nay lớp đã điểm danh không
         $existLesson = (new AttendanceController)->getExistLesson($courseId);
         if ($existLesson != null) {
-            // Bỏ buổi học hiện tại ra khỏi list
-            $lessons->forget(count($lessons) - 1);
             return view($view, ['courses' => $courses,
                 'students' => $studentDTOs,
                 'curCourse' => $curCourse,
                 'curClass' => $curClass,
-                'lessons' => $lessons,
-                'existLesson' => $existLesson]);
-        } else {
-            return view($view, ['courses' => $courses,
-                'students' => $studentDTOs,
-                'curCourse' => $curCourse,
-                'curClass' => $curClass,
-                'lessons' => $lessons]);
+                'existLesson' => $existLesson,
+                'curShift' => $curShift]);
         }
+        return view($view, ['courses' => $courses,
+            'students' => $studentDTOs,
+            'curCourse' => $curCourse,
+            'curClass' => $curClass,
+            'curShift' => $curShift]);
     }
 
     /*
      * Chuyển Model Student sang StudentDTO để chứa thêm thông tin số ngày nghỉ
      */
-    private function studentToDTO($students, $courseId,
-                                  $specificLessonId = null): array
+    public function studentToDTO($students, $courseId,
+                                 $specificLessonId = null): array
     {
         $result = array();
 
@@ -233,16 +224,42 @@ class LecturerController extends Controller
         }
     }
 
+    /*
+     * Trang xem lịch sử của khóa học
+     */
+    public function history($courseId)
+    {
+        // Lấy danh sách các buổi học trước
+        $lessons = Lesson::where('course_id', $courseId)
+            ->orderBy('created_at', 'ASC')->get();
+
+        // Tìm và bỏ buổi học hôm nay khỏi DS lịch sử các buổi học NẾU CÓ
+        $existLesson = (new AttendanceController)->getExistLesson($courseId);
+
+        if ($existLesson == null) {
+            return view('lecturer.attendance.attendance_history.main_history',
+                ['lessons' => $lessons]);
+        }
+
+        $lessons->forget(count($lessons) - 1);
+        return view('lecturer.attendance.attendance_history.main_history', [
+            'lessons' => $lessons,
+            'existLesson' => $existLesson]);
+    }
+
+    /*
+     * Xem buổi học trong quá khứ
+     */
     public function prevLessonDetail($lessonId)
     {
         // Lấy lại danh sách các khóa học
         // để truyền lên thanh tìm kiếm khóa học
-        $courses = Course::all();
+        $courses = self::findCoursesOfLecturer(auth()->user()->id, true, true, true);
 
         // Lấy các thông tin về previous lesson được chọn
         $prevLesson = Lesson::find($lessonId);
         if (is_null($prevLesson)) {
-            return;
+            return -1;
         }
 
         // Lấy thông tin của khóa học
@@ -265,33 +282,29 @@ class LecturerController extends Controller
             $prevLessons->forget(count($prevLessons) - 1);
         }
 
-        return view('lecturer.attendance.history_view', ['courses' => $courses,
-            'students' => $studentDTOs,
-            'curCourse' => $curCourse,
-            'curClass' => $curClass,
-            'lessons' => $prevLessons,
-            'prevLesson' => $prevLesson]);
+        return view('lecturer.attendance.attendance_history.main_history',
+            ['courses' => $courses,
+                'students' => $studentDTOs,
+                'curCourse' => $curCourse,
+                'curClass' => $curClass,
+                'lessons' => $prevLessons,
+                'prevLesson' => $prevLesson]);
     }
 
     /*
-     * Quản lí các lớp được phân công
+     * Lấy danh sách các phân công hiện tại
      */
     public
     function courseManagement()
     {
         // Lấy danh sách các lớp được phân công
-        $courses = Course::select('course.*')
-            ->join('lecturer_scheduling', 'course.id', '=',
-                'lecturer_scheduling.course_id')
-            ->join('user', 'user.id', '=', 'lecturer_scheduling.lecturer_id')
-            ->where('lecturer_scheduling.lecturer_id', auth()->user()->id)
-            ->get();
+        $courses = self::findCoursesOfLecturer(auth()->user()->id, false, true, true);
         // Trả dữ liệu về view
         return view('lecturer.course.course', ['courses' => $courses]);
     }
 
     /*
-     * Update status của phân công
+     * Update status (Ẩn hiện) của phân công
      */
     public
     function courseUpdateVisibility($id)
@@ -336,12 +349,8 @@ class LecturerController extends Controller
             $monthEnd = date('Y-m-t');
         }
 
-        // Lấy danh sách các khóa học được phân công
-        $courses = Course::select('course.*')
-            ->join('lecturer_scheduling', 'course.id', '=',
-                'lecturer_scheduling.course_id')
-            ->join('user', 'user.id', '=', 'lecturer_scheduling.lecturer_id')
-            ->get();
+        // Lấy danh sách các khóa học có thể đã dạy
+        $courses = self::findCoursesOfLecturer(auth()->user()->id, false, false, false);
 
         // Lấy ID các khóa học vừa tìm được
         $courseIds = array();
@@ -390,6 +399,9 @@ class LecturerController extends Controller
         ]);
     }
 
+    /*
+     * Export danh sách xét điều kiện thi ra Excel
+     */
     public function exportStudentData($courseId)
     {
         $curCourse = Course::find($courseId);
@@ -411,5 +423,49 @@ class LecturerController extends Controller
 
         return (new AttendanceExport($courseId, $studentDTOs))
             ->download($courseName . '_ds_sv_du_dieu_kien.xlsx');
+    }
+
+    /*
+     * Xem thời khóa biểu
+     */
+    public function schedule()
+    {
+        $courses = self::findCoursesOfLecturer(auth()->user()->id, true, true, true);
+        foreach ($courses as $course) {
+            $course->scheduled_time = explode(' - ', $course->scheduled_time);
+            $course->start = $course->scheduled_time[0];
+            $course->end = $course->scheduled_time[1];
+        }
+        return view('lecturer.schedule.schedule', ['courses' => $courses]);
+    }
+
+    /*
+     * Query khóa học được phân công cho giảng viên
+     * $userId: Id giảng viên
+     * $onlyUnfinishedCourse: Chỉ những khóa học chưa kết thúc
+     * $onlyMainLecturer: Chỉ những khóa học mà giảng viên này dạy chính
+     * $onlyNotDeletedSchedule: Chỉ những phân công (dạy thay) chưa kết thúc
+     */
+    private function findCoursesOfLecturer($userId, $onlyUnfinishedCourse = true,
+                                           $onlyNotDeletedSchedule = true, $onlyMainLecturer = true)
+    {
+        $queryOption = [];
+        if ($onlyUnfinishedCourse) {
+            $queryOption['course.status'] = 1;
+        }
+        if ($onlyMainLecturer) {
+            $queryOption['lecturer_scheduling.substitution'] = 0;
+        }
+        if ($onlyNotDeletedSchedule) {
+            $queryOption['lecturer_scheduling.status'] = 1;
+        }
+        return Course::select('course.*')
+            ->join('lecturer_scheduling', 'course.id', '=',
+                'lecturer_scheduling.course_id')
+            ->join('user', 'user.id', '=', 'lecturer_scheduling.lecturer_id')
+            ->where(['lecturer_scheduling.lecturer_id' => $userId])
+            ->where($queryOption)
+            ->get();
+
     }
 }
