@@ -79,7 +79,7 @@
                 pickDate: false,
                 pickSeconds: false,
                 pick12HourFormat: false,
-                steps: 320,
+                steps: 60,
             });
         });
     </script>

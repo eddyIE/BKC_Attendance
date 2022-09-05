@@ -43,28 +43,6 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="card card-info">
-                    <div class="card-header">
-                        <h3 class="card-title font-weight-bold text-uppercase">Môn học</h3>
-                    </div>
-                    <div class="card-body">
-                        <div class="form-group">
-                            <div class="select2-lightblue">
-                                <select class="form-control" multiple="multiple" data-placeholder="Vui lòng chọn môn học" data-dropdown-css-class="select2-lightblue" style="width: 100%;" name="student[]" id="student">
-                                    @foreach($students as $student)
-                                        @if($student->selected == true)
-                                            <option value="{{ $student->id }}" selected>{{ $student->full_name }}</option>
-                                        @else
-                                            <option value="{{ $student->id }}">{{ $student->full_name }}</option>
-                                        @endif
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </form>
 @endsection

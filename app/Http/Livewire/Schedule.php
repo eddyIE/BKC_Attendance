@@ -109,6 +109,8 @@ class Schedule extends Component
                 }
             }
 
+            $insert_data = [];
+            $validated = false;
             //nếu phần tử của mảng client không có trong mảng hệ thống, thực hiện thêm phân công
             foreach ($this->lecturer as $index => $lecturer){
                 if (!in_array($lecturer, $schedules)){
@@ -116,24 +118,27 @@ class Schedule extends Component
                     if ($validated == true){
                         //xác định giảng viên chính
                         if ($index == 0){
-                            LecturerScheduling::create([
+                            $insert_data[] = [
                                 'course_id' => $this->course,
                                 'lecturer_id' => $lecturer,
                                 'created_by' => auth()->user()->id,
-                            ]);
+                            ];
                         } else {
-                            LecturerScheduling::create([
+                            $insert_data[] = [
                                 'course_id' => $this->course,
                                 'lecturer_id' => $lecturer,
                                 'substitution' => 1,
                                 'created_by' => auth()->user()->id,
-                            ]);
+                            ];
                         }
                     } else {
                         $type = 'error';
                         $message = 'Trùng lịch của giảng viên với lớp môn học khác.';
                     }
                 }
+            }
+            if ($validated == true){
+                LecturerScheduling::insert($insert_data);
             }
         } else {
             $type = 'error';

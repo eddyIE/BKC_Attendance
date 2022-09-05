@@ -13,16 +13,23 @@ class AdminController extends Controller
 {
     public function index()
     {
-        $courses = Course::where([
+        $courses = Course::select('course.*', 'user.full_name')
+            ->leftJoin('lecturer_scheduling','course.id','=','lecturer_scheduling.course_id')
+            ->leftJoin('user','user.id','=','lecturer_scheduling.lecturer_id')
+            ->where([
                 ['scheduled_day', '!=', null],
                 ['scheduled_time', '!=', null],
-                ['status', '=', 1]]
-        )->get();
+                ['course.status', '=', 1],
+                ['lecturer_scheduling.substitution', '=', 0],
+                ['lecturer_scheduling.status', '=', 1],
+                ['user.status', '=', 1]
+            ])->get();
         foreach ($courses as $course) {
+            $course->dow = json_decode($course->scheduled_day);
             $course->scheduled_time = explode(' - ', $course->scheduled_time);
             $course->start = $course->scheduled_time[0];
             $course->end = $course->scheduled_time[1];
-            $course->total_lessons = $course->total_hours / (count($course->scheduled_time));
+            $course->total_week = ceil($course->total_hours / floor((strtotime($course->end) - strtotime($course->start)) / 3600) / (count($course->dow)));
         }
         return view('admin.index', ['courses' => $courses]);
     }

@@ -22,7 +22,7 @@
             @foreach ($data as $each)
                 @if($each->status == 1)
                     <tr class="clickable-row" onclick="window.location='{{ route('course.show', $each->id) }}'">
-                        <td class="text-center border-0">{{ $loop->index + 1 }}</td>
+                        <td class="text-center border-0">{{ $each->index }}</td>
                         <td class="text-center border-0">{{ $each->class->name }}</td>
                         <td class="text-center border-0">{{ $each->program_info->subject->name }}</td>
                         <td class="text-center border-0">{{ (float) $each->total_hours . ' giờ' }}</td>
@@ -36,12 +36,17 @@
                             <td class="text-center border-0 text-danger">Chưa phân công</td>
                         @endif
                         <td class="text-center border-0">{{ date_format($each->created_at, 'd/m/Y') }}</td>
-                        <td class="border-0 align-middle text-center">
-                            <form action="{{ route('course.destroy', $each->id) }}" method="post">
-                                @method('DELETE')
-                                @csrf
-                                <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
-                            </form>
+                        <td class="border-0 align-middle text-center row">
+                            <div class="col-md-6">
+                                <a href="{{asset('/course/export/'.$each->id)}}" class="btn btn-sm btn-outline-secondary" title="Tải danh sách xét chuyên cần sinh viên">
+                                    <i class="fa fa-download" aria-hidden="true"></i>
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <a href="{{ route('course.destroy', $each->id) }}" class="btn btn-sm btn-outline-danger">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
                         </td>
                     </tr>
                 @else
@@ -68,4 +73,7 @@
             @endforeach
         </tbody>
     </table>
+    <div class="row text-right">
+        {{ $data->links() }}
+    </div>
 @endsection

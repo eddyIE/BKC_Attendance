@@ -80,7 +80,7 @@
                 pickDate: false,
                 pickSeconds: false,
                 pick12HourFormat: false,
-                allowTimes: ['08:00','12:00','13:00','17:00','18:00','21:00'],
+                stepping: 60,
             });
         });
     </script>

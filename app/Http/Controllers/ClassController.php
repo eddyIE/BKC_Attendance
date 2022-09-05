@@ -55,6 +55,7 @@ class ClassController extends Controller
     {
         $data = Classes::find($id);
         $program = Program::where('status', true)->get();
+
         return view('admin.class.detail', ['data' => $data, 'program' => $program]);
     }
 
