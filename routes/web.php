@@ -41,6 +41,9 @@ Route::group(['prefix' => '/admin', 'middleware' => ['auth', 'role:admin']], fun
     Route::resource('course', 'CourseController')->except('edit');
     Route::patch('course/{course}/restore', 'CourseController@restore')->name('course.restore');
 
+    // Excel
+    Route::get('course/export/{courseId}', 'CourseController@exportStudentData');
+
     // Điểm danh
     Route::get("attendance", 'LecturerController@courseChooser');
 

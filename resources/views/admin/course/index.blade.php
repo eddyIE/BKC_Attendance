@@ -38,7 +38,7 @@
                         <td class="text-center border-0">{{ date_format($each->created_at, 'd/m/Y') }}</td>
                         <td class="border-0 align-middle text-center row">
                             <div class="col-md-6">
-                                <a href="{{asset('/course/export/'.$each->id)}}" class="btn btn-sm btn-outline-secondary" title="Tải danh sách xét chuyên cần sinh viên">
+                                <a href="{{ asset('admin/course/export/'.$each->id) }}" class="btn btn-sm btn-outline-secondary" title="Tải danh sách xét chuyên cần sinh viên">
                                     <i class="fa fa-download" aria-hidden="true"></i>
                                 </a>
                             </div>
