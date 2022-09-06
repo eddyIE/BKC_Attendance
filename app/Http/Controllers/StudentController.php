@@ -25,25 +25,17 @@ class StudentController extends Controller
     {
         $data = $request->validate([
             'full_name' => 'required',
-            'class_id' => 'required',
             'birthdate' => 'required',
         ]);
         $data['birthdate'] = date('Y-m-d', strtotime(str_replace('/', '-', $data['birthdate'])));
+        $data['created_by'] = auth()->user()->id;
+        $new_student = Student::firstOrCreate($data);
+        if ($new_student){
+            Student::find($new_student->id)->update(['code' => sprintf('BKC%05d',$new_student->id)]);
 
-        $exist = Student::where($data)->get();
-
-        if ($exist->isEmpty()){
-            $data['created_by'] = auth()->user()->id;
-            $result = Student::create($data);
-            if ($result){
-                Session::flash('type', 'success');
-                Session::flash('message', 'Thêm thông tin thành công.');
-                return redirect('admin/student');
-            } else {
-                Session::flash('type', 'error');
-                Session::flash('message', 'Đã có sự cố xảy ra.');
-                return redirect('admin/student');
-            }
+            Session::flash('type', 'success');
+            Session::flash('message', 'Thêm thông tin thành công.');
+            return redirect('admin/student');
         } else {
             Session::flash('type', 'error');
             Session::flash('message', 'Thông tin đã tồn tại trong hệ thống.');
@@ -62,7 +54,6 @@ class StudentController extends Controller
     {
         $data = $request->validate([
             'full_name' => 'required',
-            'class_id' => 'required',
             'birthdate' => 'required',
         ]);
         $data['birthdate'] = date('Y-m-d', strtotime(str_replace('/', '-', $data['birthdate'])));

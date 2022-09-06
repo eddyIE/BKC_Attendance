@@ -10,7 +10,7 @@ class SubjectController extends Controller
 {
     public function index()
     {
-        $data = Subject::all()->sortByDesc('created_at');
+        $data = Subject::where('status',1)->latest()->simplePaginate(10);
         return view('admin.subject.index', ['data' => $data]);
     }
 

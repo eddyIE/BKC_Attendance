@@ -32,8 +32,8 @@ class SubjectFactory extends Factory
             'Cơ sở dữ liệu nâng cao',
         ];
         return [
-            'name' => $this->faker->randomElements($name),
-            'recommend_hours' => $this->faker->randomElements([30,45,60,75])
+            'name' => $this->faker->randomElement($name),
+            'recommend_hours' => $this->faker->randomElement([30,45,60,75])
         ];
     }
 }
