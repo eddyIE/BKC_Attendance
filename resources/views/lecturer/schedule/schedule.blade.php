@@ -108,12 +108,8 @@
 
                 // Truyền vào các buổi chấm công
                 events: [
-                    {
-                        title: "test",
-                        daysOfWeek: [5],
-                    },
-                        @isset($courses)
-                        @foreach($courses as $course)
+                    @isset($courses)
+                    @foreach($courses as $course)
                     {
                         title:
                         @php
