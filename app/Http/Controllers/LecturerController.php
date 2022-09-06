@@ -420,7 +420,6 @@ class LecturerController extends Controller
         $courseName = str_replace("-", "", $courseName);
         $courseName = str_replace("__", "_", $courseName);
 
-
         return (new AttendanceExport($courseId, $studentDTOs))
             ->download($courseName . '_ds_sv_du_dieu_kien.xlsx');
     }
