@@ -11,7 +11,7 @@ class StudentController extends Controller
 {
     public function index()
     {
-        $data = Student::whereRelation('class', 'status', true)->get()->sortByDesc('created_at');
+        $data = Student::whereRelation('class', 'status', true)->orderBy('created_at')->simplePaginate(10);
         return view('admin.student.index', ['data' => $data]);
     }
 
