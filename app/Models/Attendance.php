@@ -18,7 +18,6 @@ class Attendance extends Model
         'modified_by',
     ];
     protected $attributes = [
-        'status' => 1,
         'created_by' => 1,
     ];
 
