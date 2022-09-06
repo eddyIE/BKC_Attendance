@@ -44,7 +44,6 @@ class AdminController extends Controller
         // Danh sách sinh viên nghỉ nhiều
         $absents = self::getStudentAbsentTooMuch(30, 0);
         $absentsWithReason = self::getStudentAbsentTooMuch(30, 2);
-        dump($absentsWithReason);
         foreach ($absentsWithReason as $absentWithReason) {
             $flag = false;
             foreach ($absents as $absent) {
@@ -57,8 +56,6 @@ class AdminController extends Controller
                 $absents->push($absentWithReason);
             }
         }
-
-        dump($absents);
 
         $absents = self::countAbsent(3, $absents);
 

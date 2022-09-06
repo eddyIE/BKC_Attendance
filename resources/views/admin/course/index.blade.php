@@ -43,9 +43,11 @@
                                 </a>
                             </div>
                             <div class="col-md-6">
-                                <a href="{{ route('course.destroy', $each->id) }}" class="btn btn-sm btn-outline-danger">
-                                    <i class="fas fa-trash"></i>
-                                </a>
+                                <form action="{{ route('course.destroy', $each->id) }}" method="post">
+                                    @method('DELETE')
+                                    @csrf
+                                        <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                                </form>
                             </div>
                         </td>
                     </tr>
