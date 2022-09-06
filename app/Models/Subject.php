@@ -16,6 +16,10 @@ class Subject extends Model
         'created_by',
         'modified_by',
     ];
+    protected $attributes = [
+        'status' => 1,
+        'created_by' => 1,
+    ];
 
     public function program_info(){
         return $this->hasMany(ProgramInfo::class);

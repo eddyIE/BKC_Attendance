@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Classes extends Model
 {
+    use HasFactory;
+
     protected $table = 'class';
     protected $primaryKey = 'id';
     protected $fillable = [
@@ -15,6 +17,10 @@ class Classes extends Model
         'status',
         'created_by',
         'modified_by',
+    ];
+    protected $attributes = [
+        'status' => 1,
+        'created_by' => 1,
     ];
 
     public function program(){

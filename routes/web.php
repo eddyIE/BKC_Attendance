@@ -42,7 +42,7 @@ Route::group(['prefix' => '/admin', 'middleware' => ['auth', 'role:admin']], fun
     Route::patch('course/{course}/restore', 'CourseController@restore')->name('course.restore');
 
     // Excel
-    Route::get('course/export/{courseId}', 'CourseController@exportStudentData');
+    Route::get('course/export/{courseId}', 'LecturerController@exportStudentData');
 
     // Điểm danh
     Route::get("attendance", 'LecturerController@courseChooser');

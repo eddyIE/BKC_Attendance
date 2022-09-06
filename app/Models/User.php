@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class User extends Authenticatable
 {
     use HasFactory;
+
     protected $table = 'user';
     protected $primaryKey = 'id';
     protected $fillable = [
@@ -19,7 +20,11 @@ class User extends Authenticatable
         'phone',
         'gender',
     ];
-
+    protected $attributes = [
+        'status' => 1,
+        'role' => 0,
+        'created_by' => 1,
+    ];
 
     public function lesson(){
         return $this->hasMany(Lesson::class);
