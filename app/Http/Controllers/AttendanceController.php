@@ -90,6 +90,7 @@ class AttendanceController extends Controller
                 $attendance->note = $student['absent_reason'];
                 $attendance->lesson_id = $lessonId;
                 $attendance->created_by = Auth::user()->id;
+                $attendance->created_at = Carbon::now();
                 $data[] = $attendance->attributesToArray();
             }
         }
@@ -250,27 +251,47 @@ class AttendanceController extends Controller
         // Lấy lesson id buổi học trước cần update
         $lessonId = $request->all()['prev-lesson-id'];
 
-        // Xóa các bản ghi điểm danh cũ
-        Attendance::where('lesson_id', $lessonId)->delete();
+        // Lấy các bản ghi điểm danh cũ
+        $oldAttendance = Attendance::where('lesson_id', $lessonId)->get();
 
+        // Biến flag có tại vì trước đây các sinh viên đi học sẽ không được thêm bản ghi Attendance vào DB
+        // Giờ sẽ check nếu inh viên không tồn tại bản ghi trước đó thì sẽ tạo mới thay vì chỉ update
+        $flag = false;
         // Tạo lại các bản ghi điểm danh
         $data = array();
         $students = $request->{'students'};
         foreach ($students as $student) {
             if (!is_null($student["status"])) {
-                $attendance = new Attendance();
-                $attendance->student_id = $student['student_id'];
-                $attendance->attendant_status = $student['status'];
-                $attendance->note = $student['absent_reason'];
-                $attendance->lesson_id = $lessonId;
-                // Chưa tìm được cách ko phải set lại created_by
-                // IDEA: Lấy created_by của lesson
-                $attendance->created_by = Auth::user()->id;
-                $attendance->modified_by = Auth::user()->id;
-                $data[] = $attendance->attributesToArray();
+                $flag = false;
+                foreach ($oldAttendance as $attendance) {
+                    if ($attendance->student_id == $student['student_id']) {
+                        $attendance->attendant_status = $student['status'];
+                        $attendance->note = $student['absent_reason'];
+                        $attendance->lesson_id = $lessonId;
+                        $attendance->modified_by = Auth::user()->id;
+                        $attendance->updated_at = Carbon::now();
+                        $data[] = $attendance->attributesToArray();
+                        $flag = true;
+                        $attendance->save();
+                    }
+                }
+                // Bản ghi trước đó không tồn tại
+                if(!$flag){
+                    $newAttendance = new Attendance();
+                    $newAttendance->student_id = $student['student_id'];
+                    $newAttendance->attendant_status = $student['status'];
+                    $newAttendance->note = $student['absent_reason'];
+                    $newAttendance->lesson_id = $lessonId;
+                    $newAttendance->created_by = count($oldAttendance) > 0 ? $oldAttendance[0]->created_by : Auth::user()->id;
+                    $newAttendance->created_at = count($oldAttendance) > 0 ?$oldAttendance[0]->created_at : Carbon::now();
+                    $newAttendance->modified_by = Auth::user()->id;
+                    $newAttendance->updated_at = Carbon::now();
+                    $data[] = $newAttendance->attributesToArray();
+                    $newAttendance->save();
+                }
             }
         }
-        Attendance::insert($data);
+//        Attendance::updateOrCreate($data);
     }
 
     /*

@@ -47,8 +47,12 @@ class AttendanceExport implements FromCollection, WithHeadings, ShouldAutoSize, 
             $newStudent->class_name = Classes::find($student->class_id)->name;
 
             // Tính % nghỉ và làm tròn
-            $newStudent->absentPercentage = $student->absentQuan / $curCourse->finished_lessons * 100;
-            $newStudent->absentPercentage = number_format((float)$newStudent->absentPercentage, 2);
+            if ($curCourse->finished_lessons == 0 || $curCourse->finished_lessons == null) {
+                $newStudent->absentPercentage = 0;
+            } else {
+                $newStudent->absentPercentage = $student->absentQuan / $curCourse->finished_lessons * 100;
+                $newStudent->absentPercentage = number_format((float)$newStudent->absentPercentage, 2);
+            }
 
             // Nghỉ quá 50% học lại, quá 30% thi lại
             if ($newStudent->absentPercentage > 50) {

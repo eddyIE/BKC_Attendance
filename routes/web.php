@@ -42,7 +42,7 @@ Route::group(['prefix' => '/admin', 'middleware' => ['auth', 'role:admin']], fun
     Route::patch('course/{course}/restore', 'CourseController@restore')->name('course.restore');
 
     // Excel
-    Route::get('course/export/{courseId}', 'LecturerController@exportStudentData');
+    Route::get('course/export/{courseId}', 'CourseController@exportStudentData');
 
     // Điểm danh
     Route::get("attendance", 'LecturerController@courseChooser');
@@ -53,6 +53,10 @@ Route::group(['prefix' => '/admin', 'middleware' => ['auth', 'role:admin']], fun
 
     // Thống kê
     Route::get('statistic/{courseId?}', 'AdminController@statistic');
+
+    // Excel danh sách chuyên cần
+    Route::get('course/export/{courseId}', 'LecturerController@exportStudentData');
+
 });
 
 Route::group(['prefix' => '/', 'middleware' => ['auth', 'role:lecturer']], function (){
@@ -83,7 +87,7 @@ Route::group(['prefix' => '/', 'middleware' => ['auth', 'role:lecturer']], funct
     // Chấm công
     Route::get('/time-keeping/{month?}', 'LecturerController@timeKeeping');
 
-    // Excel
+    // Excel danh sách chuyên cần
     Route::get('/course/export/{courseId}', 'LecturerController@exportStudentData');
 
     // Thời khóa biểu
