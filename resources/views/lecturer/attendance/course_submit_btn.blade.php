@@ -2,11 +2,9 @@
 
 {{--Ghi chú--}}
 <textarea class="form-control mb-4 mt-4" placeholder="Ghi chú:" name="note"
-          rows="4">
-    @php
-    echo (isset($lessonNote) && trim($lessonNote, ' ') != '') ? $lessonNote : null;
-    @endphp
-</textarea>
+          rows="4"><?php
+    echo((isset($existLesson) && $existLesson->note != '') ? $existLesson->note : '');
+    ?></textarea>
 
 {{-- <button class="btn btn-primary" data-toggle="modal" data-target="bs-example-modal-sm">Hỗ trợ</button> --}}
 
