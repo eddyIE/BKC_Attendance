@@ -33,7 +33,7 @@ class LecturerController extends Controller
             return view('admin.attendance.index', ['courses' => $courses]);
         } // Nếu không phải giáo vụ thì chỉ lấy các lớp được phân công
         else if (auth()->user()->role == 0) {
-            $courses = (new Course)->findCoursesOfLecturer(auth()->user()->id);
+            $courses = self::findCoursesOfLecturer(auth()->user()->id, true, true, false);
             // Trả dữ liệu về view
             return view('lecturer.attendance.index', ['courses' => $courses]);
         }
@@ -50,7 +50,7 @@ class LecturerController extends Controller
     {
         // Lấy lại danh sách các khóa học
         // để truyền lên thanh tìm kiếm khóa học
-        $courses = (new Course)->findCoursesOfLecturer(auth()->user()->id);
+        $courses = self::findCoursesOfLecturer(auth()->user()->id, true, true, false);
 
         // Lấy thông tin của khóa học
         $courseId = $request->all()['course-id'];
@@ -254,7 +254,7 @@ class LecturerController extends Controller
     {
         // Lấy lại danh sách các khóa học
         // để truyền lên thanh tìm kiếm khóa học
-        $courses = (new Course)->findCoursesOfLecturer(auth()->user()->id);
+        $courses = self::findCoursesOfLecturer(auth()->user()->id, true, true, true);
 
         // Lấy các thông tin về previous lesson được chọn
         $prevLesson = Lesson::find($lessonId);
@@ -292,19 +292,19 @@ class LecturerController extends Controller
     }
 
     /*
-     * Quản lí các lớp được phân công
+     * Lấy danh sách các phân công hiện tại
      */
     public
     function courseManagement()
     {
         // Lấy danh sách các lớp được phân công
-        $courses = (new Course)->findCoursesOfLecturer(auth()->user()->id, false);
+        $courses = self::findCoursesOfLecturer(auth()->user()->id, false, true, true);
         // Trả dữ liệu về view
         return view('lecturer.course.course', ['courses' => $courses]);
     }
 
     /*
-     * Update status của phân công
+     * Update status (Ẩn hiện) của phân công
      */
     public
     function courseUpdateVisibility($id)
@@ -349,8 +349,8 @@ class LecturerController extends Controller
             $monthEnd = date('Y-m-t');
         }
 
-        // Lấy danh sách các khóa học được phân công
-        $courses = (new Course)->findCoursesOfLecturer(auth()->user()->id, false);
+        // Lấy danh sách các khóa học có thể đã dạy
+        $courses = self::findCoursesOfLecturer(auth()->user()->id, false, false, false);
 
         // Lấy ID các khóa học vừa tìm được
         $courseIds = array();
@@ -430,12 +430,42 @@ class LecturerController extends Controller
      */
     public function schedule()
     {
-        $courses = (new Course)->findCoursesOfLecturer(auth()->user()->id);
+        $courses = self::findCoursesOfLecturer(auth()->user()->id, true, true, true);
         foreach ($courses as $course) {
             $course->scheduled_time = explode(' - ', $course->scheduled_time);
             $course->start = $course->scheduled_time[0];
             $course->end = $course->scheduled_time[1];
         }
         return view('lecturer.schedule.schedule', ['courses' => $courses]);
+    }
+
+    /*
+     * Query khóa học được phân công cho giảng viên
+     * $userId: Id giảng viên
+     * $onlyUnfinishedCourse: Chỉ những khóa học chưa kết thúc
+     * $onlyMainLecturer: Chỉ những khóa học mà giảng viên này dạy chính
+     * $onlyNotDeletedSchedule: Chỉ những phân công (dạy thay) chưa kết thúc
+     */
+    private function findCoursesOfLecturer($userId, $onlyUnfinishedCourse = true,
+                                           $onlyNotDeletedSchedule = true, $onlyMainLecturer = true)
+    {
+        $queryOption = [];
+        if ($onlyUnfinishedCourse) {
+            $queryOption['course.status'] = 1;
+        }
+        if ($onlyMainLecturer) {
+            $queryOption['lecturer_scheduling.substitution'] = 0;
+        }
+        if ($onlyNotDeletedSchedule) {
+            $queryOption['lecturer_scheduling.status'] = 1;
+        }
+        return Course::select('course.*')
+            ->join('lecturer_scheduling', 'course.id', '=',
+                'lecturer_scheduling.course_id')
+            ->join('user', 'user.id', '=', 'lecturer_scheduling.lecturer_id')
+            ->where(['lecturer_scheduling.lecturer_id' => $userId])
+            ->where($queryOption)
+            ->get();
+
     }
 }

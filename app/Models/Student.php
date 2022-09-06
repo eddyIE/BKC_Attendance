@@ -18,6 +18,10 @@ class Student extends Model
         'modified_by',
         'code'
     ];
+    protected $attributes = [
+        'status' => 1,
+        'created_by' => 1,
+    ];
 
     public function attendance(){
         return $this->hasMany(Attendance::class);

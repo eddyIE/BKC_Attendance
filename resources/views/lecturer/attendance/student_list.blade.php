@@ -98,7 +98,7 @@
                 {{--Có mặt--}}
                 <td class="text-center border border-0">
                     <input type="radio" class="btn-check"
-                           name="students[{{ $loop->index + 1 }}][status]" value=""
+                           name="students[{{ $loop->index + 1 }}][status]" value="attend"
                            id="{{$each->id}}_attend" checked>
                     <label class="btn btn-outline-success" for="{{$each->id}}_attend">
                         Có mặt

@@ -78,14 +78,6 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ asset('admin/timetable') }}" class="nav-link">
-                        <i class="nav-icon fas fa-chalkboard-teacher"></i>
-                        <p>
-                            BÓC LỊCH
-                        </p>
-                    </a>
-                </li>
-                <li class="nav-item">
                     <a href="{{ asset('admin/attendance') }}" class="nav-link">
                         <i class="nav-icon fas fa-graduation-cap"></i>
                         <p>

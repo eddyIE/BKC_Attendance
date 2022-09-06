@@ -2,13 +2,13 @@
 
 namespace Database\Factories;
 
-use App\Models\User;
+use App\Models\Classes;
+use App\Models\Student;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
-class UserFactory extends Factory
+class StudentFactory extends Factory
 {
-    protected $model = User::class;
+    protected $model = Student::class;
     /**
      * Define the model's default state.
      *
@@ -147,11 +147,8 @@ class UserFactory extends Factory
             "Võ Quốc Vinh",
         ];
         return [
-            'username' => $this->faker->userName,
-            'password' => 'e10adc3949ba59abbe56e057f20f883e',
             'full_name' => $this->faker->randomElement($name),
-            'phone' => $this->faker->phoneNumber,
-            'gender' => $this->faker->boolean,
+            'birthdate' => $this->faker->dateTimeBetween('2001-01-01','2001-12-31'),
         ];
     }
 }

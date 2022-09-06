@@ -14,14 +14,14 @@
                         @error('name')
                         <div class="danger text-red" style="float:right">{{ $message }}</div>
                         @enderror
-                        <input type="text" class="form-control" id="name" name="name">
+                        <input type="text" class="form-control" id="name" name="name" placeholder="Tên">
                     </div>
                     <div class="form-group">
-                        <label for="recommend_hours">Thời lượng môn dự kiến (giờ)</label>
+                        <label for="recommend_hours">Thời lượng môn</label>
                         @error('recommend_hours')
                         <div class="danger text-red" style="float:right">{{ $message }}</div>
                         @enderror
-                        <input type="text" class="form-control" id="recommend_hours" name="recommend_hours">
+                        <input type="text" class="form-control" id="recommend_hours" name="recommend_hours" placeholder="Giờ">
                     </div>
                 </div>
                 <div class="card-footer">

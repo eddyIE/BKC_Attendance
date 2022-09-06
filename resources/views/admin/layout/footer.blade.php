@@ -1,8 +1,6 @@
 <strong>Copyright &copy; 2021-2022 <a href="https://attendance.bkc">BKC Attendance</a>.</strong>
 All rights reserved.
 
-<!-- jQuery -->
-<script src="{{ asset('js/jquery/jquery.min.js') }}"></script>
 <!-- Boostrap 4 -->
 <script src="{{ asset('js/bootstrap/bootstrap.bundle.min.js') }}"></script>
 <!-- DataTables  & Plugins -->
@@ -43,6 +41,7 @@ All rights reserved.
             Swal.fire({
                 toast: true,
                 timer: 3000,
+                timerProgressBar: true,
                 position: 'top-end',
                 iconColor: 'white',
                 customClass: {
@@ -51,6 +50,7 @@ All rights reserved.
                 showConfirmButton: false,
                 icon: type,
                 title: message,
+
             });
         }
 
