@@ -17,6 +17,10 @@ class Attendance extends Model
         'created_by',
         'modified_by',
     ];
+    protected $attributes = [
+        'status' => 1,
+        'created_by' => 1,
+    ];
 
     public function lesson(){
         return $this->belongsTo(Lesson::class);

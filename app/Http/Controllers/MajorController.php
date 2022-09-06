@@ -10,7 +10,7 @@ class MajorController extends Controller
 {
     public function index()
     {
-        $data = Major::all()->sortByDesc('created_at');
+        $data = Major::orderBy('created_at')->simplePaginate(10);
         return view('admin.major.index', ['data' => $data]);
     }
 

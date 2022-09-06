@@ -14,14 +14,14 @@ class ProgramController extends Controller
 {
     public function index()
     {
-        $data = Program::whereRelation('major', 'status', true)->get()->sortByDesc('created_at');
+        $data = Program::whereRelation('major', 'status', 1)->orderBy('created_at')->simplePaginate(10);
         return view('admin.program.index', ['data' => $data]);
     }
 
     public function create()
     {
-        $majors = Major::where('status', true)->get();
-        $subjects = Subject::where('status', true)->get();
+        $majors = Major::where('status', 1)->get();
+        $subjects = Subject::where('status', 1)->get();
         return view('admin.program.add', ['majors' => $majors, 'subjects' => $subjects]);
     }
 
@@ -58,8 +58,8 @@ class ProgramController extends Controller
 
     public function show($id)
     {
-        $major = Major::where('status', true)->get();
-        $subjects = Subject::where('status', true)->get();
+        $major = Major::where('status', 1)->get();
+        $subjects = Subject::where('status', 1)->get();
 
         foreach ($subjects as $subject) {
             $selected_subject = Subject::leftJoin('program_info', 'subject.id', '=', 'program_info.subject_id')
@@ -67,7 +67,7 @@ class ProgramController extends Controller
                 ->where([
                     ['program.id', '=', $id],
                     ['subject.id', '=', $subject->id],
-                    ['subject.status', '=', true]
+                    ['subject.status', '=', 1]
                 ])->get('subject.*');
 
             if (count($selected_subject)){
@@ -108,8 +108,7 @@ class ProgramController extends Controller
         foreach ($current_subjects as $current) {
             if (!in_array($current, $selected_subjects)){
                 $delete = true;
-                $delete_data[] = $current->id;
-                dd($current.': deleted!');
+                $delete_data[] = $current;
             }
         }
         if ($delete == true){

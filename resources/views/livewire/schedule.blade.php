@@ -1,7 +1,7 @@
 <div>
     <form wire:submit.prevent="schedule">
         @csrf
-        <div class="card card-danger">
+        <div class="card card-maroon">
             <div class="card-header">
                 <h3 class="card-title font-weight-bold text-uppercase">Phân công giảng viên</h3>
             </div>
