@@ -50,4 +50,7 @@
         @endforeach
         </tbody>
     </table>
+    <div class="row text-right">
+        {{ $data->links() }}
+    </div>
 @endsection

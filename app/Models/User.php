@@ -23,7 +23,6 @@ class User extends Authenticatable
     protected $attributes = [
         'status' => 1,
         'role' => 0,
-        'created_by' => 1,
     ];
 
     public function lesson(){
