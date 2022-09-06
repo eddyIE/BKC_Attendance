@@ -320,28 +320,4 @@ class CourseController extends Controller
 
         return $result;
     }
-    /*
-     * Export danh sách xét điều kiện thi ra Excel
-     */
-    public function exportStudentData($courseId)
-    {
-        $curCourse = Course::find($courseId);
-        // Lấy thông tin lớp theo học khóa học
-        $curClass = Classes::find($curCourse->class_id);
-
-        // Lấy danh sách các sinh viên
-        $students = Student::where('class_id', $curCourse->class_id)->get();
-        // Lấy ds DTO chứa các thông tin số buổi nghỉ, muộn, phép
-        $studentDTOs = LecturerController::class->studentToDTO($students, $courseId);
-
-        // Lưu excel tên khóa học dạng viết hoa, cách bằng gạch dưới
-        $courseName = $curCourse->name;
-        $courseName = ucfirst($courseName);
-        $courseName = str_replace(" ", "_", $courseName);
-        $courseName = str_replace("-", "", $courseName);
-        $courseName = str_replace("__", "_", $courseName);
-
-
-        return (new AttendanceExport($courseId, $studentDTOs))->download($courseName . '_ds_sv_du_dieu_kien.xlsx');
-    }
 }
