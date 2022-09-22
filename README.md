@@ -84,9 +84,22 @@ Kết thúc môn học, nếu sinh viên nghỉ quá 30% số buổi sẽ phải
 </p>
 
 
+## PHẦN 4: ĐÁNH GIÁ
 
+Như vậy, sau một thời gian tìm hiểu, nghiên cứu em đã hoàn thành đồ án “Hệ thống điểm danh BKC Attendance”. Đồ án đã đưa ra một cách tổng quan về chương trình quản lý điểm danh sinh viên. Với yêu cầu của bài toán thực tế về vấn đề theo dõi điểm danh thì chương trình của em đã giải quyết được những vấn đề sau:
+- Tạo ra được CSDL có khả năng lưu trữ chính xác và khoa học các thông tin liên quan đến vấn đề điểm danh cho giáo viên, và xuất báo cáo tình hình điểm danh tại học viện.
+- Xây dựng được các giao diện cập nhật dữ liệu dễ dàng, thuận tiện.
+- Xây dựng được giao diện điểm danh hàng ngày cho từng lớp môn học.
+- Xây dựng được giao diện thống kê trung tâm dào tạo.
+- Xây dựng được giao diện xem lịch sử các buổi đã dạy
+- Xây dựng được các chức năng quản trị hệ thống bao gồm: đăng nhập, quản trị dữ liệu hệ thống.
 
+Tuy nhiên, chương trình vẫn còn một số hạn chế như:
+- Giao diện điểm danh hàng ngày chưa thực sự sinh mã lần điểm danh tự động và sinh dữ liệu thông tin sinh viên tự động cho mỗi lần điểm danh.
+- Giao diện chưa đẹp do cả 2 thành viên đều không chuyên sâu về Front-end
 
+Hướng phát triển tiếp theo của chương trình trong tương lai:
+- Cải thiện giao diện người dùng.
+- Nghiên cứu, bổ sung thêm các chức năng hỗ trợ điểm danh và thống kê.
 
-
-
+Do kiến thức còn hạn chế nên đồ án tốt nghiệp của em chắc chắn không tránh khỏi những thiếu sót. Em rất mong có được những ý kiến đánh giá, đóng góp của các thầy cô và các bạn để đồ án thêm hoàn thiện. Em xin gửi lời cảm ơn chân thành đến thầy giáo Nguyễn Ngọc Tân người đã trực tiếp hướng dẫn và giúp đỡ em hoàn thành đồ án tốt nghiệp này.
