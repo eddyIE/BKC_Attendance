@@ -1,64 +1,92 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
-
 <p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+    <img src="https://user-images.githubusercontent.com/61381778/191733461-79c62354-c6dc-489e-8d80-a82033fcb215.png" alt="drawing" width="500"/>
 </p>
 
-## About Laravel
+## TỔNG QUAN VỀ PROJECT
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Đây là đồ án tốt nghiệp Phần mềm điểm danh học viện được tạo ra với mục đích là đồ án tốt nghiệp Học viện công nghệ BKACAD và Trường Cao đẳng nghề Bách Khoa Hà Nội vào tháng 9 năm 2022. Tài liệu và phần mềm được tạo nên bời sinh viên Trần Đại Nghĩa và Nguyễn Trần Nhật Vũ.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## PHẦN 1: MÔ TẢ BÀI TOÁN VÀ GIẢI PHÁP
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 1.1. Lý do chọn đề tài
 
-## Learning Laravel
+Tác vụ điểm danh có lẽ là một trong những tác vụ cơ bản nhất của mỗi trường học. Nó giúp cho nhà trường quản lí được tính chuyên cần của học sinh, sinh viên từ đó nâng cao tính kỉ cương của nhà trường. Song, nếu như điểm danh bằng tài liệu (giấy, sổ, bảng biểu,…) thì sẽ xuất hiện rất nhiều hạn chế như khó đồng bộ, dễ thất thoát tài liệu, khó đảm bảo độ chính xác với trường có quá nhiều học sinh, sinh viên.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Từ nhu cầu trên, ảnh hưởng cùng sự phát triển của ngành Công nghệ thông tin hiện nay. Chúng em lựa chọn đề tài tạo nên một phần mềm điểm danh cho các học viện, trung tâm đào tạo. Đối tượng chúng em hướng tới là các cơ sở đào tạo nhỏ, có khoảng 300-500 học sinh, sinh viên mỗi khóa học. Các trung tâm đào tạo này sẽ được tạo ra một giải pháp phần mềm điểm danh giúp họ thay thế các tác vụ điểm danh bằng giấy.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 1.2. Mô tả giải pháp điểm danh học viện
 
-## Laravel Sponsors
+Giải pháp được tạo ra có thể trình bày như sau: khi bắt đầu mỗi môn học, phòng Đào tạo có trách nhiệm lập ra một lớp học bao gồm các thông tin về môn học được giảng dạy, giảng viên đứng lớp, danh sách sinh viên, số giờ dự kiến. Sau đó giáo viên sẽ có thể theo dõi dõi tình hình môn học của lớp học mình được phân công giảng dạy từ phòng Đào tạo.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+Hàng ngày, giáo viên đến lớp thì sẽ dùng hệ thống để lấy danh sách điểm danh của lớp học đó ra để tiến hành điểm danh sinh viên. Nếu sinh viên không có mặt tại lớp thì giáo viên sẽ đánh dấu sinh viên “Vắng”, còn nếu sinh viên đi muộn thì chọn “Muộn”. Trong trường hợp sinh viên vắng mặt nhưng có xin phép thì giảng viên có thể click chọn “Có phép” và ghi thêm lý do nghỉ.
 
-### Premium Partners
+Giáo vụ có thể xem thống kê về chuyên cần của các sinh viên. Điểm chuyên cần của sinh viên được tính như sau: 
+- Nếu sinh viên nghỉ không phép thì tính là một buổi nghỉ
+- Nếu sinh viên đi muộn thì tính là 0,3 buổi nghỉ và 3 buổi muộn sẽ làm tròn thành 1 buổi nghỉ
+- Nếu sinh viên nghỉ có phép thì sẽ tính 1 buổi nghỉ có phép.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+Kết thúc môn học, nếu sinh viên nghỉ quá 30% số buổi sẽ phải thi lại, sinh viên nào nghỉ quá 50% số buổi sẽ phải học lại.
 
-## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 1.3. Các công nghệ sẽ áp dụng cho đồ án
 
-## Code of Conduct
+- HTML5/CSS3
+- JavaScript
+- PHP 8
+- Framework Laravel 8
+- Framework Bootstrap 5
+- JQuery và một số thư viện
+- Cơ sở dữ liệu PostgreSQL
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+<p align="center">
+<img src="https://user-images.githubusercontent.com/61381778/191728175-1302f468-c1af-4c18-8fa9-ccf0d01a6d97.png" alt="drawing" width="500"/>
+</p>
 
-## Security Vulnerabilities
+## PHẦN 2: PHÂN TÍCH THIẾT KẾ HỆ THÔNG
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Đồ án được tạo ra với 2 vai trò người sử dụng chính, giảng viên và giáo vụ.
 
-## License
+### 2.1. Chức năng giáo vụ
+<p align="center">
+<img src="https://user-images.githubusercontent.com/61381778/191727363-1feb40ce-9a18-44af-95e7-3dc2a644e2de.png" alt="drawing" width="800"/>
+</p>
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 2.2. Chức năng giảng viên
+<p align="center">
+<img src="https://user-images.githubusercontent.com/61381778/191727463-50cfef46-293f-4ed9-9a2d-09fa4c0f8aef.png" alt="drawing" width="800"/>
+</p>
+    
+### 2.3. Quan hệ giữa các bảng trong DB
+<p align="center">
+<img src="https://user-images.githubusercontent.com/61381778/191729208-de4c68b8-c426-4415-b19d-f7a6dc5a6ff0.png" alt="drawing" width="800"/>
+</p>
+    
+## PHẦN 3: TRIỂN KHAI CHƯƠNG TRÌNH
+
+### 3.1. Đăng nhập hệ thống
+<p align="center">
+<img src="https://user-images.githubusercontent.com/61381778/191729619-e008c797-2310-43df-bcf7-f2e95e80aaf4.png" alt="drawing" width="800"/>
+</p>
+
+### 3.2. Giao diện điểm danh của giảng viên
+<p align="center">
+<img src="https://user-images.githubusercontent.com/61381778/191731187-68778a0b-007a-4114-a933-b8951c9c964f.png" alt="drawing" width="800"/>
+</p>
+
+### 3.3. Giao diện trang chủ giáo vụ với các lịch phân công toàn trường
+<p align="center">
+<img src="https://user-images.githubusercontent.com/61381778/191731537-17b9f7b6-d680-48ff-93ec-709009d30030.png" alt="drawing" width="800"/>
+</p>
+
+### 3.4. Giao diện thống kê của giáo vụ
+<p align="center">
+<img src="https://user-images.githubusercontent.com/61381778/191731736-205e4fe5-8f45-41c0-bded-f9624bf2381b.png" alt="drawing" width="800"/>
+</p>
+
+
+
+
+
+
+
+
